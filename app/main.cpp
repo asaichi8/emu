@@ -6,7 +6,12 @@ int main()
 {
     RAM ram;
     CPU cpu(&ram);
-    std::cout << "hello world" << std::endl;
+
+    // example code
+    ram.WriteByte(0, 0x5);
+    std::cout << (int)(ram.ReadByte(0)) << std::endl;
+    ram.Reset();
+    std::cout << (int)(ram.ReadByte(0)) << std::endl;
 
     return 0;
 }

@@ -4,10 +4,10 @@
 
 CPU::CPU(RAM* ram) : m_RAM(ram)
 {
-    this->reset();
+    this->Reset();
 }
 
-void CPU::reset()
+void CPU::Reset()
 {
     reg.program_counter = 0;
     reg.accumulator = 0;
@@ -16,5 +16,5 @@ void CPU::reset()
     reg.stack_pointer = 0;
     reg.status_register = 0;
 
-    memset(m_RAM->ram, 0, sizeof(m_RAM->ram));
+    m_RAM->Reset();
 }

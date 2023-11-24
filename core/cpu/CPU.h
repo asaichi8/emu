@@ -30,12 +30,10 @@ class CPU
         std::bitset<8> status_register{};
     };
 
-    void reset();
+    void Reset();
 
 public:
     CPU(RAM* ram);
     
     registers reg;
-
-
 };
