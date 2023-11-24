@@ -1,6 +1,7 @@
 #pragma once
 
 #include <bitset>
+#include "RAM.h"
 #include "../../include/typedefs.h"
 
 enum StatusRegisterFlags
@@ -15,9 +16,9 @@ enum StatusRegisterFlags
     NEGATIVE
 };
 
-class cpu
+class CPU
 {
-    BYTE ram[UINT16_MAX + 1];
+    RAM* m_RAM = nullptr;
 
     struct registers
     {
@@ -32,8 +33,9 @@ class cpu
 
 
 public:
-    cpu();
+    CPU(RAM* ram);
     
     registers reg;
+
 
 };

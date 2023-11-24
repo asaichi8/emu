@@ -1,10 +1,11 @@
 #include <iostream>
-#include "../core/cpu/cpu.h"
+#include "../core/cpu/CPU.h"
 
 
 int main()
 {
-    cpu Cpu;
+    RAM ram;
+    CPU cpu(&ram);
     std::cout << "hello world" << std::endl;
 
     return 0;
