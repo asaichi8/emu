@@ -55,8 +55,6 @@ class CPU
     // Opcodes
     void LDA(WORD addr);
 
-    Instruction instruction = {&LDA, &mode_immediate, 1}; // e.g.
-
     void Execute(const Instruction& instruction);
     void Reset();
 

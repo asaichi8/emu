@@ -12,14 +12,13 @@ CPU::CPU(RAM* ram) : m_RAM(ram)
 
 /// @brief Executes an instruction.
 /// @param instruction Instruction to be executed.
-void CPU::Execute(const Instruction &instruction)
+void CPU::Execute(const Instruction& instruction)
 {
     // first call the addressing mode, so we can get the address of what we're acting upon
     WORD operand = (this->*(instruction.addrMode))();
 
     // now call opcode normally with the real operand as the address
     (this->*(instruction.opcode))(operand);
-
 }
 
 /// @brief Resets the processor to a known state.
