@@ -4,6 +4,7 @@
 #include "RAM.h"
 #include "../../include/typedefs.h"
 
+#define MODE(addressingMode) WORD addressingMode()
 #define OPCODE(opcodeName) void opcodeName(WORD addr)
 
 enum StatusRegisterFlags
@@ -40,19 +41,19 @@ class CPU
     };
 
     // Addressing modes - returns the address to act upon
-    WORD mode_immediate();
-    WORD mode_implicit();
-    WORD mode_accumulator();
-    WORD mode_absolute();
-    WORD mode_absolute_x();
-    WORD mode_absolute_y();
-    WORD mode_indirect();
-    WORD mode_relative();
-    WORD mode_zp();
-    WORD mode_zp_x();
-    WORD mode_zp_y();
-    WORD mode_indirect_indexed();
-    WORD mode_indexed_indirect();
+    MODE(mode_immediate);
+    MODE(mode_implicit);
+    MODE(mode_accumulator);
+    MODE(mode_absolute);
+    MODE(mode_absolute_x);
+    MODE(mode_absolute_y);
+    MODE(mode_indirect);
+    MODE(mode_relative);
+    MODE(mode_zp);
+    MODE(mode_zp_x);
+    MODE(mode_zp_y);
+    MODE(mode_indirect_indexed);
+    MODE(mode_indexed_indirect);
 
     // --== Opcodes ==--
     // Load operations
@@ -76,22 +77,69 @@ class CPU
     OPCODE(DEY);
 
     // Arithmetic operations
+    OPCODE(ADC);
+    OPCODE(SBC);
+    OPCODE(CMP);
+    OPCODE(CPX);
+    OPCODE(CPY);
 
     // Logical operations
+    OPCODE(AND);
+    OPCODE(EOR);
+    OPCODE(ORA);
+    OPCODE(BIT);
 
     // Stack operations
+    OPCODE(TSX);
+    OPCODE(TXS);
+    OPCODE(PHA);
+    OPCODE(PHP);
+    OPCODE(PLA);
+    OPCODE(PLP);
 
     // Jump operations
+    OPCODE(JMP);
+    OPCODE(JSR);
+    OPCODE(RTS);
 
     // Branch operations
+    OPCODE(BCC);
+    OPCODE(BCS);
+    OPCODE(BEQ);
+    OPCODE(BMI);
+    OPCODE(BNE);
+    OPCODE(BPL);
+    OPCODE(BVC);
+    OPCODE(BVS);
 
     // Shift operations
-
+    OPCODE(ASL);
+    OPCODE(LSR);
+    OPCODE(ROL);
+    OPCODE(ROR);
+    
     // Clear operations
+    OPCODE(CLC);
+    OPCODE(CLD);
+    OPCODE(CLI);
+    OPCODE(CLV);
 
     // Set flag operations
+    OPCODE(SEC);
+    OPCODE(SED);
+    OPCODE(SEI);
+
+    // Transfer operations
+    OPCODE(TAX);
+    OPCODE(TAY);
+    OPCODE(TXA);
+    OPCODE(TYA);
 
     // System functions
+    OPCODE(BRK);
+    OPCODE(NOP);
+    OPCODE(RTI);
+
 
     // Illegal/unused operations
 
