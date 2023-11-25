@@ -10,8 +10,6 @@ int main()
     // example code
     ram.WriteByte(0, 0x5);
     std::cout << (int)(ram.ReadByte(0)) << std::endl;
-    ram.Reset();
-    std::cout << (int)(ram.ReadByte(0)) << std::endl;
 
     return 0;
 }

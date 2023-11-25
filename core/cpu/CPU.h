@@ -28,12 +28,10 @@ class CPU
         BYTE Y{};
         BYTE stack_pointer{};
         std::bitset<8> status_register{};
-    };
+    } reg;
 
     void Reset();
 
 public:
     CPU(RAM* ram);
-    
-    registers reg;
 };
