@@ -7,6 +7,6 @@
 #define DWORD   uint32_t
 #define QWORD   uint64_t
 
-#define PAGE    0x00FF
+#define PAGE    0x0100
 
 #define STACK   0x0100 // beginning of stack (0x0100 - 0x01FF)
