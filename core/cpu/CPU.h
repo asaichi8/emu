@@ -30,6 +30,34 @@ class CPU
         std::bitset<8> status_register{};
     } reg;
 
+    struct Instruction
+    {
+        void (CPU::*opcode)(WORD);
+        WORD (CPU::*addrMode)();
+        DWORD cycles;
+    };
+
+    // Addressing modes - returns the address to act upon
+    WORD mode_immediate();
+    WORD mode_implicit();
+    WORD mode_accumulator();
+    WORD mode_absolute();
+    WORD mode_absolute_x();
+    WORD mode_absolute_y();
+    WORD mode_indirect();
+    WORD mode_relative();
+    WORD mode_zp();
+    WORD mode_zp_x();
+    WORD mode_zp_y();
+    WORD mode_indirect_indexed();
+    WORD mode_indexed_indirect();
+
+    // Opcodes
+    void LDA(WORD addr);
+
+    Instruction instruction = {&LDA, &mode_immediate, 1}; // e.g.
+
+    void Execute(const Instruction& instruction);
     void Reset();
 
 public:
