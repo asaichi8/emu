@@ -4,6 +4,8 @@
 #include "RAM.h"
 #include "../../include/typedefs.h"
 
+#define OPCODE(opcodeName) void opcodeName(WORD addr)
+
 enum StatusRegisterFlags
 {
     CARRY,
@@ -52,8 +54,51 @@ class CPU
     WORD mode_indirect_indexed();
     WORD mode_indexed_indirect();
 
-    // Opcodes
-    void LDA(WORD addr);
+    // --== Opcodes ==--
+    // Load operations
+    OPCODE(LDA);
+    OPCODE(LDX);
+    OPCODE(LDY);
+
+    // Store operations
+    OPCODE(STA);
+    OPCODE(STX);
+    OPCODE(STY);
+
+    // Increment operations
+    OPCODE(INC);
+    OPCODE(INX);
+    OPCODE(INY);
+
+    // Decrement operations
+    OPCODE(DEC);
+    OPCODE(DEX);
+    OPCODE(DEY);
+
+    // Arithmetic operations
+
+    // Logical operations
+
+    // Stack operations
+
+    // Jump operations
+
+    // Branch operations
+
+    // Shift operations
+
+    // Clear operations
+
+    // Set flag operations
+
+    // System functions
+
+    // Illegal/unused operations
+
+
+
+
+    static Instruction instructions[256];
 
     void Execute(const Instruction& instruction);
     void Reset();
