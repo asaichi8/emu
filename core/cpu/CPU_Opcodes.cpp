@@ -26,106 +26,402 @@ CPU::Instruction CPU::instructions[256] = {
 
 
 // Load operations
-void CPU::LDA(WORD addr) { }
-void CPU::LDX(WORD addr) { }
-void CPU::LDY(WORD addr) { }
+void CPU::LDA(WORD addr) 
+{ 
+
+}
+
+void CPU::LDX(WORD addr) 
+{ 
+
+}
+
+void CPU::LDY(WORD addr) 
+{ 
+
+}
+
 
 // Store operations
-void CPU::STA(WORD addr) { }
-void CPU::STX(WORD addr) { }
-void CPU::STY(WORD addr) { }
+void CPU::STA(WORD addr) 
+{ 
+
+}
+
+void CPU::STX(WORD addr) 
+{ 
+
+}
+
+void CPU::STY(WORD addr) 
+{ 
+
+}
+
 
 // Increment operations
-void CPU::INC(WORD addr) { }
-void CPU::INX(WORD addr) { }
-void CPU::INY(WORD addr) { }
+void CPU::INC(WORD addr) 
+{ 
+
+}
+
+void CPU::INX(WORD addr) 
+{ 
+
+}
+
+void CPU::INY(WORD addr) 
+{ 
+
+}
+
 
 // Decrement operations
-void CPU::DEC(WORD addr) { }
-void CPU::DEX(WORD addr) { }
-void CPU::DEY(WORD addr) { }
+void CPU::DEC(WORD addr) 
+{ 
+
+}
+
+void CPU::DEX(WORD addr) 
+{ 
+
+}
+
+void CPU::DEY(WORD addr) 
+{ 
+
+}
+
 
 // Arithmetic operations
-void CPU::ADC(WORD addr) { }
-void CPU::SBC(WORD addr) { }
-void CPU::CMP(WORD addr) { }
-void CPU::CPX(WORD addr) { }
-void CPU::CPY(WORD addr) { }
+void CPU::ADC(WORD addr) 
+{ 
+
+}
+
+void CPU::SBC(WORD addr) 
+{ 
+
+}
+
+void CPU::CMP(WORD addr) 
+{ 
+
+}
+
+void CPU::CPX(WORD addr) 
+{ 
+
+}
+
+void CPU::CPY(WORD addr) 
+{ 
+    
+}
+
 
 // Logical operations
-void CPU::AND(WORD addr) { }
-void CPU::EOR(WORD addr) { }
-void CPU::ORA(WORD addr) { }
-void CPU::BIT(WORD addr) { }
+void CPU::AND(WORD addr) 
+{ 
+
+}
+void CPU::EOR(WORD addr) 
+{ 
+
+}
+void CPU::ORA(WORD addr) 
+{ 
+
+}
+void CPU::BIT(WORD addr) 
+{ 
+
+}
+
 
 // Stack operations
-void CPU::TSX(WORD addr) { }
-void CPU::TXS(WORD addr) { }
-void CPU::PHA(WORD addr) { }
-void CPU::PHP(WORD addr) { }
-void CPU::PLA(WORD addr) { }
-void CPU::PLP(WORD addr) { }
+void CPU::TSX(WORD addr) 
+{ 
+
+}
+
+void CPU::TXS(WORD addr) 
+{ 
+    
+}
+
+void CPU::PHA(WORD addr) 
+{ 
+
+}
+
+void CPU::PHP(WORD addr) 
+{ 
+
+}
+
+void CPU::PLA(WORD addr) 
+{ 
+
+}
+
+void CPU::PLP(WORD addr) 
+{ 
+
+}
+
 
 // Jump operations
-void CPU::JMP(WORD addr) { }
-void CPU::JSR(WORD addr) { }
-void CPU::RTS(WORD addr) { }
+void CPU::JMP(WORD addr) 
+{ 
+
+}
+
+void CPU::JSR(WORD addr) 
+{ 
+
+}
+
+void CPU::RTS(WORD addr) 
+{ 
+
+}
+
 
 // Branch operations
-void CPU::BCC(WORD addr) { }
-void CPU::BCS(WORD addr) { }
-void CPU::BEQ(WORD addr) { }
-void CPU::BMI(WORD addr) { }
-void CPU::BNE(WORD addr) { }
-void CPU::BPL(WORD addr) { }
-void CPU::BVC(WORD addr) { }
-void CPU::BVS(WORD addr) { }
+void CPU::BCC(WORD addr) 
+{ 
+
+}
+
+void CPU::BCS(WORD addr) 
+{ 
+
+}
+
+void CPU::BEQ(WORD addr) 
+{ 
+
+}
+
+void CPU::BMI(WORD addr) 
+{ 
+
+}
+
+void CPU::BNE(WORD addr) 
+{ 
+
+}
+
+void CPU::BPL(WORD addr) 
+{ 
+
+}
+
+void CPU::BVC(WORD addr) 
+{ 
+
+}
+
+void CPU::BVS(WORD addr) 
+{ 
+
+}
+
 
 // Shift operations
-void CPU::ASL(WORD addr) { }
-void CPU::LSR(WORD addr) { }
-void CPU::ROL(WORD addr) { }
-void CPU::ROR(WORD addr) { }
+void CPU::ASL(WORD addr) 
+{ 
+
+}
+
+void CPU::LSR(WORD addr) 
+{ 
+
+}
+
+void CPU::ROL(WORD addr) 
+{ 
+
+}
+
+void CPU::ROR(WORD addr) 
+{ 
+
+}
+
 
 // Clear operations
-void CPU::CLC(WORD addr) { }
-void CPU::CLD(WORD addr) { }
-void CPU::CLI(WORD addr) { }
-void CPU::CLV(WORD addr) { }
+void CPU::CLC(WORD addr) 
+{ 
+
+}
+
+void CPU::CLD(WORD addr) 
+{ 
+
+}
+
+void CPU::CLI(WORD addr) 
+{ 
+
+}
+
+void CPU::CLV(WORD addr) 
+{ 
+
+}
+
 
 // Set flag operations
-void CPU::SEC(WORD addr) { }
-void CPU::SED(WORD addr) { }
-void CPU::SEI(WORD addr) { }
+void CPU::SEC(WORD addr) 
+{ 
+    
+}
+
+void CPU::SED(WORD addr) 
+{ 
+
+}
+
+void CPU::SEI(WORD addr) 
+{ 
+
+}
+
 
 // Transfer operations
-void CPU::TAX(WORD addr) { }
-void CPU::TAY(WORD addr) { }
-void CPU::TXA(WORD addr) { }
-void CPU::TYA(WORD addr) { }
+void CPU::TAX(WORD addr) 
+{ 
+
+}
+
+void CPU::TAY(WORD addr) 
+{ 
+
+}
+
+void CPU::TXA(WORD addr) 
+{ 
+
+}
+
+void CPU::TYA(WORD addr) 
+{ 
+
+}
+
 
 // System functions
-void CPU::BRK(WORD addr) { }
-void CPU::NOP(WORD addr) { }
-void CPU::RTI(WORD addr) { }
+void CPU::BRK(WORD addr) 
+{ 
+
+}
+
+void CPU::NOP(WORD addr) 
+{ 
+
+}
+
+void CPU::RTI(WORD addr) 
+{ 
+    
+}
+
 
 // Illegal/unused operations
-void CPU::SHY(WORD addr) { }
-void CPU::TAS(WORD addr) { }
-void CPU::SHX(WORD addr) { }
-void CPU::AHX(WORD addr) { }
-void CPU::XAA(WORD addr) { }
-void CPU::LAX(WORD addr) { }
-void CPU::KIL(WORD addr) { }
-void CPU::SLO(WORD addr) { }
-void CPU::RLA(WORD addr) { }
-void CPU::SRE(WORD addr) { }
-void CPU::RRA(WORD addr) { }
-void CPU::SAX(WORD addr) { }
-void CPU::DCP(WORD addr) { }
-void CPU::ANC(WORD addr) { }
-void CPU::ALR(WORD addr) { }
-void CPU::ARR(WORD addr) { }
-void CPU::LAS(WORD addr) { }
-void CPU::AXS(WORD addr) { }
-void CPU::ISC(WORD addr) { }
+void CPU::SHY(WORD addr) 
+{ 
+
+}
+
+void CPU::TAS(WORD addr) 
+{ 
+
+}
+
+void CPU::SHX(WORD addr) 
+{ 
+
+}
+
+void CPU::AHX(WORD addr) 
+{ 
+
+}
+
+void CPU::XAA(WORD addr) 
+{ 
+
+}
+
+void CPU::LAX(WORD addr) 
+{ 
+
+}
+
+void CPU::KIL(WORD addr) 
+{ 
+
+}
+
+void CPU::SLO(WORD addr) 
+{ 
+
+}
+
+void CPU::RLA(WORD addr) 
+{ 
+
+}
+
+void CPU::SRE(WORD addr) 
+{ 
+
+}
+
+void CPU::RRA(WORD addr) 
+{ 
+
+}
+
+void CPU::SAX(WORD addr) 
+{ 
+
+}
+
+void CPU::DCP(WORD addr) 
+{ 
+
+}
+
+void CPU::ANC(WORD addr) 
+{ 
+
+}
+
+void CPU::ALR(WORD addr) 
+{ 
+
+}
+
+void CPU::ARR(WORD addr) 
+{ 
+
+}
+
+void CPU::LAS(WORD addr) 
+{ 
+
+}
+
+void CPU::AXS(WORD addr) 
+{ 
+
+}
+
+void CPU::ISC(WORD addr) 
+{ 
+
+}
