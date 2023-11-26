@@ -49,11 +49,13 @@ class CPU
     MODE(ABY); // absolute y
     MODE(IND); // indirect
     MODE(REL); // relative
-    MODE(ZP); // zero page
+    MODE(ZPG); // zero page
     MODE(ZPX); // zero page x
     MODE(ZPY); // zero page y
     MODE(IZY); // indirect indexed
     MODE(IZX); // indexed indirect
+
+    MODE(unk); // unknown right now
 
     // --== Opcodes ==--
     // http://www.oxyron.de/html/opcodes02.html
@@ -145,6 +147,25 @@ class CPU
 
     // Illegal/unused operations
     // https://www.masswerk.at/nowgobang/2021/6502-illegal-opcodes
+    OPCODE(SHY);
+    OPCODE(TAS);
+    OPCODE(SHX);
+    OPCODE(AHX);
+    OPCODE(XAA);
+    OPCODE(LAX);
+    OPCODE(KIL);
+    OPCODE(SLO);
+    OPCODE(RLA);
+    OPCODE(SRE);
+    OPCODE(RRA);
+    OPCODE(SAX);
+    OPCODE(DCP);
+    OPCODE(ANC);
+    OPCODE(ALR);
+    OPCODE(ARR);
+    OPCODE(LAS);
+    OPCODE(AXS);
+    OPCODE(ISC);
 
 
 
