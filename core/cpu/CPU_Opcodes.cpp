@@ -2,6 +2,7 @@
 
 #define i(x, y, z) {&CPU::x, &CPU::y, z}
 
+// http://www.oxyron.de/html/opcodes02.html
 CPU::Instruction CPU::instructions[256] = {
 /*                 x0              x1              x2              x3              x4              x5              x6              x7                x8              x9              xA              xB              xC              xD              xE              xF              */
 /* 0x */    i(BRK, IMP, 7), i(ORA, IZX, 6), i(KIL, unk, 0), i(SLO, IZX, 8), i(NOP, ZPG, 3), i(ORA, ZPG, 3), i(ASL, ZPG, 5), i(SLO, ZPG, 5),   i(PHP, IMP, 3), i(ORA, IMM, 2), i(ASL, IMP, 2), i(ANC, IMM, 2), i(NOP, ABS, 4), i(ORA, ABS, 4), i(ASL, ABS, 6), i(SLO, ABS, 6), 
