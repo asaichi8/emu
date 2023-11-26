@@ -24,14 +24,19 @@ BYTE RAM::ReadByte(WORD addr)
     return m_RAM[addr];
 }
 
-WORD RAM::ReadWord(WORD addr)
+WORD RAM::ReadWord(WORD addr, bool shouldWrapPage = false)
 {
     if (addr == UINT16_MAX)
         return 0;
 
     // little endian
     BYTE low = m_RAM[addr];
-    BYTE high = m_RAM[addr + 1];
+
+    BYTE high{};
+    if (shouldWrapPage)
+        high = m_RAM[(addr & 0xFF00) | ((addr + 1) & 0x00FF)];
+    else
+        high = m_RAM[addr + 1];
 
     return (WORD(high) << 8) + low;
 }

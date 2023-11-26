@@ -16,7 +16,7 @@ public:
     void Reset();
 
     BYTE ReadByte(WORD addr);
-    WORD ReadWord(WORD addr);
+    WORD ReadWord(WORD addr, bool shouldWrapPage = false);
     void WriteByte(WORD addr, BYTE val);
     void WriteWord(WORD addr, WORD val);
 };

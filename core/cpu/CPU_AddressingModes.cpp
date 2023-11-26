@@ -90,18 +90,27 @@ WORD CPU::ZPY()
 
 WORD CPU::IZY()
 {
-    WORD addr = m_RAM->ReadWord(reg.program_counter);
-    reg.program_counter++;
+    /* e.g.: MEMORY ADDR | CONTENTS |                      DESCRIPTION
+                0x1000   |   0x60   | Supplied zero page address (inside reg.program_counter)
+                0x0060   |   0x00   | Low byte of effective address in the zero page
+                0x0061   |   0x70   | High byte of effective address in the zero page
 
-    return m_RAM->ReadWord(addr) + reg.Y;
+        Y = 0x40
+    */
+
+    WORD zpAddrLow = m_RAM->ReadByte(reg.program_counter); // Read supplied ZP address, result: 0x60 (low byte of effective address)
+    reg.program_counter++; // Increment PC: it's now 0x1001
+
+    return m_RAM->ReadWord(zpAddrLow, true) + reg.Y; // Read word at 0x60-0x61 (0x7000). Add Y for a final result of 0x7040.
 }
 
 WORD CPU::IZX()
 {
-    WORD addr = m_RAM->ReadWord(reg.program_counter) + reg.X;
+    WORD zpAddrLow = m_RAM->ReadByte(reg.program_counter);
     reg.program_counter++;
 
-    return m_RAM->ReadWord(addr);
+    WORD addr = (zpAddrLow + reg.X) & 0x00FF; // add X and wrap around
+    return m_RAM->ReadWord(addr, true);
 }
 
 WORD CPU::unk()
