@@ -1,9 +1,6 @@
 #include "CPU.h"
 
 
-// TODO: probably a bunch of wraparound/overflow bugs
-//       usage of ReadWord is questionable
-
 // After fetching the opcode, the program counter points to the effective operand.
 
 /// @brief Takes a single constant byte as an operand, e.g. LDY #$05, loading 0x05 into the Y index register. 
