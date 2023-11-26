@@ -57,8 +57,6 @@ class CPU
     MODE(IZY); // indirect indexed
     MODE(IZX); // indexed indirect
 
-    MODE(unk); // unknown right now
-
     // --== Opcodes ==--
     // http://www.oxyron.de/html/opcodes02.html
     // https://www.nesdev.org/wiki/CPU_unofficial_opcodes

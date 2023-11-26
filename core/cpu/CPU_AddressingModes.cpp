@@ -114,8 +114,3 @@ WORD CPU::IZX()
     WORD addr = (zpAddrLow + reg.X) & 0x00FF; // add X and wrap around
     return m_RAM->ReadWord(addr, true);
 }
-
-WORD CPU::unk()
-{
-    return 0;
-}
