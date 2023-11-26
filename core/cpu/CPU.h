@@ -41,21 +41,23 @@ class CPU
     };
 
     // Addressing modes - returns the address to act upon
-    MODE(mode_immediate);
-    MODE(mode_implicit);
-    MODE(mode_accumulator);
-    MODE(mode_absolute);
-    MODE(mode_absolute_x);
-    MODE(mode_absolute_y);
-    MODE(mode_indirect);
-    MODE(mode_relative);
-    MODE(mode_zp);
-    MODE(mode_zp_x);
-    MODE(mode_zp_y);
-    MODE(mode_indirect_indexed);
-    MODE(mode_indexed_indirect);
+    MODE(IMM); // immediate
+    MODE(IMP); // implicit
+    MODE(ACC); // accumulator
+    MODE(ABS); // absolute
+    MODE(ABX); // absolute x
+    MODE(ABY); // absolute y
+    MODE(IND); // indirect
+    MODE(REL); // relative
+    MODE(ZP); // zero page
+    MODE(ZPX); // zero page x
+    MODE(ZPY); // zero page y
+    MODE(IZY); // indirect indexed
+    MODE(IZX); // indexed indirect
 
     // --== Opcodes ==--
+    // http://www.oxyron.de/html/opcodes02.html
+    // https://www.nesdev.org/wiki/CPU_unofficial_opcodes
     // Load operations
     OPCODE(LDA);
     OPCODE(LDX);
@@ -142,7 +144,7 @@ class CPU
 
 
     // Illegal/unused operations
-
+    // https://www.masswerk.at/nowgobang/2021/6502-illegal-opcodes
 
 
 
