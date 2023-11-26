@@ -24,7 +24,7 @@ BYTE RAM::ReadByte(WORD addr)
     return m_RAM[addr];
 }
 
-WORD RAM::ReadWord(WORD addr, bool shouldWrapPage = false)
+WORD RAM::ReadWord(WORD addr, bool shouldWrapPage)
 {
     if (addr == UINT16_MAX)
         return 0;
