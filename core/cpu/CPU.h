@@ -1,5 +1,7 @@
 #pragma once
 
+#define SIMULATE_BUGS 1
+
 #include <bitset>
 #include "RAM.h"
 #include "../../include/typedefs.h"

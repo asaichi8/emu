@@ -56,6 +56,11 @@ WORD CPU::IND()
 {
     WORD addr = ABS();
     
+    // https://atariwiki.org/wiki/Wiki.jsp?page=6502%20bugs
+    // "An indirect JMP (xxFF) will fail because the MSB will be fetched from address xx00 instead of page xx+1."
+    if (SIMULATE_BUGS)
+        return m_RAM->ReadWord(addr, true);
+
     return m_RAM->ReadWord(addr);
 }
 
