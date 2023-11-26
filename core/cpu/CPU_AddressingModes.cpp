@@ -15,14 +15,14 @@ WORD CPU::IMM()
 /// @brief Does not take any operand – the instruction is self-explanatory (e.g. NOP – no operation is done.) 
 WORD CPU::IMP()
 {
-    return NULL; // not needed
+    return 0; // not needed
 }
 
 /// @brief Takes a single operand, ‘A’. Operates directly on the accumulator register
 ///        (e.g. ROL A, rotating the contents of the accumulator left one bit.)
 WORD CPU::ACC()
 {
-    return NULL; // not needed
+    return 0; // not needed
 }
 
 /// @brief Takes a two-byte address as an operand (e.g. JMP $3000.)
@@ -73,19 +73,19 @@ WORD CPU::REL()
 
 /// @brief Instructions utilising this mode only take one 8-bit operand denoting a location inside the zero page
 ///        (e.g. DEC $5F would decrement the byte found at $005F by one.)
-WORD CPU::ZP()
+WORD CPU::ZPG()
 {
     return m_RAM->ReadByte(reg.program_counter++);
 }
 
 WORD CPU::ZPX()
 {
-    return (ZP() + reg.X) & 0x00FF;
+    return (ZPG() + reg.X) & 0x00FF;
 }
 
 WORD CPU::ZPY()
 {
-    return (ZP() + reg.Y) & 0x00FF;
+    return (ZPG() + reg.Y) & 0x00FF;
 }
 
 WORD CPU::IZY()
@@ -102,4 +102,9 @@ WORD CPU::IZX()
     reg.program_counter++;
 
     return m_RAM->ReadWord(addr);
+}
+
+WORD CPU::unk()
+{
+    return 0;
 }

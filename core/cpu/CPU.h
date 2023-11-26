@@ -166,6 +166,7 @@ class CPU
     OPCODE(LAS);
     OPCODE(AXS);
     OPCODE(ISC);
+    
 
 
 
