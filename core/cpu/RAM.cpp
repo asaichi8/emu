@@ -3,14 +3,20 @@
 #include "RAM.h"
 
 
-RAM::RAM()
+RAM::RAM(size_t size) : m_RAM_Size(size)
+{
+    m_RAM = std::make_unique<BYTE[]>(size);
+}
+
+RAM::~RAM()
 {
 
 }
 
+
 void RAM::Reset()
 {
-    memset(m_RAM, 0, sizeof(m_RAM));
+    memset(m_RAM.get(), 0, m_RAM_Size * sizeof(BYTE));
 }
 
 BYTE RAM::ReadByte(WORD addr)

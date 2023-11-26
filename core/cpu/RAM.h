@@ -1,15 +1,17 @@
 #pragma once
 
+#include <memory>
 #include "../../include/typedefs.h"
 
-#define MEMORY_MAX UINT16_MAX + 1
 
 class RAM
 {
-    BYTE m_RAM[MEMORY_MAX]{};
+    std::unique_ptr<BYTE[]> m_RAM{};
+    size_t m_RAM_Size{};
 
 public:
-    RAM();
+    RAM(size_t size);
+    ~RAM();
 
     void Reset();
 

@@ -1,10 +1,12 @@
 #include <iostream>
 #include "../core/cpu/CPU.h"
 
+#define KB 1024
 
 int main()
 {
-    RAM ram;
+    constexpr size_t CPU_RAM_SIZE = 64*KB;
+    RAM ram(CPU_RAM_SIZE);
     CPU cpu(&ram);
 
     // example code
