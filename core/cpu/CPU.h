@@ -168,13 +168,12 @@ class CPU
     OPCODE(ISC);
     
 
-
-
     static Instruction instructions[256];
 
     void Execute(const Instruction& instruction);
-    void Reset();
 
 public:
     CPU(RAM* ram);
+
+    void Reset();
 };
