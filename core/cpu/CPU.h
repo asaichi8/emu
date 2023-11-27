@@ -176,4 +176,5 @@ public:
     CPU(RAM* ram);
 
     void Reset();
+    void Run();
 };

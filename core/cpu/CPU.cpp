@@ -6,20 +6,22 @@
 
 CPU::CPU(RAM* ram) : m_RAM(ram)
 {
-    this->Reset();
+
 }
 
 
-/// @brief Executes an instruction.
-/// @param instruction Instruction to be executed.
-void CPU::Execute(const Instruction& instruction)
+/// @brief Starts running the CPU (https://en.wikipedia.org/wiki/Instruction_cycle)
+void CPU::Run()
 {
-    // first call the addressing mode, so we can get the address of what we're acting upon
-    WORD operand = (this->*(instruction.addrMode))();
+    this->Reset();
 
-    // now call opcode normally with the real operand as the address
-    (this->*(instruction.opcode))(operand);
+    while (true)
+    {
+        BYTE opcode = m_RAM->ReadByte(reg.program_counter);
+        Execute(instructions[opcode]);
+    }
 }
+
 
 /// @brief Resets the processor to a known state.
 void CPU::Reset()
@@ -42,4 +44,15 @@ void CPU::Reset()
     // TODO: cycles += 7;
 
     m_RAM->Reset();
+}
+
+/// @brief Executes an instruction.
+/// @param instruction Instruction to be executed.
+void CPU::Execute(const Instruction& instruction)
+{
+    // first call the addressing mode, so we can get the address of what we're acting upon
+    WORD operand = (this->*(instruction.addrMode))();
+
+    // now call opcode normally with the real operand as the address
+    (this->*(instruction.opcode))(operand);
 }
