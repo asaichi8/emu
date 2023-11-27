@@ -207,7 +207,7 @@ void CPU::PLP(WORD addr)
 // Jump operations
 void CPU::JMP(WORD addr) 
 { 
-
+    reg.program_counter = addr;
 }
 
 void CPU::JSR(WORD addr) 
