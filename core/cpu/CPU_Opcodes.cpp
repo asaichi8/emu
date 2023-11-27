@@ -288,39 +288,39 @@ void CPU::ROR(WORD addr)
 // Clear operations
 void CPU::CLC(WORD addr) 
 { 
-
+    reg.status_register.reset(StatusRegisterFlags::CARRY);
 }
 
 void CPU::CLD(WORD addr) 
 { 
-
+    reg.status_register.reset(StatusRegisterFlags::DECIMAL_MODE);
 }
 
 void CPU::CLI(WORD addr) 
 { 
-
+    reg.status_register.reset(StatusRegisterFlags::INTERRUPT_REQUEST);
 }
 
 void CPU::CLV(WORD addr) 
 { 
-
+    reg.status_register.reset(StatusRegisterFlags::OVERFLOW);
 }
 
 
 // Set flag operations
 void CPU::SEC(WORD addr) 
 { 
-    
+    reg.status_register.set(StatusRegisterFlags::CARRY);
 }
 
 void CPU::SED(WORD addr) 
 { 
-
+    reg.status_register.set(StatusRegisterFlags::DECIMAL_MODE);
 }
 
 void CPU::SEI(WORD addr) 
 { 
-
+    reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
 }
 
 
