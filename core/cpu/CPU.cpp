@@ -6,18 +6,22 @@
 
 CPU::CPU(RAM* ram) : m_RAM(ram)
 {
-
+    this->Reset();
 }
 
 
 /// @brief Starts running the CPU (https://en.wikipedia.org/wiki/Instruction_cycle)
 void CPU::Run()
 {
-    this->Reset();
-
     while (true)
     {
         BYTE opcode = m_RAM->ReadByte(reg.program_counter);
+        reg.program_counter++;
+
+        // TODO: temp if statement
+        if (opcode == 0x02)
+            break;
+            
         Execute(instructions[opcode]);
     }
 }

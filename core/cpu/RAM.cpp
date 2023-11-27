@@ -1,4 +1,5 @@
 #include <cstring>
+#include <iostream>
 
 #include "RAM.h"
 
@@ -6,6 +7,8 @@
 RAM::RAM(size_t size) : m_RAM_Size(size)
 {
     m_RAM = std::make_unique<BYTE[]>(size);
+
+    std::cout << "Start of array: " << (void*)((BYTE*)m_RAM.get()) << std::endl;
 }
 
 RAM::~RAM()
