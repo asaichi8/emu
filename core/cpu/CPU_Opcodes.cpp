@@ -25,38 +25,54 @@ CPU::Instruction CPU::instructions[256] = {
 
 };
 
+// TODO: package status register flag setters into functions
 
 // Load operations
 void CPU::LDA(WORD addr) 
 { 
-
+    reg.accumulator = m_RAM->ReadByte(addr);
+    
+    if (reg.accumulator == 0x00)
+        reg.status_register.set(StatusRegisterFlags::ZERO);
+    else if ((char)reg.accumulator < 0)
+        reg.status_register.set(StatusRegisterFlags::NEGATIVE);
 }
 
 void CPU::LDX(WORD addr) 
 { 
-
+    reg.X = m_RAM->ReadByte(addr);
+    
+    if (reg.X == 0x00)
+        reg.status_register.set(StatusRegisterFlags::ZERO);
+    else if ((char)reg.X < 0)
+        reg.status_register.set(StatusRegisterFlags::NEGATIVE);
 }
 
 void CPU::LDY(WORD addr) 
 { 
-
+    reg.Y = m_RAM->ReadByte(addr);
+    
+    if (reg.Y == 0x00)
+        reg.status_register.set(StatusRegisterFlags::ZERO);
+    else if ((char)reg.Y < 0)
+        reg.status_register.set(StatusRegisterFlags::NEGATIVE);
 }
 
 
 // Store operations
 void CPU::STA(WORD addr) 
 { 
-
+    m_RAM->WriteByte(addr, reg.accumulator);
 }
 
 void CPU::STX(WORD addr) 
 { 
-
+    m_RAM->WriteByte(addr, reg.X);
 }
 
 void CPU::STY(WORD addr) 
 { 
-
+    m_RAM->WriteByte(addr, reg.Y);
 }
 
 
@@ -68,12 +84,20 @@ void CPU::INC(WORD addr)
 
 void CPU::INX(WORD addr) 
 { 
-
+    reg.X++;
+    if (reg.X == 0x00)
+        reg.status_register.set(StatusRegisterFlags::ZERO);
+    else if ((char)reg.X < 0)
+        reg.status_register.set(StatusRegisterFlags::NEGATIVE);
 }
 
 void CPU::INY(WORD addr) 
 { 
-
+    reg.Y++;
+    if (reg.Y == 0x00)
+        reg.status_register.set(StatusRegisterFlags::ZERO);
+    else if ((char)reg.Y < 0)
+        reg.status_register.set(StatusRegisterFlags::NEGATIVE);
 }
 
 
@@ -85,12 +109,20 @@ void CPU::DEC(WORD addr)
 
 void CPU::DEX(WORD addr) 
 { 
-
+    reg.X--;
+    if (reg.X == 0x00)
+        reg.status_register.set(StatusRegisterFlags::ZERO);
+    else if ((char)reg.X < 0)
+        reg.status_register.set(StatusRegisterFlags::NEGATIVE);
 }
 
 void CPU::DEY(WORD addr) 
 { 
-
+    reg.Y--;
+    if (reg.Y == 0x00)
+        reg.status_register.set(StatusRegisterFlags::ZERO);
+    else if ((char)reg.Y < 0)
+        reg.status_register.set(StatusRegisterFlags::NEGATIVE);
 }
 
 
