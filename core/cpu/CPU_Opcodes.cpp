@@ -322,14 +322,21 @@ void CPU::JMP(WORD addr)
     reg.program_counter = addr;
 }
 
+// TODO: check if this is correct
 void CPU::JSR(WORD addr) 
 { 
-    
+    reg.program_counter--;
+
+    PushStackWord(reg.program_counter);
+
+    reg.program_counter = addr;
 }
 
 void CPU::RTS(WORD addr) 
 { 
+    reg.program_counter = PopStackWord();
 
+    reg.program_counter++;
 }
 
 
