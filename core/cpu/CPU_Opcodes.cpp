@@ -389,11 +389,18 @@ void CPU::BVS(WORD addr)
         reg.program_counter = addr;
 }
 
-// TODO: implement iIMP addressing mode
+
 // Shift operations
 void CPU::ASL(WORD addr) 
 { 
-    BYTE val = m_RAM->ReadByte(addr);
+    BYTE val{};
+    bool isImplicit = instructions[m_curOpcode].addrMode == &CPU::IMP;
+    
+    if (isImplicit)
+        val = m_RAM->ReadByte(addr);
+    else
+        val = reg.accumulator;
+
 
     // set carry flag if 7th bit (the one we're about to shift away) is set
     reg.status_register.set(StatusRegisterFlags::CARRY, val & 0x80);
@@ -402,12 +409,23 @@ void CPU::ASL(WORD addr)
     reg.CheckNegative(result);
     reg.CheckZero(result);
     
-    m_RAM->WriteByte(addr, result); // write value back to same location
+
+    if (isImplicit)
+        m_RAM->WriteByte(addr, result); // write value back to same location
+    else
+        reg.accumulator = result;
 }
 
 void CPU::LSR(WORD addr) 
 { 
-    BYTE val = m_RAM->ReadByte(addr);
+    BYTE val{};
+    bool isImplicit = instructions[m_curOpcode].addrMode == &CPU::IMP;
+    
+    if (isImplicit)
+        val = m_RAM->ReadByte(addr);
+    else
+        val = reg.accumulator;
+
 
     // set carry flag if 1st bit (the one we're about to shift away) is set
     reg.status_register.set(StatusRegisterFlags::CARRY, val & 0x01);
@@ -415,13 +433,24 @@ void CPU::LSR(WORD addr)
     BYTE result = val >> 1;
     reg.CheckNegative(result);
     reg.CheckZero(result);
+    
 
-    m_RAM->WriteByte(addr, result); // write value back to same location
+    if (isImplicit)
+        m_RAM->WriteByte(addr, result); // write value back to same location
+    else
+        reg.accumulator = result;
 }
 
 void CPU::ROL(WORD addr) 
 { 
-    BYTE val = m_RAM->ReadByte(addr);
+    BYTE val{};
+    bool isImplicit = instructions[m_curOpcode].addrMode == &CPU::IMP;
+    
+    if (isImplicit)
+        val = m_RAM->ReadByte(addr);
+    else
+        val = reg.accumulator;
+
 
     // set carry flag if 7th bit (the one we're about to shift away) is set
     reg.status_register.set(StatusRegisterFlags::CARRY, val & 0x80);
@@ -430,16 +459,26 @@ void CPU::ROL(WORD addr)
     BYTE result = (val << 1);
     result += reg.status_register.test(StatusRegisterFlags::CARRY);
 
-
     reg.CheckNegative(result);
     reg.CheckZero(result);
+    
 
-    m_RAM->WriteByte(addr, result); // write value back to same location
+    if (isImplicit)
+        m_RAM->WriteByte(addr, result); // write value back to same location
+    else
+        reg.accumulator = result;
 }
 
 void CPU::ROR(WORD addr) 
 { 
-    BYTE val = m_RAM->ReadByte(addr);
+    BYTE val{};
+    bool isImplicit = instructions[m_curOpcode].addrMode == &CPU::IMP;
+    
+    if (isImplicit)
+        val = m_RAM->ReadByte(addr);
+    else
+        val = reg.accumulator;
+
 
     // set carry flag if 1st bit (the one we're about to shift away) is set
     reg.status_register.set(StatusRegisterFlags::CARRY, val & 0x01);
@@ -448,11 +487,14 @@ void CPU::ROR(WORD addr)
     BYTE result = (val >> 1);
     result += reg.status_register.test(StatusRegisterFlags::CARRY) << 7;
 
-
     reg.CheckNegative(result);
     reg.CheckZero(result);
+    
 
-    m_RAM->WriteByte(addr, result); // write value back to same location
+    if (isImplicit)
+        m_RAM->WriteByte(addr, result); // write value back to same location
+    else
+        reg.accumulator = result;
 }
 
 
