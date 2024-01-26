@@ -86,14 +86,14 @@ void CPU::PushStackWord(WORD val)
 {
     m_RAM->WriteWord(STACK_LOCATION + reg.stack_pointer, val);
 
-    reg.stack_pointer--;
+    reg.stack_pointer -= 2;
 }
 
 /// @brief Pops and retrieves a word from the stack.
 /// @return Popped word.
 WORD CPU::PopStackWord()
 {
-    reg.stack_pointer++;
+    reg.stack_pointer += 2;
 
     return m_RAM->ReadWord(STACK_LOCATION + reg.stack_pointer);
 }

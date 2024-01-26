@@ -324,7 +324,7 @@ void CPU::JMP(WORD addr)
 
 void CPU::JSR(WORD addr) 
 { 
-    reg.program_counter
+    
 }
 
 void CPU::RTS(WORD addr) 
