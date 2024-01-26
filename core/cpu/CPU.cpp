@@ -15,14 +15,14 @@ void CPU::Run()
 {
     while (true)
     {
-        BYTE opcode = m_RAM->ReadByte(reg.program_counter);
+        m_curOpcode = m_RAM->ReadByte(reg.program_counter);
         reg.program_counter++;
 
         // TODO: temp if statement
-        if (opcode == 0x02)
+        if (m_curOpcode == 0x02)
             break;
             
-        Execute(instructions[opcode]);
+        Execute(instructions[m_curOpcode]);
     }
 }
 
@@ -66,7 +66,7 @@ void CPU::Execute(const Instruction& instruction)
 /// @param val Byte to be pushed.
 void CPU::PushStackByte(BYTE val)
 {
-    m_RAM->WriteByte(STACK_LOCATION + reg.stack_pointer, val);
+    m_RAM->WriteByte(STACK + reg.stack_pointer, val);
 
     reg.stack_pointer--;
 }
@@ -77,14 +77,14 @@ BYTE CPU::PopStackByte()
 {
     reg.stack_pointer++;
 
-    return m_RAM->ReadByte(STACK_LOCATION + reg.stack_pointer);
+    return m_RAM->ReadByte(STACK + reg.stack_pointer);
 }
 
 /// @brief Pushes a word to the stack.
 /// @param val Word to be pushed.
 void CPU::PushStackWord(WORD val)
 {
-    m_RAM->WriteWord(STACK_LOCATION + reg.stack_pointer, val);
+    m_RAM->WriteWord(STACK + reg.stack_pointer, val);
 
     reg.stack_pointer -= 2;
 }
@@ -95,5 +95,5 @@ WORD CPU::PopStackWord()
 {
     reg.stack_pointer += 2;
 
-    return m_RAM->ReadWord(STACK_LOCATION + reg.stack_pointer);
+    return m_RAM->ReadWord(STACK + reg.stack_pointer);
 }

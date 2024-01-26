@@ -24,7 +24,7 @@ enum StatusRegisterFlags
 class CPU
 {
     RAM* m_RAM = nullptr;
-    const WORD STACK_LOCATION = 0x100;
+    BYTE m_curOpcode{};
 
     class registers
     {
