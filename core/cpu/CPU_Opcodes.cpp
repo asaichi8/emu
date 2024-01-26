@@ -142,12 +142,7 @@ void CPU::ADC(WORD addr)
     BYTE result = added16 & 0x00FF; // convert to 8-bit
     
     //  registers
-    // determine if carry or not
-    if (added16 > BYTE_MAX)
-        reg.status_register.set(StatusRegisterFlags::CARRY);
-    else
-        reg.status_register.reset(StatusRegisterFlags::CARRY);
-
+    reg.SetCarry(added16);
     reg.SetZero(result);
     reg.SetNegative(result);
 
@@ -178,12 +173,7 @@ void CPU::SBC(WORD addr)
     BYTE result = negated16 & 0x00FF; // convert to 8-bit
 
     //  registers
-    // set carry flag if we don't need to borrow, reset otherwise
-    if (negated16 <= BYTE_MAX)
-        reg.status_register.set(StatusRegisterFlags::CARRY);
-    else
-        reg.status_register.reset(StatusRegisterFlags::CARRY);
-
+    reg.SetCarry(negated16);
     reg.SetZero(result);
     reg.SetNegative(result);
 
@@ -207,13 +197,7 @@ void CPU::CMP(WORD addr)
 
     BYTE result = negated16 & 0x00FF;
 
-    //  registers
-    // set carry flag if we don't need to borrow, reset otherwise
-    if (negated16 <= BYTE_MAX)
-        reg.status_register.set(StatusRegisterFlags::CARRY);
-    else
-        reg.status_register.reset(StatusRegisterFlags::CARRY);
-
+    reg.SetCarry(negated16);
     reg.SetZero(result);
     reg.SetNegative(result);
 }
@@ -225,13 +209,7 @@ void CPU::CPX(WORD addr)
 
     BYTE result = negated16 & 0x00FF;
 
-    //  registers
-    // set carry flag if we don't need to borrow, reset otherwise
-    if (negated16 <= BYTE_MAX)
-        reg.status_register.set(StatusRegisterFlags::CARRY);
-    else
-        reg.status_register.reset(StatusRegisterFlags::CARRY);
-
+    reg.SetCarry(negated16);
     reg.SetZero(result);
     reg.SetNegative(result);
 }
@@ -243,13 +221,7 @@ void CPU::CPY(WORD addr)
 
     BYTE result = negated16 & 0x00FF;
 
-    //  registers
-    // set carry flag if we don't need to borrow, reset otherwise
-    if (negated16 <= BYTE_MAX)
-        reg.status_register.set(StatusRegisterFlags::CARRY);
-    else
-        reg.status_register.reset(StatusRegisterFlags::CARRY);
-
+    reg.SetCarry(negated16);
     reg.SetZero(result);
     reg.SetNegative(result);
 }

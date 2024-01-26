@@ -50,6 +50,15 @@ class CPU
                 else
                     this->status_register.reset(StatusRegisterFlags::NEGATIVE);
             }
+
+            void SetCarry(WORD val)
+            {
+                // set carry flag if we don't need to borrow, reset otherwise
+                if (val <= BYTE_MAX)
+                    this->status_register.set(StatusRegisterFlags::CARRY);
+                else
+                    this->status_register.reset(StatusRegisterFlags::CARRY);
+            }
     } reg;
 
     struct Instruction
