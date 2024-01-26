@@ -169,17 +169,17 @@ void CPU::SBC(WORD addr)
 { 
     BYTE val = m_RAM->ReadByte(addr);
 
-    WORD added16 = reg.accumulator - val; // negate values
+    WORD negated16 = reg.accumulator - val; // negate values
 
     // subtract only if carry bit is not set
     if (!reg.status_register.test(StatusRegisterFlags::CARRY))
-        added16--;
+        negated16--;
 
-    BYTE result = added16 & 0x00FF; // convert to 8-bit
+    BYTE result = negated16 & 0x00FF; // convert to 8-bit
 
     //  registers
     // set carry flag if we don't need to borrow, reset otherwise
-    if (added16 <= BYTE_MAX)
+    if (negated16 <= BYTE_MAX)
         reg.status_register.set(StatusRegisterFlags::CARRY);
     else
         reg.status_register.reset(StatusRegisterFlags::CARRY);
