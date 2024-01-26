@@ -230,16 +230,26 @@ void CPU::CPY(WORD addr)
 // Logical operations
 void CPU::AND(WORD addr) 
 { 
+    BYTE val = m_RAM->ReadByte(addr);
 
+    BYTE result = val & reg.accumulator;
+
+    reg.SetZero(result);
+    reg.SetNegative(result);
+
+    reg.accumulator = result;
 }
+
 void CPU::EOR(WORD addr) 
 { 
 
 }
+
 void CPU::ORA(WORD addr) 
 { 
 
 }
+
 void CPU::BIT(WORD addr) 
 { 
 
