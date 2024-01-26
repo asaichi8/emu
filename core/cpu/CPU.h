@@ -129,8 +129,6 @@ class CPU
     OPCODE(BIT);
 
     // Stack operations
-    OPCODE(TSX);
-    OPCODE(TXS);
     OPCODE(PHA);
     OPCODE(PHP);
     OPCODE(PLA);
@@ -173,6 +171,8 @@ class CPU
     OPCODE(TAY);
     OPCODE(TXA);
     OPCODE(TYA);
+    OPCODE(TSX);
+    OPCODE(TXS);
 
     // System functions
     OPCODE(BRK);

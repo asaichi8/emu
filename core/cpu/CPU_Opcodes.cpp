@@ -279,19 +279,6 @@ void CPU::BIT(WORD addr)
 
 
 // Stack operations
-void CPU::TSX(WORD addr) 
-{ 
-    reg.X = reg.stack_pointer;
-
-    reg.CheckZero(reg.X);
-    reg.CheckNegative(reg.X);
-}
-
-void CPU::TXS(WORD addr) 
-{ 
-    reg.stack_pointer = reg.X;
-}
-
 void CPU::PHA(WORD addr) 
 { 
     PushStackByte(reg.accumulator);
@@ -540,22 +527,47 @@ void CPU::SEI(WORD addr)
 // Transfer operations
 void CPU::TAX(WORD addr) 
 { 
+    reg.X = reg.accumulator;
 
+    reg.CheckNegative(reg.X);
+    reg.CheckZero(reg.X);
 }
 
 void CPU::TAY(WORD addr) 
 { 
+    reg.Y = reg.accumulator;
 
+    reg.CheckNegative(reg.Y);
+    reg.CheckZero(reg.Y);
 }
 
 void CPU::TXA(WORD addr) 
 { 
+    reg.accumulator = reg.X;
 
+    reg.CheckNegative(reg.accumulator);
+    reg.CheckZero(reg.accumulator);
 }
 
 void CPU::TYA(WORD addr) 
 { 
+    reg.accumulator = reg.Y;
 
+    reg.CheckNegative(reg.Y);
+    reg.CheckZero(reg.Y);
+}
+
+void CPU::TSX(WORD addr) 
+{ 
+    reg.X = reg.stack_pointer;
+
+    reg.CheckZero(reg.X);
+    reg.CheckNegative(reg.X);
+}
+
+void CPU::TXS(WORD addr) 
+{ 
+    reg.stack_pointer = reg.X;
 }
 
 
@@ -567,7 +579,7 @@ void CPU::BRK(WORD addr)
 
 void CPU::NOP(WORD addr) 
 { 
-
+    //
 }
 
 void CPU::RTI(WORD addr) 
