@@ -35,7 +35,8 @@ class CPU
             BYTE stack_pointer{};
             std::bitset<8> status_register{};
 
-            void SetZero(BYTE val)
+            // Checks if the value is zero, and sets register based on result
+            void CheckZero(BYTE val)
             {
                 if (val == 0x00)
                     this->status_register.set(StatusRegisterFlags::ZERO);
@@ -43,7 +44,8 @@ class CPU
                     this->status_register.reset(StatusRegisterFlags::ZERO);
             }
 
-            void SetNegative(BYTE val)
+            // Checks if the value is negative, and sets register based on result
+            void CheckNegative(BYTE val)
             {
                 if ((CHAR)val < 0)
                     this->status_register.set(StatusRegisterFlags::NEGATIVE);
@@ -51,7 +53,8 @@ class CPU
                     this->status_register.reset(StatusRegisterFlags::NEGATIVE);
             }
 
-            void SetCarry(WORD val)
+            // Checks if the value is has a carry, and sets register based on result
+            void CheckCarry(WORD val)
             {
                 // set carry flag if we don't need to borrow, reset otherwise
                 if (val <= BYTE_MAX)

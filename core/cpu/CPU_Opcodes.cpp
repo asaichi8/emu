@@ -32,24 +32,24 @@ void CPU::LDA(WORD addr)
 { 
     reg.accumulator = m_RAM->ReadByte(addr);
     
-    reg.SetNegative(reg.accumulator);
-    reg.SetZero(reg.accumulator);
+    reg.CheckNegative(reg.accumulator);
+    reg.CheckZero(reg.accumulator);
 }
 
 void CPU::LDX(WORD addr) 
 { 
     reg.X = m_RAM->ReadByte(addr);
     
-    reg.SetNegative(reg.X);
-    reg.SetZero(reg.X);
+    reg.CheckNegative(reg.X);
+    reg.CheckZero(reg.X);
 }
 
 void CPU::LDY(WORD addr) 
 { 
     reg.Y = m_RAM->ReadByte(addr);
     
-    reg.SetNegative(reg.Y);
-    reg.SetZero(reg.Y);
+    reg.CheckNegative(reg.Y);
+    reg.CheckZero(reg.Y);
 }
 
 
@@ -76,8 +76,8 @@ void CPU::INC(WORD addr)
     BYTE val = m_RAM->ReadByte(addr);
     val++;
 
-    reg.SetNegative(val);
-    reg.SetZero(val);
+    reg.CheckNegative(val);
+    reg.CheckZero(val);
 
     m_RAM->WriteByte(addr, val);
 }
@@ -86,16 +86,16 @@ void CPU::INX(WORD addr)
 { 
     reg.X++;
 
-    reg.SetNegative(reg.X);
-    reg.SetZero(reg.X);
+    reg.CheckNegative(reg.X);
+    reg.CheckZero(reg.X);
 }
 
 void CPU::INY(WORD addr) 
 { 
     reg.Y++;
 
-    reg.SetNegative(reg.Y);
-    reg.SetZero(reg.Y);
+    reg.CheckNegative(reg.Y);
+    reg.CheckZero(reg.Y);
 }
 
 
@@ -105,8 +105,8 @@ void CPU::DEC(WORD addr)
     BYTE val = m_RAM->ReadByte(addr);
     val--;
 
-    reg.SetNegative(val);
-    reg.SetZero(val);
+    reg.CheckNegative(val);
+    reg.CheckZero(val);
         
     m_RAM->WriteByte(addr, val);
 }
@@ -115,16 +115,16 @@ void CPU::DEX(WORD addr)
 { 
     reg.X--;
 
-    reg.SetNegative(reg.X);
-    reg.SetZero(reg.X);
+    reg.CheckNegative(reg.X);
+    reg.CheckZero(reg.X);
 }
 
 void CPU::DEY(WORD addr) 
 { 
     reg.Y--;
 
-    reg.SetNegative(reg.Y);
-    reg.SetZero(reg.Y);
+    reg.CheckNegative(reg.Y);
+    reg.CheckZero(reg.Y);
 }
 
 
@@ -142,9 +142,9 @@ void CPU::ADC(WORD addr)
     BYTE result = added16 & 0x00FF; // convert to 8-bit
     
     //  registers
-    reg.SetCarry(added16);
-    reg.SetZero(result);
-    reg.SetNegative(result);
+    reg.CheckCarry(added16);
+    reg.CheckZero(result);
+    reg.CheckNegative(result);
 
     // determine overflow bit
     // if positive + positive = negative, overflow occured
@@ -173,9 +173,9 @@ void CPU::SBC(WORD addr)
     BYTE result = negated16 & 0x00FF; // convert to 8-bit
 
     //  registers
-    reg.SetCarry(negated16);
-    reg.SetZero(result);
-    reg.SetNegative(result);
+    reg.CheckCarry(negated16);
+    reg.CheckZero(result);
+    reg.CheckNegative(result);
 
     // determine overflow bit
     // if negative - positive = positive, overflow occured
@@ -197,9 +197,9 @@ void CPU::CMP(WORD addr)
 
     BYTE result = negated16 & 0x00FF;
 
-    reg.SetCarry(negated16);
-    reg.SetZero(result);
-    reg.SetNegative(result);
+    reg.CheckCarry(negated16);
+    reg.CheckZero(result);
+    reg.CheckNegative(result);
 }
 
 void CPU::CPX(WORD addr) 
@@ -209,9 +209,9 @@ void CPU::CPX(WORD addr)
 
     BYTE result = negated16 & 0x00FF;
 
-    reg.SetCarry(negated16);
-    reg.SetZero(result);
-    reg.SetNegative(result);
+    reg.CheckCarry(negated16);
+    reg.CheckZero(result);
+    reg.CheckNegative(result);
 }
 
 void CPU::CPY(WORD addr) 
@@ -221,9 +221,9 @@ void CPU::CPY(WORD addr)
 
     BYTE result = negated16 & 0x00FF;
 
-    reg.SetCarry(negated16);
-    reg.SetZero(result);
-    reg.SetNegative(result);
+    reg.CheckCarry(negated16);
+    reg.CheckZero(result);
+    reg.CheckNegative(result);
 }
 
 
@@ -234,8 +234,8 @@ void CPU::AND(WORD addr)
 
     BYTE result = val & reg.accumulator;
 
-    reg.SetZero(result);
-    reg.SetNegative(result);
+    reg.CheckZero(result);
+    reg.CheckNegative(result);
 
     reg.accumulator = result;
 }
