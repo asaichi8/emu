@@ -73,7 +73,13 @@ void CPU::STY(WORD addr)
 // Increment operations
 void CPU::INC(WORD addr) 
 { 
-    
+    BYTE val = m_RAM->ReadByte(addr);
+    val++;
+
+    reg.SetNegative(val);
+    reg.SetZero(val);
+
+    m_RAM->WriteByte(addr, val);
 }
 
 void CPU::INX(WORD addr) 
@@ -96,7 +102,13 @@ void CPU::INY(WORD addr)
 // Decrement operations
 void CPU::DEC(WORD addr) 
 { 
-    
+    BYTE val = m_RAM->ReadByte(addr);
+    val--;
+
+    reg.SetNegative(val);
+    reg.SetZero(val);
+        
+    m_RAM->WriteByte(addr, val);
 }
 
 void CPU::DEX(WORD addr) 
