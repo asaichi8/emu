@@ -18,9 +18,6 @@ void CPU::Run()
         m_curOpcode = m_RAM->ReadByte(reg.program_counter);
         reg.program_counter++;
 
-        // TODO: temp if statement
-        if (m_curOpcode == 0x02)
-            break;
             
         Execute(instructions[m_curOpcode]);
     }
