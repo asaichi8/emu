@@ -153,10 +153,10 @@ void CPU::ADC(WORD addr)
 
     // determine overflow bit
     // if positive + positive = negative, overflow occured
-    if ((CHAR)reg.accumulator > 0 && (CHAR)val > 0 && (CHAR)(result) < 0)
+    if ((CHAR)reg.accumulator >= 0 && (CHAR)val >= 0 && (CHAR)(result) < 0)
         reg.status_register.set(StatusRegisterFlags::OVERFLOW);
     // if negative + negative = positive, overflow occured
-    else if ((CHAR)reg.accumulator < 0 && (CHAR)val < 0 && (CHAR)(result) > 0)
+    else if ((CHAR)reg.accumulator < 0 && (CHAR)val < 0 && (CHAR)(result) >= 0)
         reg.status_register.set(StatusRegisterFlags::OVERFLOW);
     else
         reg.status_register.reset(StatusRegisterFlags::OVERFLOW);
@@ -167,7 +167,37 @@ void CPU::ADC(WORD addr)
 
 void CPU::SBC(WORD addr) 
 { 
+    BYTE val = m_RAM->ReadByte(addr);
 
+    WORD added16 = reg.accumulator - val; // negate values
+
+    // subtract only if carry bit is not set
+    if (!reg.status_register.test(StatusRegisterFlags::CARRY))
+        added16--;
+
+    BYTE result = added16 & 0x00FF; // convert to 8-bit
+
+    //  registers
+    // set carry flag if we don't need to borrow, reset otherwise
+    if (added16 <= BYTE_MAX)
+        reg.status_register.set(StatusRegisterFlags::CARRY);
+    else
+        reg.status_register.reset(StatusRegisterFlags::CARRY);
+
+    reg.SetZero(result);
+    reg.SetNegative(result);
+
+    // determine overflow bit
+    // if negative - positive = positive, overflow occured
+    if ((CHAR)reg.accumulator < 0 && (CHAR)val >= 0 && (CHAR)(result) >= 0)
+        reg.status_register.set(StatusRegisterFlags::OVERFLOW);
+    // if positive - negative = negative, overflow occured
+    else if ((CHAR)reg.accumulator >= 0 && (CHAR)val < 0 && (CHAR)(result) < 0)
+        reg.status_register.set(StatusRegisterFlags::OVERFLOW);
+    else
+        reg.status_register.reset(StatusRegisterFlags::OVERFLOW);
+
+    reg.accumulator = result; // save result to accumulator
 }
 
 void CPU::CMP(WORD addr) 
