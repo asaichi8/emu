@@ -294,17 +294,17 @@ void CPU::TXS(WORD addr)
 
 void CPU::PHA(WORD addr) 
 { 
-    PushStack(reg.accumulator);
+    PushStackByte(reg.accumulator);
 }
 
 void CPU::PHP(WORD addr) 
 { 
-    PushStack((BYTE)reg.status_register.to_ulong());
+    PushStackByte((BYTE)reg.status_register.to_ulong());
 }
 
 void CPU::PLA(WORD addr) 
 { 
-    reg.accumulator = PopStack();
+    reg.accumulator = PopStackByte();
 
     reg.CheckZero(reg.accumulator);
     reg.CheckNegative(reg.accumulator);
@@ -312,7 +312,7 @@ void CPU::PLA(WORD addr)
 
 void CPU::PLP(WORD addr) 
 { 
-    reg.status_register = PopStack();
+    reg.status_register = PopStackByte();
 }
 
 
@@ -324,7 +324,7 @@ void CPU::JMP(WORD addr)
 
 void CPU::JSR(WORD addr) 
 { 
-
+    reg.program_counter
 }
 
 void CPU::RTS(WORD addr) 

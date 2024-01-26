@@ -72,8 +72,10 @@ class CPU
         DWORD cycles;
     };
 
-    void PushStack(BYTE val);
-    BYTE PopStack();
+    void PushStackByte(BYTE val);
+    BYTE PopStackByte();
+    void PushStackWord(WORD val);
+    WORD PopStackWord();
 
     // Addressing modes - returns the address to act upon
     MODE(IMM); // immediate

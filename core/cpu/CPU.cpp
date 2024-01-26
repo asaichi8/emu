@@ -61,20 +61,39 @@ void CPU::Execute(const Instruction& instruction)
     (this->*(instruction.opcode))(operand);
 }
 
-/// @brief Pushes a value to the stack.
-/// @param val Value to be pushed.
-void CPU::PushStack(BYTE val)
+
+/// @brief Pushes a byte to the stack.
+/// @param val Byte to be pushed.
+void CPU::PushStackByte(BYTE val)
 {
     m_RAM->WriteByte(STACK_LOCATION + reg.stack_pointer, val);
 
     reg.stack_pointer--;
 }
 
-/// @brief Pops and retrieves a value from the stack.
-/// @return Popped value.
-BYTE CPU::PopStack()
+/// @brief Pops and retrieves a byte from the stack.
+/// @return Popped byte.
+BYTE CPU::PopStackByte()
 {
     reg.stack_pointer++;
-    
+
     return m_RAM->ReadByte(STACK_LOCATION + reg.stack_pointer);
+}
+
+/// @brief Pushes a word to the stack.
+/// @param val Word to be pushed.
+void CPU::PushStackWord(WORD val)
+{
+    m_RAM->WriteWord(STACK_LOCATION + reg.stack_pointer, val);
+
+    reg.stack_pointer--;
+}
+
+/// @brief Pops and retrieves a word from the stack.
+/// @return Popped word.
+WORD CPU::PopStackWord()
+{
+    reg.stack_pointer++;
+
+    return m_RAM->ReadWord(STACK_LOCATION + reg.stack_pointer);
 }
