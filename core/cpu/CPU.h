@@ -24,6 +24,7 @@ enum StatusRegisterFlags
 class CPU
 {
     RAM* m_RAM = nullptr;
+    const WORD STACK_LOCATION = 0x100;
 
     class registers
     {
@@ -70,6 +71,9 @@ class CPU
         WORD (CPU::*addrMode)();
         DWORD cycles;
     };
+
+    void PushStack(BYTE val);
+    BYTE PopStack();
 
     // Addressing modes - returns the address to act upon
     MODE(IMM); // immediate

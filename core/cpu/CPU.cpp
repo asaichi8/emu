@@ -60,3 +60,21 @@ void CPU::Execute(const Instruction& instruction)
     // now call opcode normally with the real operand as the address
     (this->*(instruction.opcode))(operand);
 }
+
+/// @brief Pushes a value to the stack.
+/// @param val Value to be pushed.
+void CPU::PushStack(BYTE val)
+{
+    m_RAM->WriteByte(STACK_LOCATION + reg.stack_pointer, val);
+
+    reg.stack_pointer--;
+}
+
+/// @brief Pops and retrieves a value from the stack.
+/// @return Popped value.
+BYTE CPU::PopStack()
+{
+    reg.stack_pointer++;
+    
+    return m_RAM->ReadByte(STACK_LOCATION + reg.stack_pointer);
+}
