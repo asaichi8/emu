@@ -281,12 +281,15 @@ void CPU::BIT(WORD addr)
 // Stack operations
 void CPU::TSX(WORD addr) 
 { 
+    reg.X = reg.stack_pointer;
 
+    reg.CheckZero(reg.X);
+    reg.CheckNegative(reg.X);
 }
 
 void CPU::TXS(WORD addr) 
 { 
-    
+    reg.stack_pointer = reg.X;
 }
 
 void CPU::PHA(WORD addr) 
