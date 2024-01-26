@@ -40,8 +40,8 @@ void CPU::Reset()
     reg.status_register = 0;
     reg.status_register.set(StatusRegisterFlags::UNUSED); // https://www.nesdev.org/wiki/Status_flags "No CPU effect; always pushed as 1"
     // https://www.nesdev.org/wiki/CPU_power_up_state#cite_note-1
+    reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
     reg.status_register.set(StatusRegisterFlags::BREAK_COMMAND);
-    reg.status_register.set(StatusRegisterFlags::UNUSED);
 
     // https://6502.co.uk/lesson/reset
     // "This reset sequence lasts for seven clock cycles and after this, the computer will be usable. "
