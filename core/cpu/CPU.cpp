@@ -30,8 +30,7 @@ void CPU::Run()
 /// @brief Resets the processor to a known state.
 void CPU::Reset()
 {
-    // https://en.wikipedia.org/wiki/Reset_vector "The reset vector for 6502 processor family is a 16-bit address stored at 0xFFFC and 0xFFFD."
-    reg.program_counter = m_RAM->ReadWord(0xFFFC); 
+    reg.program_counter = m_RAM->ReadWord(RESET_VECTOR); 
     reg.accumulator = 0;
     reg.X = 0;
     reg.Y = 0;

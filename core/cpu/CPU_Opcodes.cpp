@@ -574,7 +574,12 @@ void CPU::TXS(WORD addr)
 // System functions
 void CPU::BRK(WORD addr) 
 { 
+    PushStackWord(reg.program_counter);
+    PushStackByte((BYTE)(reg.status_register.to_ulong()));
 
+    reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
+
+    reg.program_counter = m_RAM->ReadByte(IRQ_VECTOR);
 }
 
 void CPU::NOP(WORD addr) 
@@ -584,7 +589,8 @@ void CPU::NOP(WORD addr)
 
 void CPU::RTI(WORD addr) 
 { 
-    
+    reg.status_register = PopStackByte();
+    reg.program_counter = PopStackWord();
 }
 
 
