@@ -242,12 +242,26 @@ void CPU::AND(WORD addr)
 
 void CPU::EOR(WORD addr) 
 { 
+    BYTE val = m_RAM->ReadByte(addr);
 
+    BYTE result = val ^ reg.accumulator;
+
+    reg.CheckZero(result);
+    reg.CheckNegative(result);
+
+    reg.accumulator = result;
 }
 
 void CPU::ORA(WORD addr) 
 { 
+    BYTE val = m_RAM->ReadByte(addr);
 
+    BYTE result = val | reg.accumulator;
+
+    reg.CheckZero(result);
+    reg.CheckNegative(result);
+
+    reg.accumulator = result;
 }
 
 void CPU::BIT(WORD addr) 
