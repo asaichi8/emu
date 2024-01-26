@@ -25,14 +25,27 @@ class CPU
 {
     RAM* m_RAM = nullptr;
 
-    struct registers
+    class registers
     {
-        WORD program_counter{};
-        BYTE accumulator{};
-        BYTE X{};   
-        BYTE Y{};
-        BYTE stack_pointer{};
-        std::bitset<8> status_register{};
+        public:
+            WORD program_counter{};
+            BYTE accumulator{};
+            BYTE X{};   
+            BYTE Y{};
+            BYTE stack_pointer{};
+            std::bitset<8> status_register{};
+
+            void SetZero(BYTE val)
+            {
+                if (this->accumulator == 0x00)
+                    this->status_register.set(StatusRegisterFlags::ZERO);
+            }
+
+            void SetNegative(BYTE val)
+            {
+                if ((char)this->accumulator < 0)
+                    this->status_register.set(StatusRegisterFlags::NEGATIVE);
+            }
     } reg;
 
     struct Instruction

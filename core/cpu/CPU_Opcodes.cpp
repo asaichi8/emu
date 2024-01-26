@@ -32,30 +32,24 @@ void CPU::LDA(WORD addr)
 { 
     reg.accumulator = m_RAM->ReadByte(addr);
     
-    if (reg.accumulator == 0x00)
-        reg.status_register.set(StatusRegisterFlags::ZERO);
-    else if ((char)reg.accumulator < 0)
-        reg.status_register.set(StatusRegisterFlags::NEGATIVE);
+    reg.SetNegative(reg.accumulator);
+    reg.SetZero(reg.accumulator);
 }
 
 void CPU::LDX(WORD addr) 
 { 
     reg.X = m_RAM->ReadByte(addr);
     
-    if (reg.X == 0x00)
-        reg.status_register.set(StatusRegisterFlags::ZERO);
-    else if ((char)reg.X < 0)
-        reg.status_register.set(StatusRegisterFlags::NEGATIVE);
+    reg.SetNegative(reg.X);
+    reg.SetZero(reg.X);
 }
 
 void CPU::LDY(WORD addr) 
 { 
     reg.Y = m_RAM->ReadByte(addr);
     
-    if (reg.Y == 0x00)
-        reg.status_register.set(StatusRegisterFlags::ZERO);
-    else if ((char)reg.Y < 0)
-        reg.status_register.set(StatusRegisterFlags::NEGATIVE);
+    reg.SetNegative(reg.Y);
+    reg.SetZero(reg.Y);
 }
 
 
@@ -79,50 +73,46 @@ void CPU::STY(WORD addr)
 // Increment operations
 void CPU::INC(WORD addr) 
 { 
-
+    
 }
 
 void CPU::INX(WORD addr) 
 { 
     reg.X++;
-    if (reg.X == 0x00)
-        reg.status_register.set(StatusRegisterFlags::ZERO);
-    else if ((char)reg.X < 0)
-        reg.status_register.set(StatusRegisterFlags::NEGATIVE);
+
+    reg.SetNegative(reg.X);
+    reg.SetZero(reg.X);
 }
 
 void CPU::INY(WORD addr) 
 { 
     reg.Y++;
-    if (reg.Y == 0x00)
-        reg.status_register.set(StatusRegisterFlags::ZERO);
-    else if ((char)reg.Y < 0)
-        reg.status_register.set(StatusRegisterFlags::NEGATIVE);
+
+    reg.SetNegative(reg.Y);
+    reg.SetZero(reg.Y);
 }
 
 
 // Decrement operations
 void CPU::DEC(WORD addr) 
 { 
-
+    
 }
 
 void CPU::DEX(WORD addr) 
 { 
     reg.X--;
-    if (reg.X == 0x00)
-        reg.status_register.set(StatusRegisterFlags::ZERO);
-    else if ((char)reg.X < 0)
-        reg.status_register.set(StatusRegisterFlags::NEGATIVE);
+
+    reg.SetNegative(reg.X);
+    reg.SetZero(reg.X);
 }
 
 void CPU::DEY(WORD addr) 
 { 
     reg.Y--;
-    if (reg.Y == 0x00)
-        reg.status_register.set(StatusRegisterFlags::ZERO);
-    else if ((char)reg.Y < 0)
-        reg.status_register.set(StatusRegisterFlags::NEGATIVE);
+
+    reg.SetNegative(reg.Y);
+    reg.SetZero(reg.Y);
 }
 
 
