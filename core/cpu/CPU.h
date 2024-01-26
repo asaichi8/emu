@@ -45,7 +45,7 @@ class CPU
 
             void SetNegative(BYTE val)
             {
-                if ((char)val < 0)
+                if ((CHAR)val < 0)
                     this->status_register.set(StatusRegisterFlags::NEGATIVE);
                 else
                     this->status_register.reset(StatusRegisterFlags::NEGATIVE);
