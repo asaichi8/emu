@@ -202,17 +202,56 @@ void CPU::SBC(WORD addr)
 
 void CPU::CMP(WORD addr) 
 { 
+    BYTE val = m_RAM->ReadByte(addr);
+    WORD negated16 = reg.accumulator - val;
 
+    BYTE result = negated16 & 0x00FF;
+
+    //  registers
+    // set carry flag if we don't need to borrow, reset otherwise
+    if (negated16 <= BYTE_MAX)
+        reg.status_register.set(StatusRegisterFlags::CARRY);
+    else
+        reg.status_register.reset(StatusRegisterFlags::CARRY);
+
+    reg.SetZero(result);
+    reg.SetNegative(result);
 }
 
 void CPU::CPX(WORD addr) 
 { 
+    BYTE val = m_RAM->ReadByte(addr);
+    WORD negated16 = reg.X - val;
 
+    BYTE result = negated16 & 0x00FF;
+
+    //  registers
+    // set carry flag if we don't need to borrow, reset otherwise
+    if (negated16 <= BYTE_MAX)
+        reg.status_register.set(StatusRegisterFlags::CARRY);
+    else
+        reg.status_register.reset(StatusRegisterFlags::CARRY);
+
+    reg.SetZero(result);
+    reg.SetNegative(result);
 }
 
 void CPU::CPY(WORD addr) 
 { 
-    
+    BYTE val = m_RAM->ReadByte(addr);
+    WORD negated16 = reg.Y - val;
+
+    BYTE result = negated16 & 0x00FF;
+
+    //  registers
+    // set carry flag if we don't need to borrow, reset otherwise
+    if (negated16 <= BYTE_MAX)
+        reg.status_register.set(StatusRegisterFlags::CARRY);
+    else
+        reg.status_register.reset(StatusRegisterFlags::CARRY);
+
+    reg.SetZero(result);
+    reg.SetNegative(result);
 }
 
 
