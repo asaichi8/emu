@@ -439,7 +439,20 @@ void CPU::ROL(WORD addr)
 
 void CPU::ROR(WORD addr) 
 { 
-    
+    BYTE val = m_RAM->ReadByte(addr);
+
+    // set carry flag if 1st bit (the one we're about to shift away) is set
+    reg.status_register.set(StatusRegisterFlags::CARRY, val & 0x01);
+
+    // shift to right while setting bit 7 to current value of carry flag
+    BYTE result = (val >> 1);
+    result += reg.status_register.test(StatusRegisterFlags::CARRY) << 7;
+
+
+    reg.CheckNegative(result);
+    reg.CheckZero(result);
+
+    m_RAM->WriteByte(addr, result); // write value back to same location
 }
 
 
