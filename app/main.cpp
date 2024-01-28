@@ -8,7 +8,7 @@
 
 #define KB 1024
 
-/*std::vector<BYTE> HexStrToBytes(const std::string& hexString) 
+std::vector<BYTE> HexStrToBytes(const std::string& hexString) 
 {
     std::vector<BYTE> bytes;
     std::istringstream stream(hexString);
@@ -45,25 +45,25 @@ std::vector<BYTE> LoadFile(const std::string& filePath)
     }
 
     return buffer;
-}*/
+}
 
 int main()
 {
     constexpr size_t CPU_RAM_SIZE = 64*KB;
-    constexpr WORD START_ADDR = 0xC000;
+    constexpr WORD START_ADDR = 0x0400;
     RAM ram(CPU_RAM_SIZE);
     ram.WriteWord(CPU::RESET_VECTOR, START_ADDR); // start the program at specific mem location
     CPU cpu(&ram);
     
     // example code
-    /*std::string assem = "A2 0A 8E 00 00 A2 03 8E 01 00 AC 00 00 A9 00 18 6D 01 00 88 D0 FA 8D 02 00 EA EA EA";
-    auto bytes = LoadFile("/home/---/Downloads/test.bin");
-    auto bytes2 = HexStrToBytes(assem);
+    //std::string assem = "A2 0A 8E 00 00 A2 03 8E 01 00 AC 00 00 A9 00 18 6D 01 00 88 D0 FA 8D 02 00 EA EA EA";
+    auto bytes = LoadFile("/home/---/Downloads/6502_functional_test.bin");
+    //auto bytes2 = HexStrToBytes(assem);
 
     for (int i = 0; i < bytes.size(); ++i)
     {
         ram.WriteByte((WORD)(i), bytes.at(i));
-    }*/
+    }
 
     cpu.Run();
 

@@ -287,9 +287,9 @@ void CPU::PHA(WORD addr)
 void CPU::PHP(WORD addr) 
 { 
     reg.status_register.set(StatusRegisterFlags::UNUSED);
-    reg.status_register.set(StatusRegisterFlags::BREAK_COMMAND); 
+    reg.status_register.set(StatusRegisterFlags::BREAK_COMMAND);  // https://www.nesdev.org/wiki/Status_flags#The_B_flag
     
-    PushStackByte((BYTE)(reg.status_register.to_ulong())); // https://www.nesdev.org/wiki/Status_flags#The_B_flag
+    PushStackByte((BYTE)(reg.status_register.to_ulong()));
 }
 
 void CPU::PLA(WORD addr) 
