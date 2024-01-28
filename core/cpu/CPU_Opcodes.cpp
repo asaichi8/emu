@@ -574,6 +574,8 @@ void CPU::TXS(WORD addr)
 // System functions
 void CPU::BRK(WORD addr) 
 { 
+    reg.program_counter++;
+
     PushStackWord(reg.program_counter);
     PushStackByte((BYTE)(reg.status_register.to_ulong()));
 
