@@ -23,11 +23,6 @@ enum StatusRegisterFlags
 
 class CPU
 {
-    // https://en.wikipedia.org/wiki/Reset_vector "The reset vector for 6502 processor family is a 16-bit address stored at 0xFFFC and 0xFFFD."
-    static const WORD RESET_VECTOR = 0xFFFC;
-    // http://www.6502.org/users/obelisk/6502/reference.html#BRK : "IRQ interrupt vector at $FFFE/F"   
-    static const WORD IRQ_VECTOR = 0xFFFE;
-
     RAM* m_RAM = nullptr;
     BYTE m_curOpcode{};
     QWORD m_nCycles{};
@@ -215,6 +210,11 @@ class CPU
 
 public:
     CPU(RAM* ram);
+
+    // https://en.wikipedia.org/wiki/Reset_vector "The reset vector for 6502 processor family is a 16-bit address stored at 0xFFFC and 0xFFFD."
+    static const WORD RESET_VECTOR = 0xFFFC;
+    // http://www.6502.org/users/obelisk/6502/reference.html#BRK : "IRQ interrupt vector at $FFFE/F"   
+    static const WORD IRQ_VECTOR = 0xFFFE;
 
     void Reset();
     void Run();

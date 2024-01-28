@@ -9,7 +9,7 @@ int main()
 {
     constexpr size_t CPU_RAM_SIZE = 64*KB;
     RAM ram(CPU_RAM_SIZE);
-    ram.WriteWord(0xFFFC, 0x1000); // start the program at mem location 0x1000
+    ram.WriteWord(CPU::RESET_VECTOR, 0x1000); // start the program at specific mem location
     CPU cpu(&ram);
     
     // example code
