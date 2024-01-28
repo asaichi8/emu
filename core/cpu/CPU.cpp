@@ -17,6 +17,14 @@ void CPU::Run()
     {
         m_curOpcode = m_RAM->ReadByte(reg.program_counter);
         reg.program_counter++;
+        
+        /*if (m_curOpcode == 0x02)
+        {
+            std::cout << "pc: " << reg.program_counter << std::endl;
+            std::cout << "cycles: " << m_nCycles << std::endl;
+            std::cout << "02h: " << m_RAM->ReadByte(0x0002);
+            break;
+        }*/
 
         Execute(instructions[m_curOpcode]);
         m_nCycles += instructions[m_curOpcode].cycles;

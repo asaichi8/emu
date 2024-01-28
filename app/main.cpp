@@ -1,55 +1,71 @@
 #include <iostream>
 #include <cstring>
+#include <vector>
+#include <sstream>
+#include <fstream>
+#include <cstdint>
 #include "../core/cpu/CPU.h"
 
 #define KB 1024
-#define EG1 1
+
+/*std::vector<BYTE> HexStrToBytes(const std::string& hexString) 
+{
+    std::vector<BYTE> bytes;
+    std::istringstream stream(hexString);
+    std::string byteStr;
+
+    while (stream >> byteStr)
+    {
+        WORD w;
+        std::stringstream hexStream(byteStr);
+        hexStream >> std::hex >> w;
+        bytes.push_back((BYTE)w);
+    }
+
+    return bytes;
+}
+
+std::vector<BYTE> LoadFile(const std::string& filePath) 
+{
+    std::ifstream file(filePath, std::ios::binary | std::ios::ate);
+    if (!file) 
+    {
+        std::cerr << "err1" << std::endl;
+        return {};
+    }
+
+    std::streamsize size = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    std::vector<BYTE> buffer(size);
+    if (!file.read((char*)(buffer.data()), size)) 
+    {
+        std::cerr << "err2" << std::endl;
+        return {};
+    }
+
+    return buffer;
+}*/
 
 int main()
 {
     constexpr size_t CPU_RAM_SIZE = 64*KB;
+    constexpr WORD START_ADDR = 0xC000;
     RAM ram(CPU_RAM_SIZE);
-    ram.WriteWord(CPU::RESET_VECTOR, 0x1000); // start the program at specific mem location
+    ram.WriteWord(CPU::RESET_VECTOR, START_ADDR); // start the program at specific mem location
     CPU cpu(&ram);
     
     // example code
-    
-#ifdef EG1
-    ram.WriteByte(0x1000, 0xA2); // LDX
-    ram.WriteByte(0x1001, 0x0A); // #$0A
-    ram.WriteByte(0x1002, 0xE8); // INX
-    ram.WriteByte(0x1003, 0x8E); // STX
-    ram.WriteWord(0x1004, 0x2000); // $2000
-    ram.WriteByte(0x1006, 0x02); // KIL (illegal opcode - halts CPU)
-#endif
+    /*std::string assem = "A2 0A 8E 00 00 A2 03 8E 01 00 AC 00 00 A9 00 18 6D 01 00 88 D0 FA 8D 02 00 EA EA EA";
+    auto bytes = LoadFile("/home/---/Downloads/test.bin");
+    auto bytes2 = HexStrToBytes(assem);
 
-#ifndef EG1
+    for (int i = 0; i < bytes.size(); ++i)
     {
-        const char* sz = "Hello, World!";
-        for (int i = 0; i < strlen(sz); ++i)
-        {
-            ram.WriteByte(0x1000 + (i*6), 0xA2); // LDX
-            ram.WriteByte(0x1001 + (i*6), sz[i]); // char as operand
-            ram.WriteByte(0x1003 + (i*6), 0x8E); // STX
-            ram.WriteWord(0x1004 + (i*6), 0x2000 + i); // storage location as operand
-
-            if (i == strlen(sz) - 1) // if it's the last iteration...
-                ram.WriteByte(0x1006 + (i*6), 0x02); // KIL (illegal opcode - halts CPU)
-        }
-    }
-#endif
-    
+        ram.WriteByte((WORD)(i), bytes.at(i));
+    }*/
 
     cpu.Run();
-
-#ifdef EG1
-    std::cout << (int)(ram.ReadByte(0x2000)) << std::endl;
-#endif
-
-#ifndef EG1
-    for (int i = 0; i < 13; ++i)
-        std::cout << (char)(ram.ReadByte(0x2000 + i));
-#endif
 
     return 0;
 }
