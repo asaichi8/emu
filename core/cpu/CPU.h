@@ -25,6 +25,7 @@ class CPU
 {
     RAM* m_RAM = nullptr;
     BYTE m_curOpcode{};
+    DWORD m_curCycles{};
     QWORD m_nCycles{};
 
     class registers

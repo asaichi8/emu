@@ -32,10 +32,7 @@ void CPU::Run()
         }
 
         Execute(instructions[m_curOpcode]);
-        m_nCycles += instructions[m_curOpcode].cycles;
-
-        if (reg.status_register == 0)
-            std::cout<<"hey<";
+        m_nCycles += m_curCycles;
     }
 }
 
@@ -65,7 +62,9 @@ void CPU::Reset()
 /// @brief Executes an instruction.
 /// @param instruction Instruction to be executed.
 void CPU::Execute(const Instruction& instruction)
-{
+{ 
+    m_curCycles = instruction.cycles;
+
     // first call the addressing mode, so we can get the address of what we're acting upon
     WORD operand = (this->*(instruction.addrMode))();
 
