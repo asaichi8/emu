@@ -64,6 +64,14 @@ class CPU
                 else
                     this->status_register.reset(StatusRegisterFlags::CARRY);
             }
+
+            void CheckCarryCompare(BYTE regVal, BYTE val) 
+            {
+                if (regVal >= val)
+                    this->status_register.set(StatusRegisterFlags::CARRY);
+                else
+                    this->status_register.reset(StatusRegisterFlags::CARRY);
+            }
     } reg;
 
     struct Instruction

@@ -197,7 +197,7 @@ void CPU::CMP(WORD addr)
 
     BYTE result = negated16 & 0x00FF;
 
-    reg.CheckCarry(negated16);
+    reg.CheckCarryCompare(reg.accumulator, val);
     reg.CheckZero(result);
     reg.CheckNegative(result);
 }
@@ -209,7 +209,7 @@ void CPU::CPX(WORD addr)
 
     BYTE result = negated16 & 0x00FF;
 
-    reg.CheckCarry(negated16);
+    reg.CheckCarryCompare(reg.X, val);
     reg.CheckZero(result);
     reg.CheckNegative(result);
 }
@@ -221,7 +221,7 @@ void CPU::CPY(WORD addr)
 
     BYTE result = negated16 & 0x00FF;
 
-    reg.CheckCarry(negated16);
+    reg.CheckCarryCompare(reg.Y, val);
     reg.CheckZero(result);
     reg.CheckNegative(result);
 }
@@ -381,7 +381,7 @@ void CPU::BVS(WORD addr)
 void CPU::ASL(WORD addr) 
 { 
     BYTE val{};
-    bool isImplicit = instructions[m_curOpcode].addrMode == &CPU::IMP;
+    bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP);
     
     if (isImplicit)
         val = m_RAM->ReadByte(addr);
@@ -406,7 +406,7 @@ void CPU::ASL(WORD addr)
 void CPU::LSR(WORD addr) 
 { 
     BYTE val{};
-    bool isImplicit = instructions[m_curOpcode].addrMode == &CPU::IMP;
+    bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP);
     
     if (isImplicit)
         val = m_RAM->ReadByte(addr);
@@ -431,7 +431,7 @@ void CPU::LSR(WORD addr)
 void CPU::ROL(WORD addr) 
 { 
     BYTE val{};
-    bool isImplicit = instructions[m_curOpcode].addrMode == &CPU::IMP;
+    bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP);
     
     if (isImplicit)
         val = m_RAM->ReadByte(addr);
@@ -459,7 +459,7 @@ void CPU::ROL(WORD addr)
 void CPU::ROR(WORD addr) 
 { 
     BYTE val{};
-    bool isImplicit = instructions[m_curOpcode].addrMode == &CPU::IMP;
+    bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP);
     
     if (isImplicit)
         val = m_RAM->ReadByte(addr);
