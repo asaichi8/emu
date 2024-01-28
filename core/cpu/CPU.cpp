@@ -13,21 +13,29 @@ CPU::CPU(RAM* ram) : m_RAM(ram)
 /// @brief Starts running the CPU (https://en.wikipedia.org/wiki/Instruction_cycle)
 void CPU::Run()
 {
+    reg.program_counter = 0x0400;
     while (true)
     {
         m_curOpcode = m_RAM->ReadByte(reg.program_counter);
         reg.program_counter++;
         
-        /*if (m_curOpcode == 0x02)
+        if (m_nCycles >= 1000)
         {
-            std::cout << "pc: " << reg.program_counter << std::endl;
+            std::cout << "pc: " << std::hex << reg.program_counter << std::endl;
             std::cout << "cycles: " << m_nCycles << std::endl;
-            std::cout << "02h: " << m_RAM->ReadByte(0x0002);
-            break;
-        }*/
+            //std::cout << "02h: " << std::hex << m_RAM->ReadByte(0x0002);
+            //break;
+        }
+        if (reg.program_counter >= 0x3820)
+        {
+            std::cout << "a" << std::endl;
+        }
 
         Execute(instructions[m_curOpcode]);
         m_nCycles += instructions[m_curOpcode].cycles;
+
+        if (reg.status_register == 0)
+            std::cout<<"hey<";
     }
 }
 
@@ -84,20 +92,21 @@ BYTE CPU::PopStackByte()
     return m_RAM->ReadByte(STACK + reg.stack_pointer);
 }
 
+
 /// @brief Pushes a word to the stack.
 /// @param val Word to be pushed.
 void CPU::PushStackWord(WORD val)
 {
-    m_RAM->WriteWord(STACK + reg.stack_pointer, val);
-
-    reg.stack_pointer -= 2;
+    PushStackByte((val >> 8) & 0xFF);
+    PushStackByte(val & 0xFF);
 }
 
 /// @brief Pops and retrieves a word from the stack.
 /// @return Popped word.
 WORD CPU::PopStackWord()
 {
-    reg.stack_pointer += 2;
+    BYTE low = PopStackByte();
+    BYTE high = PopStackByte();
 
-    return m_RAM->ReadWord(STACK + reg.stack_pointer);
+    return ((high << 8) | low);
 }
