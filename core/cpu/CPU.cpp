@@ -73,6 +73,7 @@ void CPU::Execute(const Instruction& instruction)
 }
 
 
+// Opcode helper functions
 /// @brief Pushes a byte to the stack.
 /// @param val Byte to be pushed.
 void CPU::PushStackByte(BYTE val)
@@ -108,4 +109,13 @@ WORD CPU::PopStackWord()
     BYTE high = PopStackByte();
 
     return ((high << 8) | low);
+}
+
+/// @brief Checks if two addresses are on the same page or not.
+/// @param addr1 First address to be compared.
+/// @param addr2 Second address to be compared.
+/// @return Returns true if the two addresses are on the same page, false if otherwise.PIRAT
+bool CPU::IsOnSamePage(WORD addr1, WORD addr2)
+{
+    return ((addr1 & 0xFF00) == (addr2 & 0xFF00));
 }
