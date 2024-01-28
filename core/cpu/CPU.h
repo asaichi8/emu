@@ -30,6 +30,7 @@ class CPU
 
     RAM* m_RAM = nullptr;
     BYTE m_curOpcode{};
+    QWORD m_nCycles{};
 
     class registers
     {

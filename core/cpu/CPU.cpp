@@ -18,8 +18,8 @@ void CPU::Run()
         m_curOpcode = m_RAM->ReadByte(reg.program_counter);
         reg.program_counter++;
 
-            
         Execute(instructions[m_curOpcode]);
+        m_nCycles += instructions[m_curOpcode].cycles;
     }
 }
 
@@ -41,7 +41,7 @@ void CPU::Reset()
 
     // https://6502.co.uk/lesson/reset
     // "This reset sequence lasts for seven clock cycles and after this, the computer will be usable. "
-    // TODO: cycles += 7;
+    m_nCycles += 7;
 
     m_RAM->Reset();
 }
