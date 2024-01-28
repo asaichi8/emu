@@ -286,7 +286,7 @@ void CPU::PHA(WORD addr)
 
 void CPU::PHP(WORD addr) 
 { 
-    PushStackByte((BYTE)reg.status_register.to_ulong());
+    PushStackByte((BYTE)reg.status_register.to_ulong() | StatusRegisterFlags::UNUSED);
 }
 
 void CPU::PLA(WORD addr) 
@@ -299,7 +299,7 @@ void CPU::PLA(WORD addr)
 
 void CPU::PLP(WORD addr) 
 { 
-    reg.status_register = PopStackByte();
+    reg.status_register = PopStackByte() | StatusRegisterFlags::UNUSED;
 }
 
 
@@ -577,7 +577,7 @@ void CPU::BRK(WORD addr)
     reg.program_counter++;
 
     PushStackWord(reg.program_counter);
-    PushStackByte((BYTE)(reg.status_register.to_ulong()));
+    PushStackByte((BYTE)(reg.status_register.to_ulong() | StatusRegisterFlags::UNUSED));
 
     reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
 
@@ -591,7 +591,7 @@ void CPU::NOP(WORD addr)
 
 void CPU::RTI(WORD addr) 
 { 
-    reg.status_register = PopStackByte();
+    reg.status_register = PopStackByte() | StatusRegisterFlags::UNUSED;
     reg.program_counter = PopStackWord();
 }
 
