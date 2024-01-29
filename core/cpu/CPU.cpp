@@ -26,11 +26,16 @@ void CPU::Run()
             //std::cout << "02h: " << std::hex << m_RAM->ReadByte(0x0002);
             //break;
         }
-        if (reg.program_counter >= 0x3820)
+        if (reg.program_counter == 0x99c)
         {
-            std::cout << "a" << std::endl;
+            int b = m_RAM->ReadByte(0x0201); //9c8
+            if (b != 255)
+                int c{};
         }
-
+        if (reg.status_register[StatusRegisterFlags::UNUSED] == 0)
+            std::cout << "b" << std::endl;
+        if (reg.stack_pointer == 0)
+            std::cout << "c" << std::endl;
         Execute(instructions[m_curOpcode]);
         m_nCycles += m_curCycles;
     }
@@ -58,6 +63,41 @@ void CPU::Reset()
 
     m_RAM->Reset();
 }
+
+
+// https://www.pagetable.com/?p=410
+void CPU::IRQ()
+{
+    if (reg.status_register.test(StatusRegisterFlags::INTERRUPT_REQUEST))
+        return;
+
+    auto savedReg = reg.status_register;
+    savedReg.set(StatusRegisterFlags::UNUSED);
+    savedReg.reset(StatusRegisterFlags::BREAK_COMMAND);
+
+    PushStackWord(reg.program_counter);
+    PushStackByte((BYTE)(savedReg.to_ulong()));
+
+    reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
+
+    reg.program_counter = m_RAM->ReadWord(IRQ_VECTOR);
+}
+    
+void CPU::NMI()
+{
+    auto savedReg = reg.status_register;
+    savedReg.set(StatusRegisterFlags::UNUSED);
+    savedReg.reset(StatusRegisterFlags::BREAK_COMMAND);
+
+    PushStackWord(reg.program_counter);
+    PushStackByte((BYTE)(savedReg.to_ulong()));
+
+    reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
+
+    reg.program_counter = m_RAM->ReadWord(NMI_VECTOR);
+}
+
+
 
 /// @brief Executes an instruction.
 /// @param instruction Instruction to be executed.

@@ -88,6 +88,7 @@ class CPU
     WORD PopStackWord();
     bool IsOnSamePage(WORD addr1, WORD addr2);
 
+
     // Addressing modes - returns the address to act upon
     MODE(IMM); // immediate
     MODE(IMP); // implicit
@@ -221,11 +222,15 @@ class CPU
 public:
     CPU(RAM* ram);
 
+    // https://www.pagetable.com/?p=410
+    static const WORD NMI_VECTOR = 0xFFFA;
     // https://en.wikipedia.org/wiki/Reset_vector "The reset vector for 6502 processor family is a 16-bit address stored at 0xFFFC and 0xFFFD."
     static const WORD RESET_VECTOR = 0xFFFC;
     // http://www.6502.org/users/obelisk/6502/reference.html#BRK : "IRQ interrupt vector at $FFFE/F"   
     static const WORD IRQ_VECTOR = 0xFFFE;
 
-    void Reset();
     void Run();
+    void Reset();
+    void IRQ();
+    void NMI();
 };
