@@ -36,13 +36,26 @@ WORD CPU::ABS()
 ///        evaluating to a final 16-bit address (e.g. LDY $1234, X would load the byte contained at address $1234 + X
 ///        into the Y register. Therefore, if X contained the value 10H, the byte contained at memory location $1244
 ///        would be loaded into the Y register.)
+///        An additional clock cycle is used when the result of the operation is on a new page.
 WORD CPU::ABX()
 {
-    return ABS() + reg.X;
+    WORD addr = ABS();
+    WORD result = result + reg.X;
+
+    if (!CPU::IsOnSamePage(addr, result))
+        m_curCycles++;
+
+    return result;
 }
 WORD CPU::ABY()
 {
-    return ABS() + reg.Y;
+    WORD addr = ABS();
+    WORD result = result + reg.Y;
+
+    if (!CPU::IsOnSamePage(addr, result))
+        m_curCycles++;
+
+    return result;
 }
 
 /// @brief Takes a two-byte address which should resolve to another two-byte address as an operand. For example, if
@@ -103,7 +116,14 @@ WORD CPU::IZY()
     WORD zpAddrLow = m_RAM->ReadByte(reg.program_counter); // Read supplied ZP address, result: 0x60 (low byte of effective address)
     reg.program_counter++; // Increment PC: it's now 0x1001
 
-    return m_RAM->ReadWord(zpAddrLow, true) + reg.Y; // Read word at 0x60-0x61 (0x7000). Add Y for a final result of 0x7040.
+    WORD addr = m_RAM->ReadWord(zpAddrLow, true); // Read word at 0x60-0x61 (0x7000). 
+    WORD result = result + reg.Y; // Add Y for a final result of 0x7040.
+
+    //  An additional clock cycle is used when the result of the operation is on a new page.
+    if (!CPU::IsOnSamePage(addr, result))
+        m_curCycles++;
+
+    return result; 
 }
 
 WORD CPU::IZX()
