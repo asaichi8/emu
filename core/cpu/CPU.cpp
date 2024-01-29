@@ -22,7 +22,7 @@ void CPU::Run()
         if (m_nCycles >= 1000)
         {
             std::cout << "pc: " << std::hex << reg.program_counter << std::endl;
-            std::cout << "cycles: " << m_nCycles << std::endl;
+            std::cout << "cycles: " << std::dec << m_nCycles << std::endl;
             //std::cout << "02h: " << std::hex << m_RAM->ReadByte(0x0002);
             //break;
         }

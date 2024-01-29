@@ -334,51 +334,77 @@ void CPU::RTS(WORD addr)
 // Branch operations
 void CPU::BCC(WORD addr) 
 { 
-    if (!reg.status_register.test(StatusRegisterFlags::CARRY))
-        reg.program_counter = addr;
+    if (reg.status_register.test(StatusRegisterFlags::CARRY)) 
+        return;
+
+    // we branched, so increase current cycles by at least one. if it was to a different page, increment by one
+    m_curCycles += CPU::IsOnSamePage(reg.program_counter, addr) ? 1 : 2;
+    reg.program_counter = addr;
 }
 
 void CPU::BCS(WORD addr) 
 { 
-    if (reg.status_register.test(StatusRegisterFlags::CARRY))
-        reg.program_counter = addr;
+    if (!reg.status_register.test(StatusRegisterFlags::CARRY))
+        return;
+    
+    m_curCycles += CPU::IsOnSamePage(reg.program_counter, addr) ? 1 : 2;
+    reg.program_counter = addr;
 }
 
 void CPU::BEQ(WORD addr) 
 { 
-    if (reg.status_register.test(StatusRegisterFlags::ZERO))
-        reg.program_counter = addr;
+    if (!reg.status_register.test(StatusRegisterFlags::ZERO))
+        return;
+        
+    m_curCycles += CPU::IsOnSamePage(reg.program_counter, addr) ? 1 : 2;
+    reg.program_counter = addr;
 }
 
 void CPU::BMI(WORD addr) 
 { 
-    if (reg.status_register.test(StatusRegisterFlags::NEGATIVE))
-        reg.program_counter = addr;
+    if (!reg.status_register.test(StatusRegisterFlags::NEGATIVE))
+        return;
+        
+    m_curCycles += CPU::IsOnSamePage(reg.program_counter, addr) ? 1 : 2;
+    reg.program_counter = addr;
 }
 
 void CPU::BNE(WORD addr) 
 { 
-    if (!reg.status_register.test(StatusRegisterFlags::ZERO))
-        reg.program_counter = addr;
+    if (reg.status_register.test(StatusRegisterFlags::ZERO))
+        return;
+        
+    m_curCycles += CPU::IsOnSamePage(reg.program_counter, addr) ? 1 : 2;
+    reg.program_counter = addr;
 }
 
 void CPU::BPL(WORD addr) 
 { 
-    if (!reg.status_register.test(StatusRegisterFlags::NEGATIVE))
-        reg.program_counter = addr;
+    if (reg.status_register.test(StatusRegisterFlags::NEGATIVE))
+        return;
+        
+    m_curCycles += CPU::IsOnSamePage(reg.program_counter, addr) ? 1 : 2;
+    reg.program_counter = addr;
 }
 
 void CPU::BVC(WORD addr) 
 { 
-    if (!reg.status_register.test(StatusRegisterFlags::OVERFLOW))
-        reg.program_counter = addr;
+    if (reg.status_register.test(StatusRegisterFlags::OVERFLOW))
+        return;
+        
+    m_curCycles += CPU::IsOnSamePage(reg.program_counter, addr) ? 1 : 2;
+    reg.program_counter = addr;
 }
 
 void CPU::BVS(WORD addr) 
 { 
-    if (reg.status_register.test(StatusRegisterFlags::OVERFLOW))
-        reg.program_counter = addr;
+    if (!reg.status_register.test(StatusRegisterFlags::OVERFLOW))
+        return;
+
+    m_curCycles += CPU::IsOnSamePage(reg.program_counter, addr) ? 1 : 2;
+    reg.program_counter = addr;
 }
+
 
 
 // Shift operations
