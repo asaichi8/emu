@@ -1,63 +1,18 @@
-#include <iostream>
-#include <cstring>
-#include <vector>
-#include <sstream>
-#include <fstream>
-#include <cstdint>
+#include "../core/loader/Loader.h"
 #include "../core/cpu/CPU.h"
 
 #define KB 1024
-
-std::vector<BYTE> HexStrToBytes(const std::string& hexString) 
-{
-    std::vector<BYTE> bytes;
-    std::istringstream stream(hexString);
-    std::string byteStr;
-
-    while (stream >> byteStr)
-    {
-        WORD w;
-        std::stringstream hexStream(byteStr);
-        hexStream >> std::hex >> w;
-        bytes.push_back((BYTE)w);
-    }
-
-    return bytes;
-}
-
-std::vector<BYTE> LoadFile(const std::string& filePath) 
-{
-    std::ifstream file(filePath, std::ios::binary | std::ios::ate);
-    if (!file) 
-    {
-        std::cerr << "err1" << std::endl;
-        return {};
-    }
-
-    std::streamsize size = file.tellg();
-    file.seekg(0, std::ios::beg);
-
-    std::vector<BYTE> buffer(size);
-    if (!file.read((char*)(buffer.data()), size)) 
-    {
-        std::cerr << "err2" << std::endl;
-        return {};
-    }
-
-    return buffer;
-}
 
 int main()
 {
     constexpr size_t CPU_RAM_SIZE = 64*KB;
     constexpr WORD START_ADDR = 0x0400;
+
     RAM ram(CPU_RAM_SIZE);
     ram.WriteWord(CPU::RESET_VECTOR, START_ADDR); // start the program at specific mem location
     CPU cpu(&ram);
     
-    // example code
-    auto bytes = LoadFile("/home/---/Downloads/6502_functional_test.bin");
-    //auto bytes2 = HexStrToBytes(assem);
+    auto bytes = Loader::LoadFile("/home/---/Downloads/6502_functional_test.bin");
 
     for (int i = 0; i < bytes.size(); ++i)
     {
