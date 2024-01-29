@@ -13,29 +13,11 @@ CPU::CPU(RAM* ram) : m_RAM(ram)
 /// @brief Starts running the CPU (https://en.wikipedia.org/wiki/Instruction_cycle)
 void CPU::Run()
 {
-    reg.program_counter = 0x0400;
     while (true)
     {
         m_curOpcode = m_RAM->ReadByte(reg.program_counter);
         reg.program_counter++;
         
-        if (m_nCycles >= 1000)
-        {
-            std::cout << "pc: " << std::hex << reg.program_counter << std::endl;
-            std::cout << "cycles: " << std::dec << m_nCycles << std::endl;
-            //std::cout << "02h: " << std::hex << m_RAM->ReadByte(0x0002);
-            //break;
-        }
-        if (reg.program_counter == 0x99c)
-        {
-            int b = m_RAM->ReadByte(0x0201); //9c8
-            if (b != 255)
-                int c{};
-        }
-        if (reg.status_register[StatusRegisterFlags::UNUSED] == 0)
-            std::cout << "b" << std::endl;
-        if (reg.stack_pointer == 0)
-            std::cout << "c" << std::endl;
         Execute(instructions[m_curOpcode]);
         m_nCycles += m_curCycles;
     }
