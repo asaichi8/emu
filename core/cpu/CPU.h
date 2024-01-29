@@ -3,7 +3,7 @@
 #define SIMULATE_BUGS 1
 
 #include <bitset>
-#include "RAM.h"
+#include "../memory/RAM.h"
 #include "../../include/typedefs.h"
 
 #define MODE(addressingMode) WORD addressingMode()

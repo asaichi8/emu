@@ -1,7 +1,7 @@
 #include <cstring>
 #include <iostream>
 
-#include "RAM.h"
+#include "../memory/RAM.h"
 
 
 RAM::RAM(size_t size) : m_RAM_Size(size)
