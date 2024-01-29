@@ -419,9 +419,9 @@ void CPU::ASL(WORD addr)
     bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP);
     
     if (isImplicit)
-        val = m_RAM->ReadByte(addr);
-    else
         val = reg.accumulator;
+    else
+        val = m_RAM->ReadByte(addr);
 
 
     // set carry flag if 7th bit (the one we're about to shift away) is set
@@ -433,9 +433,9 @@ void CPU::ASL(WORD addr)
     
 
     if (isImplicit)
-        m_RAM->WriteByte(addr, result); // write value back to same location
-    else
         reg.accumulator = result;
+    else
+        m_RAM->WriteByte(addr, result); // write value back to same location
 }
 
 void CPU::LSR(WORD addr) 
@@ -444,9 +444,9 @@ void CPU::LSR(WORD addr)
     bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP);
     
     if (isImplicit)
-        val = m_RAM->ReadByte(addr);
-    else
         val = reg.accumulator;
+    else
+        val = m_RAM->ReadByte(addr);
 
 
     // set carry flag if 1st bit (the one we're about to shift away) is set
@@ -458,9 +458,9 @@ void CPU::LSR(WORD addr)
     
 
     if (isImplicit)
-        m_RAM->WriteByte(addr, result); // write value back to same location
-    else
         reg.accumulator = result;
+    else
+        m_RAM->WriteByte(addr, result); // write value back to same location
 }
 
 void CPU::ROL(WORD addr) 
@@ -469,9 +469,9 @@ void CPU::ROL(WORD addr)
     bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP);
     
     if (isImplicit)
-        val = m_RAM->ReadByte(addr);
-    else
         val = reg.accumulator;
+    else
+        val = m_RAM->ReadByte(addr);
 
 
     // set carry flag if 7th bit (the one we're about to shift away) is set
@@ -486,9 +486,9 @@ void CPU::ROL(WORD addr)
     
 
     if (isImplicit)
-        m_RAM->WriteByte(addr, result); // write value back to same location
-    else
         reg.accumulator = result;
+    else
+        m_RAM->WriteByte(addr, result); // write value back to same location
 }
 
 void CPU::ROR(WORD addr) 
@@ -497,9 +497,9 @@ void CPU::ROR(WORD addr)
     bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP);
     
     if (isImplicit)
-        val = m_RAM->ReadByte(addr);
-    else
         val = reg.accumulator;
+    else
+        val = m_RAM->ReadByte(addr);
 
 
     // set carry flag if 1st bit (the one we're about to shift away) is set
@@ -514,9 +514,9 @@ void CPU::ROR(WORD addr)
     
 
     if (isImplicit)
-        m_RAM->WriteByte(addr, result); // write value back to same location
-    else
         reg.accumulator = result;
+    else
+        m_RAM->WriteByte(addr, result); // write value back to same location
 }
 
 
