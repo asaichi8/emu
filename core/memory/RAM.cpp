@@ -27,8 +27,8 @@ BYTE RAM::ReadByte(WORD addr)
 
 WORD RAM::ReadWord(WORD addr, bool shouldWrapPage)
 {
-    if (addr == UINT16_MAX)
-        return 0;
+    //if (addr == UINT16_MAX)
+    //    return 0;
 
     // little endian
     BYTE low = m_RAM[addr];
@@ -49,8 +49,8 @@ void RAM::WriteByte(WORD addr, BYTE val)
 
 void RAM::WriteWord(WORD addr, WORD val)
 {
-    if (addr == UINT16_MAX)
-        return;
+    //if (addr == UINT16_MAX)
+    //    return;
 
     m_RAM[addr] = BYTE(val & 0x00FF); // set low byte
     m_RAM[addr + 1] = BYTE((val >> 8) & 0xFF); // set high byte

@@ -6,8 +6,10 @@
 
 class RAM
 {
-    std::unique_ptr<BYTE[]> m_RAM{};
     size_t m_RAM_Size{};
+    
+protected:
+    std::unique_ptr<BYTE[]> m_RAM{};
 
 public:
     RAM(size_t size);
@@ -15,8 +17,8 @@ public:
 
     void Reset();
 
-    BYTE ReadByte(WORD addr);
-    WORD ReadWord(WORD addr, bool shouldWrapPage = false);
-    void WriteByte(WORD addr, BYTE val);
-    void WriteWord(WORD addr, WORD val);
+     BYTE ReadByte(WORD addr);
+     WORD ReadWord(WORD addr, bool shouldWrapPage = false);
+     virtual void WriteByte(WORD addr, BYTE val);
+     virtual void WriteWord(WORD addr, WORD val);
 };

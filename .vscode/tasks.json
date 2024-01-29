@@ -7,6 +7,10 @@
             "args": [
                 "-g",
                 "${workspaceFolder}/core/cpu/*.cpp",
+                "${workspaceFolder}/core/ppu/*.cpp",
+                //"${workspaceFolder}/core/apu/*.cpp",
+                "${workspaceFolder}/core/memory/*.cpp",
+                "${workspaceFolder}/core/loader/*.cpp",
                 "${workspaceFolder}/app/*.cpp",
                 "-o",
                 "${workspaceFolder}/bin/emu"
