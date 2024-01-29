@@ -40,7 +40,7 @@ WORD CPU::ABS()
 WORD CPU::ABX()
 {
     WORD addr = ABS();
-    WORD result = result + reg.X;
+    WORD result = addr + reg.X;
 
     if (!CPU::IsOnSamePage(addr, result))
         m_curCycles++;
@@ -50,7 +50,7 @@ WORD CPU::ABX()
 WORD CPU::ABY()
 {
     WORD addr = ABS();
-    WORD result = result + reg.Y;
+    WORD result = addr + reg.Y;
 
     if (!CPU::IsOnSamePage(addr, result))
         m_curCycles++;
@@ -117,7 +117,7 @@ WORD CPU::IZY()
     reg.program_counter++; // Increment PC: it's now 0x1001
 
     WORD addr = m_RAM->ReadWord(zpAddrLow, true); // Read word at 0x60-0x61 (0x7000). 
-    WORD result = result + reg.Y; // Add Y for a final result of 0x7040.
+    WORD result = addr + reg.Y; // Add Y for a final result of 0x7040.
 
     //  An additional clock cycle is used when the result of the operation is on a new page.
     if (!CPU::IsOnSamePage(addr, result))

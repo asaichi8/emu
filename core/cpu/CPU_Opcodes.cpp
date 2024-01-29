@@ -286,10 +286,11 @@ void CPU::PHA(WORD addr)
 
 void CPU::PHP(WORD addr) 
 { 
-    reg.status_register.set(StatusRegisterFlags::UNUSED);
-    reg.status_register.set(StatusRegisterFlags::BREAK_COMMAND);  // https://www.nesdev.org/wiki/Status_flags#The_B_flag
-    
-    PushStackByte((BYTE)(reg.status_register.to_ulong()));
+    auto statusCopy = reg.status_register;
+    statusCopy.set(StatusRegisterFlags::UNUSED);
+    statusCopy.set(StatusRegisterFlags::BREAK_COMMAND);
+
+    PushStackByte((BYTE)(statusCopy.to_ulong()));
 }
 
 void CPU::PLA(WORD addr) 
@@ -302,7 +303,11 @@ void CPU::PLA(WORD addr)
 
 void CPU::PLP(WORD addr) 
 { 
-    reg.status_register = PopStackByte();
+    auto pulledStatus = PopStackByte();
+
+    bool breakSet = (reg.status_register.test(StatusRegisterFlags::BREAK_COMMAND));
+    reg.status_register = pulledStatus;
+    reg.status_register.set(StatusRegisterFlags::BREAK_COMMAND, breakSet);
     reg.status_register.set(StatusRegisterFlags::UNUSED);
 }
 
@@ -615,7 +620,7 @@ void CPU::BRK(WORD addr)
 
     reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
 
-    reg.program_counter = m_RAM->ReadByte(IRQ_VECTOR);
+    reg.program_counter = m_RAM->ReadWord(IRQ_VECTOR);
 }
 
 void CPU::NOP(WORD addr) 
@@ -626,7 +631,8 @@ void CPU::NOP(WORD addr)
 void CPU::RTI(WORD addr) 
 {
     reg.status_register = PopStackByte();
-    reg.status_register.set(StatusRegisterFlags::UNUSED);
+    reg.status_register.reset(StatusRegisterFlags::UNUSED);
+    reg.status_register.reset(StatusRegisterFlags::BREAK_COMMAND);
 
     reg.program_counter = PopStackWord();
 }
