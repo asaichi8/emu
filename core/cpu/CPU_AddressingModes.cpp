@@ -1,29 +1,36 @@
 #include "CPU.h"
 
+// === ADDRESSING MODES ===
 
 // After fetching the opcode, the program counter points to the effective operand.
+// Addressing modes return the effective address of the operation.
+// https://www.nesdev.org/obelisk-6502-guide/addressing.html
 
+// IMMEDIATE
 /// @brief Takes a single constant byte as an operand, e.g. LDY #$05, loading 0x05 into the Y index register. 
-WORD CPU::IMM()
+WORD CPU::IMM() 
 {
     return reg.program_counter++; // return addr of operand, then increment pc
 }
 
+// IMPLICIT
 /// @brief Does not take any operand – the instruction is self-explanatory (e.g. NOP – no operation is done.) 
-WORD CPU::IMP()
+WORD CPU::IMP() 
 {
     return 0; // not needed
 }
 
+// ACCUMULATOR
 /// @brief Takes a single operand, ‘A’. Operates directly on the accumulator register
 ///        (e.g. ROL A, rotating the contents of the accumulator left one bit.)
-WORD CPU::ACC()
+WORD CPU::ACC() 
 {
     return 0; // not needed
 }
 
+// ABSOLUTE
 /// @brief Takes a two-byte address as an operand (e.g. JMP $3000.)
-WORD CPU::ABS()
+WORD CPU::ABS() 
 {
     WORD addr = m_RAM->ReadWord(reg.program_counter);
     reg.program_counter += 2;
@@ -31,6 +38,7 @@ WORD CPU::ABS()
     return addr;
 }
 
+// ABSOLUTE, X
 /// @brief Like the absolute addressing mode, but with an extra operand containing one of the 8-bit index registers.
 ///        The contents of said register will be added to the address of the first two-byte operand,
 ///        evaluating to a final 16-bit address (e.g. LDY $1234, X would load the byte contained at address $1234 + X
@@ -47,7 +55,8 @@ WORD CPU::ABX()
 
     return result;
 }
-WORD CPU::ABY()
+// ABSOLUTE, Y
+WORD CPU::ABY() 
 {
     WORD addr = ABS();
     WORD result = addr + reg.Y;
@@ -58,11 +67,12 @@ WORD CPU::ABY()
     return result;
 }
 
+// INDIRECT
 /// @brief Takes a two-byte address which should resolve to another two-byte address as an operand. For example, if
 ///        the operand is $5000 (e.g. JMP ($5000)) and the values of $5000 and $5001 are $EF and $BE respectively,
 ///        the instruction will execute with these values in absolute addressing mode fashion (using the previous
 ///        example, JMP ($5000) would evaluate to JMP ($BEEF)).
-WORD CPU::IND()
+WORD CPU::IND() 
 {
     WORD addr = ABS();
     
@@ -74,6 +84,7 @@ WORD CPU::IND()
     return m_RAM->ReadWord(addr);
 }
 
+// RELATIVE
 /// @brief Takes a single operand containing a signed 8-bit number (ranging from -128 to +127) as a label.
 WORD CPU::REL()
 {
@@ -86,23 +97,25 @@ WORD CPU::REL()
     return addr;
 }
 
+// ZERO PAGE
 /// @brief Instructions utilising this mode only take one 8-bit operand denoting a location inside the zero page
 ///        (e.g. DEC $5F would decrement the byte found at $005F by one.)
 WORD CPU::ZPG()
 {
-    return m_RAM->ReadByte(reg.program_counter++);
+    return m_RAM->ReadByte(reg.program_counter++); // increment program counter AFTER reading
 }
-
+// ZERO PAGE, X
 WORD CPU::ZPX()
 {
     return (ZPG() + reg.X) & 0x00FF;
 }
-
+// ZERO PAGE, Y
 WORD CPU::ZPY()
 {
     return (ZPG() + reg.Y) & 0x00FF;
 }
 
+// INDIRECT INDEXED
 WORD CPU::IZY()
 {
     /* e.g.: MEMORY ADDR | CONTENTS |                      DESCRIPTION
@@ -125,7 +138,7 @@ WORD CPU::IZY()
 
     return result; 
 }
-
+// INDEXED INDIRECT
 WORD CPU::IZX()
 {
     WORD zpAddrLow = m_RAM->ReadByte(reg.program_counter);
