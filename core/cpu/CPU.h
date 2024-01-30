@@ -3,77 +3,21 @@
 #define SIMULATE_BUGS 1
 
 #include <bitset>
+#include "CPURegisters.h"
 #include "../memory/RAM.h"
 #include "../../include/typedefs.h"
 
 #define MODE(addressingMode) WORD addressingMode()
 #define OPCODE(opcodeName) void opcodeName(WORD addr)
 
-enum StatusRegisterFlags
-{
-    CARRY,
-    ZERO,
-    INTERRUPT_REQUEST,
-    DECIMAL_MODE,
-    BREAK_COMMAND,
-    UNUSED,
-    OVERFLOW,
-    NEGATIVE
-};
-
 class CPU
 {
     RAM* m_RAM = nullptr;
+    CPURegisters reg{};
     BYTE m_curOpcode{};
     DWORD m_curCycles{};
     QWORD m_nCycles{};
 
-    class registers
-    {
-        public:
-            WORD program_counter{};
-            BYTE accumulator{};
-            BYTE X{};   
-            BYTE Y{};
-            BYTE stack_pointer{};
-            std::bitset<8> status_register{};
-
-            // Checks if the value is zero, and sets register based on result
-            void CheckZero(BYTE val)
-            {
-                if (val == 0x00)
-                    this->status_register.set(StatusRegisterFlags::ZERO);
-                else
-                    this->status_register.reset(StatusRegisterFlags::ZERO);
-            }
-
-            // Checks if the value is negative, and sets register based on result
-            void CheckNegative(BYTE val)
-            {
-                if ((CHAR)val < 0)
-                    this->status_register.set(StatusRegisterFlags::NEGATIVE);
-                else
-                    this->status_register.reset(StatusRegisterFlags::NEGATIVE);
-            }
-
-            // Checks if the value is has a carry, and sets register based on result
-            void CheckCarry(WORD val)
-            {
-                // set carry flag if we don't need to borrow, reset otherwise
-                if (val > BYTE_MAX)
-                    this->status_register.set(StatusRegisterFlags::CARRY);
-                else
-                    this->status_register.reset(StatusRegisterFlags::CARRY);
-            }
-
-            void CheckCarryCompare(BYTE regVal, BYTE val) 
-            {
-                if (regVal >= val)
-                    this->status_register.set(StatusRegisterFlags::CARRY);
-                else
-                    this->status_register.reset(StatusRegisterFlags::CARRY);
-            }
-    } reg;
 
     struct Instruction
     {
