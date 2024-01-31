@@ -504,7 +504,6 @@ void CPU::LSR(WORD addr)
 
     val = (isImplicit ? reg.accumulator : m_RAM->ReadByte(addr));
 
-
     // set carry flag if 1st bit (the one we're about to shift away) is set
     reg.status_register.set(StatusRegisterFlags::CARRY, val & 0x01);
 
@@ -527,14 +526,11 @@ void CPU::ROL(WORD addr)
     
     val = (isImplicit ? reg.accumulator : m_RAM->ReadByte(addr));
 
-    // save old carry bit
-    bool oldCarry = reg.status_register.test(StatusRegisterFlags::CARRY);
+    // shift to left while setting bit 0 to value of carry flag
+    BYTE result = (val << 1) | reg.status_register.test(StatusRegisterFlags::CARRY);
 
     // set carry flag if 7th bit (the one we're about to shift away) is set
     reg.status_register.set(StatusRegisterFlags::CARRY, val & 0x80);
-
-    // shift to left while setting bit 0 to old value of carry flag
-    BYTE result = (val << 1) | (oldCarry ? 1 : 0);
 
     reg.CheckNegative(result);
     reg.CheckZero(result);
@@ -554,14 +550,11 @@ void CPU::ROR(WORD addr)
     
     val = (isImplicit ? reg.accumulator : m_RAM->ReadByte(addr));
 
-    // save old carry bit
-    bool oldCarry = reg.status_register.test(StatusRegisterFlags::CARRY);
+    // shift to left while setting bit 7 to value of carry flag
+    BYTE result = (val >> 1) | (reg.status_register.test(StatusRegisterFlags::CARRY) << 7);
     
     // set carry flag if 1st bit (the one we're about to shift away) is set
     reg.status_register.set(StatusRegisterFlags::CARRY, val & 0x01);
-
-    // shift to right while setting bit 7 to old value of carry flag
-    BYTE result = (val >> 1) | (oldCarry ? 0x80 : 0);
 
     reg.CheckNegative(result);
     reg.CheckZero(result);
