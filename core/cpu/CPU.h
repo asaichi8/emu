@@ -30,7 +30,7 @@ class CPU
     BYTE PopStackByte();
     void PushStackWord(WORD val);
     WORD PopStackWord();
-    bool IsOnSamePage(WORD addr1, WORD addr2);
+    static bool IsOnSamePage(WORD addr1, WORD addr2);
 
 
     // Addressing modes - returns the address to act upon
