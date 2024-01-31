@@ -189,7 +189,7 @@ void CPU::SBC(WORD addr)
     BYTE result = negated16 & 0x00FF; // convert to 8-bit
 
     //  registers
-    reg.CheckCarry(negated16);
+    reg.status_register.set(StatusRegisterFlags::CARRY, negated16 < (BYTE_MAX + 1));
     reg.CheckZero(result);
     reg.CheckNegative(result);
 
