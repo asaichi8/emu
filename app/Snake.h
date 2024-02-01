@@ -13,7 +13,7 @@
 #define SCREEN_END   0x0600
 
 #define SIZE 32
-#define SCALE 10
+#define SCALE 25
 
 class Snake
 {

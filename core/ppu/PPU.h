@@ -1,6 +1,9 @@
+#include "../memory/RAM.h"
+
 class PPU
 {
+    RAM* m_RAM = nullptr;
 
 public:
-    PPU();
+    PPU(RAM* ram);
 };

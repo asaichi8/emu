@@ -13,7 +13,8 @@ void CPU::Run(std::function<void()> callbackFunc)
 {
     while (true)
     {
-        if (callbackFunc) callbackFunc();
+        if (callbackFunc)
+            callbackFunc();
 
         m_curOpcode = m_RAM->ReadByte(reg.program_counter);
         reg.program_counter++;
