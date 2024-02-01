@@ -3,6 +3,7 @@
 #define SIMULATE_BUGS 1
 
 #include <bitset>
+#include <functional>
 #include "CPURegisters.h"
 #include "../memory/RAM.h"
 #include "../../include/typedefs.h"
@@ -173,7 +174,7 @@ public:
     // http://www.6502.org/users/obelisk/6502/reference.html#BRK : "IRQ interrupt vector at $FFFE/F"   
     static const WORD IRQ_VECTOR = 0xFFFE;
 
-    void Run();
+    void Run(std::function<void()> callbackFunc = nullptr);
     void Reset();
     void IRQ();
     void NMI();

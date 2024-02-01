@@ -1,0 +1,76 @@
+#include "SDLApp.h"
+
+
+SDLApp::SDLApp(const std::string& windowName, int w, int h, int scale) 
+{
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) 
+        throw std::runtime_error("Failed to init SDL");
+    
+    SetupWindow(windowName, w, h, scale);
+    SetupRenderer(scale);
+    SetupTexture(w, h);
+}
+
+SDLApp::~SDLApp()
+{
+    if (m_Texture)
+        SDL_DestroyTexture(m_Texture);
+
+    if (m_Renderer)
+        SDL_DestroyRenderer(m_Renderer);
+
+    if (m_Window)
+        SDL_DestroyWindow(m_Window);
+
+    SDL_Quit();
+}
+
+
+void SDLApp::SetupWindow(const std::string& windowName, int w, int h, int scale)
+{
+    m_Window = SDL_CreateWindow(
+        windowName.c_str(),              
+        SDL_WINDOWPOS_CENTERED,     
+        SDL_WINDOWPOS_CENTERED,     
+        w * scale, 
+        h * scale,
+        SDL_WINDOW_SHOWN  
+    );
+
+    if (!m_Window) 
+        throw std::runtime_error(std::string("Failed to init window: ") + SDL_GetError());
+}
+
+void SDLApp::SetupRenderer(int scale)
+{
+    m_Renderer = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
+    if (!m_Renderer) 
+        throw std::runtime_error(std::string("Failed to init renderer: ") + SDL_GetError());
+
+    SDL_RenderSetScale(m_Renderer, scale, scale);
+}
+
+void SDLApp::SetupTexture(int w, int h)
+{
+    m_Texture = SDL_CreateTexture(m_Renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STATIC, w, h);
+
+    if (!m_Texture) 
+        throw std::runtime_error(std::string("Failed to init texture: ") + SDL_GetError());
+}
+
+
+SDL_Window* SDLApp::GetWindow()
+{
+    return m_Window;
+}
+
+SDL_Renderer* SDLApp::GetRenderer()
+{
+    return m_Renderer;
+}
+
+SDL_Texture* SDLApp::GetTexture()
+{
+    return m_Texture;
+}

@@ -12,8 +12,12 @@
                 "${workspaceFolder}/core/memory/*.cpp",
                 "${workspaceFolder}/core/loader/*.cpp",
                 "${workspaceFolder}/app/*.cpp",
+                "${workspaceFolder}/app/SDL/*.cpp",
+                "-I/usr/include/SDL2",
+                "-D_REENTRANT",
                 "-o",
-                "${workspaceFolder}/bin/emu"
+                "${workspaceFolder}/bin/emu",
+                "-lSDL2"
             ],
             "options": {
                 "cwd": "${fileDirname}"
