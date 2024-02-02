@@ -3,23 +3,32 @@
 Snake::Snake(RAM* ram) : m_app(std::make_unique<SDLApp>("Snake", SIZE, SIZE, SCALE)),
     m_RAM(ram)
 {
-
+    m_app->InitImGui();
 }
 
+Snake::~Snake()
+{
+    m_app->ShutdownImGui();
+}
 
-void Snake::Run()
+bool Snake::Run()
 {
     HandleInput(m_Event);
+
+    if (!m_app->GetShouldCPURun())
+    {
+        RenderScreen();
+        return m_app->GetShouldCPURun(); // always false
+    }
 
     m_RAM->WriteByte(RNG_POS, (BYTE)(rand() % 14) + 1);
 
     if (!ReadScreen(m_Screen))
-        return;
+        return true;
         
-    SDL_UpdateTexture(m_app->GetTexture(), NULL, m_Screen, SIZE * 3);
-    SDL_RenderClear(m_app->GetRenderer());
-    SDL_RenderCopy(m_app->GetRenderer(), m_app->GetTexture(), NULL, NULL);
-    SDL_RenderPresent(m_app->GetRenderer());
+    RenderScreen();
+
+    return m_app->GetShouldCPURun();
 }
 
 
@@ -27,7 +36,8 @@ void Snake::HandleInput(SDL_Event &e)
 {
     while (SDL_PollEvent(&e)) 
     {
-        if (e.type == SDL_KEYDOWN) 
+        ImGui_ImplSDL2_ProcessEvent(&e);
+        if (e.type == SDL_KEYDOWN && m_app->GetShouldCPURun()) 
         {
             switch (e.key.keysym.sym) 
             {
@@ -42,9 +52,6 @@ void Snake::HandleInput(SDL_Event &e)
                     break;
                 case SDLK_d:
                     m_RAM->WriteByte(DIR_POS, RIGHT_KEY);
-                    break;
-                case SDLK_ESCAPE:
-                    std::exit(0);
                     break;
                 default:
                     break;
@@ -99,4 +106,16 @@ bool Snake::ReadScreen(BYTE* szFrame)
     }
 
     return shouldUpdate;
+}
+
+void Snake::RenderScreen()
+{
+    SDL_RenderClear(m_app->GetRenderer());
+    
+    SDL_UpdateTexture(m_app->GetTexture(), NULL, m_Screen, SIZE * 3);
+    SDL_RenderCopy(m_app->GetRenderer(), m_app->GetTexture(), NULL, NULL);
+    m_app->StartImGuiFrame();
+    m_app->RenderImGuiFrame();
+
+    SDL_RenderPresent(m_app->GetRenderer());
 }

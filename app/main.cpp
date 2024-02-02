@@ -19,7 +19,7 @@ int main()
     CPU cpu(&ram);
     //PPU ppu(&ram);
     
-    auto bytes = Loader::LoadFile(std::string(std::filesystem::current_path() / "snake.bin"));
+    auto bytes = Loader::LoadFile("/home/pai/github/emu/app/snake.bin");
 
     // map program directly into memory
     for (int i = 0; i < bytes.size(); ++i)
@@ -29,11 +29,12 @@ int main()
 
     Snake snake(&ram);
     
-    cpu.Run([&]() 
-        {
-            snake.Run();
-            std::this_thread::sleep_for(std::chrono::microseconds(50));
-        });
+    while (true)
+    {
+        std::this_thread::sleep_for(std::chrono::microseconds(50));
+        if (snake.Run())
+            cpu.Run();
+    }
 
     return 0;
 }

@@ -16,6 +16,8 @@ class SDLApp
     void SetupRenderer(int scale);
     void SetupTexture(int w, int h);
 
+    bool shouldCPURun = 1;
+
 public:
     SDLApp(const std::string& windowName, int w, int h, int scale);
     ~SDLApp();
@@ -23,4 +25,11 @@ public:
     SDL_Window* GetWindow();
     SDL_Renderer* GetRenderer();
     SDL_Texture* GetTexture();
+
+    void InitImGui();
+    void StartImGuiFrame();
+    void RenderImGuiFrame();
+    void ShutdownImGui();
+
+    bool GetShouldCPURun() { return shouldCPURun; }
 };

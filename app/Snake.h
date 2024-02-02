@@ -13,7 +13,7 @@
 #define SCREEN_END   0x0600
 
 #define SIZE 32
-#define SCALE 25
+#define SCALE 20
 
 class Snake
 {
@@ -25,9 +25,11 @@ class Snake
     void HandleInput(SDL_Event &e);
     SDL_Color GetColor(uint8_t byte);
     bool ReadScreen(BYTE* frame);
+    void RenderScreen();
 
 public:
     Snake(RAM* ram);
+    ~Snake();
 
-    void Run();
+    bool Run();
 };

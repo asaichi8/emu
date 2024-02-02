@@ -1,25 +1,28 @@
 #include "CPU.h"
-
+#include <thread>
 CPU::CPU(RAM* ram) : m_RAM(ram)
 {
     this->Reset();
 }
 
-
+#include <iostream>
 /// @brief Starts running the CPU (https://en.wikipedia.org/wiki/Instruction_cycle)
 void CPU::Run(std::function<void()> callbackFunc)
 {
-    while (true)
-    {
-        if (callbackFunc)
-            callbackFunc();
+    if (callbackFunc)
+        callbackFunc();
 
-        m_curOpcode = m_RAM->ReadByte(reg.program_counter);
-        reg.program_counter++;
-        
-        Execute(instructions[m_curOpcode]);
-        m_nCycles += m_curCycles;
-    }
+    m_curOpcode = m_RAM->ReadByte(reg.program_counter);
+    reg.program_counter++;
+    
+    /*if (reg.program_counter == 0x6cf) // if we're currently drawing a new frame (snake)
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));*/
+
+    /*if (!reg.program_counter)
+        std::cout << "lastopcode:" << std::hex << reg.program_counter << std::endl;*/
+
+    Execute(instructions[m_curOpcode]);
+    m_nCycles += m_curCycles;
 }
 
 

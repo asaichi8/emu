@@ -43,12 +43,12 @@ void SDLApp::SetupWindow(const std::string& windowName, int w, int h, int scale)
 
 void SDLApp::SetupRenderer(int scale)
 {
-    m_Renderer = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-
+    m_Renderer = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_ACCELERATED);
+    
     if (!m_Renderer) 
         throw std::runtime_error(std::string("Failed to init renderer: ") + SDL_GetError());
 
-    SDL_RenderSetScale(m_Renderer, scale, scale);
+    //SDL_RenderSetScale(m_Renderer, scale, scale);
 }
 
 void SDLApp::SetupTexture(int w, int h)
@@ -58,6 +58,7 @@ void SDLApp::SetupTexture(int w, int h)
     if (!m_Texture) 
         throw std::runtime_error(std::string("Failed to init texture: ") + SDL_GetError());
 }
+
 
 
 SDL_Window* SDLApp::GetWindow()
@@ -73,4 +74,64 @@ SDL_Renderer* SDLApp::GetRenderer()
 SDL_Texture* SDLApp::GetTexture()
 {
     return m_Texture;
+}
+
+
+void SDLApp::InitImGui() 
+{
+    if (!m_Window || !m_Renderer)       
+        throw std::runtime_error("no window or renderer");
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+    ImGui_ImplSDL2_InitForSDLRenderer(
+        m_Window,
+        m_Renderer
+    );
+    ImGui_ImplSDLRenderer2_Init(m_Renderer);
+}
+
+void SDLApp::StartImGuiFrame() 
+{
+    ImGui_ImplSDLRenderer2_NewFrame();
+    ImGui_ImplSDL2_NewFrame(m_Window);
+
+    ImGui::NewFrame();
+    if (ImGui::BeginMainMenuBar()) {
+        
+        if (ImGui::BeginMenu("Debug")) 
+        {
+            if (ImGui::MenuItem(shouldCPURun ? "Pause" : "Resume")) 
+            {
+                shouldCPURun = !shouldCPURun;
+            }
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMainMenuBar();
+    }
+    if (shouldCPURun) 
+    {
+        ImGui::Begin("Hello World Window", &shouldCPURun); 
+
+        ImGui::Text("Hello World!");
+
+        ImGui::End();
+    }
+
+    ImGui::Render();
+}
+
+void SDLApp::RenderImGuiFrame() 
+{
+    ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
+}
+
+void SDLApp::ShutdownImGui() 
+{
+    ImGui_ImplSDLRenderer2_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
 }
