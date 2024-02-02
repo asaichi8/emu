@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <iostream>
 
-#include "../../include/typedefs.h"
+#include "typedefs.h"
 
 class Loader
 {

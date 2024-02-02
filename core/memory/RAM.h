@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "../../include/typedefs.h"
+#include "typedefs.h"
 
 
 class RAM

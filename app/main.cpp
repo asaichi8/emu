@@ -1,10 +1,10 @@
 #include <thread>
 #include <filesystem>
 
-#include "../core/loader/Loader.h"
-#include "../core/memory/RAM.h"
-#include "../core/cpu/CPU.h"
-#include "../core/ppu/PPU.h"
+#include "Loader.h"
+#include "RAM.h"
+#include "CPU.h"
+#include "PPU.h"
 #include "Snake.h"
 
 #define KB 1024

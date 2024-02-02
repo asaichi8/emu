@@ -1,4 +1,4 @@
-#include "../memory/RAM.h"
+#include "RAM.h"
 
 class PPU
 {

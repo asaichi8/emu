@@ -1,7 +1,5 @@
 #include "CPU.h"
 
-#include <iostream>
-
 CPU::CPU(RAM* ram) : m_RAM(ram)
 {
     this->Reset();
@@ -12,7 +10,7 @@ CPU::CPU(RAM* ram) : m_RAM(ram)
 void CPU::Run(std::function<void()> callbackFunc)
 {
     while (true)
-    { //test
+    {
         if (callbackFunc)
             callbackFunc();
 

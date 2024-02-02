@@ -1,4 +1,4 @@
-#include "../core/memory/RAM.h"
+#include "RAM.h"
 #include "SDL/SDLApp.h"
 
 #define UP_KEY      0x77

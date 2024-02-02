@@ -5,8 +5,8 @@
 #include <bitset>
 #include <functional>
 #include "CPURegisters.h"
-#include "../memory/RAM.h"
-#include "../../include/typedefs.h"
+#include "RAM.h"
+#include "typedefs.h"
 
 #define MODE(addressingMode) WORD addressingMode()
 #define OPCODE(opcodeName) void opcodeName(WORD addr)
