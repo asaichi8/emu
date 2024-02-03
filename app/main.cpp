@@ -42,7 +42,11 @@ void GameLoop(Snake& snake, CPU& cpu, RAM& ram, std::unique_ptr<SnakeGUI>& gui, 
         }
 
         snake.Run(screenBuffer);
-        
+
+        if (gui->GetShouldReadRegisters()) 
+        {
+            gui->UpdateRegisters(cpu.ReadRegisters());
+        }
         gui->RenderFrame(screenBuffer, SIZE);
 
         if (gui->GetShouldCPURun()) 
@@ -52,15 +56,14 @@ void GameLoop(Snake& snake, CPU& cpu, RAM& ram, std::unique_ptr<SnakeGUI>& gui, 
             InitializeRAM(ram);
             cpu.Reset();
             LoadProgramIntoRAM(ram, PROGRAM_PATH);
-
             gui->SetShouldRestart(false);
         }
         if (gui->GetShouldStepThrough())
         {
-            
-
+            cpu.Run();
             gui->SetShouldStepThrough(false);
         }
+        
 
         //std::this_thread::sleep_for(std::chrono::microseconds(50));
     }

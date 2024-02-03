@@ -40,16 +40,54 @@ void SnakeGUI::StartImGuiFrame()
             }
             ImGui::EndMenu();
         }
+
         if (ImGui::BeginMenu("Debug")) 
         {
             if (ImGui::MenuItem(shouldCPURun ? "Pause" : "Resume")) 
             {
                 shouldCPURun = !shouldCPURun;
             }
+            if (ImGui::MenuItem(shouldReadRegisters ? "Hide registers" : "Display registers"))
+            {
+                shouldReadRegisters = !shouldReadRegisters;
+            }
+            if (!shouldCPURun)
+            {
+                if (ImGui::MenuItem("Step through")) 
+                {
+                    shouldStepThrough = true;
+                }
+            }
             ImGui::EndMenu();
         }
 
         ImGui::EndMainMenuBar();
+    }
+
+    if (shouldReadRegisters)
+    {
+        static const ImVec4 green = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+        static const ImVec4 red   = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+
+        ImGui::Begin("CPU", &shouldReadRegisters, ImGuiWindowFlags_AlwaysAutoResize);
+        
+        ImGui::Text("PC: 0x%04X", m_curRegisters.program_counter);
+        ImGui::Text("SP: 0x%02X", m_curRegisters.stack_pointer);
+        ImGui::Text("A:  0x%02X", m_curRegisters.accumulator);
+        ImGui::Text("X:  0x%02X", m_curRegisters.X);
+        ImGui::Text("Y:  0x%02X", m_curRegisters.Y);
+        ImGui::Separator();
+        ImGui::TextColored(m_curRegisters.status_register.test(StatusRegisterFlags::CARRY) ? green : red, "C"); ImGui::SameLine();
+        ImGui::TextColored(m_curRegisters.status_register.test(StatusRegisterFlags::ZERO) ? green : red, "Z"); ImGui::SameLine();
+        ImGui::TextColored(m_curRegisters.status_register.test(StatusRegisterFlags::INTERRUPT_REQUEST) ? green : red, "I"); ImGui::SameLine();
+        ImGui::TextColored(m_curRegisters.status_register.test(StatusRegisterFlags::DECIMAL_MODE) ? green : red, "D"); ImGui::SameLine();
+        ImGui::TextColored(m_curRegisters.status_register.test(StatusRegisterFlags::BREAK_COMMAND) ? green : red, "B"); ImGui::SameLine();
+        ImGui::TextColored(m_curRegisters.status_register.test(StatusRegisterFlags::UNUSED) ? green : red, "U"); ImGui::SameLine();
+        ImGui::TextColored(m_curRegisters.status_register.test(StatusRegisterFlags::OVERFLOW) ? green : red, "O"); ImGui::SameLine();
+        ImGui::TextColored(m_curRegisters.status_register.test(StatusRegisterFlags::NEGATIVE) ? green : red, "N");
+        
+        ImGui::End();
+            
     }
 
     ImGui::Render();

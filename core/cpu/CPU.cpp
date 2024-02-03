@@ -14,9 +14,6 @@ void CPU::Run()
     /*if (reg.program_counter == 0x6cf) // if we're currently drawing a new frame (snake)
         std::this_thread::sleep_for(std::chrono::milliseconds(50));*/
 
-    /*if (!reg.program_counter)
-        std::cout << "lastopcode:" << std::hex << reg.program_counter << std::endl;*/
-
     Execute(instructions[m_curOpcode]);
     m_nCycles += m_curCycles;
 }

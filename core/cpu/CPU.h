@@ -178,4 +178,5 @@ public:
     void Reset();
     void IRQ();
     void NMI();
+    const CPURegisters& ReadRegisters() const { return reg; }
 };
