@@ -1,65 +1,71 @@
 #include <thread>
 #include <filesystem>
-
+#include <memory>
 #include "Loader.h"
 #include "RAM.h"
 #include "CPU.h"
 #include "PPU.h"
 #include "Snake.h"
-#include "SDLApp.h"
+#include "SnakeGUI.h"
 
-#define KB 1024
+constexpr size_t KB = 1024;
+constexpr size_t CPU_RAM_SIZE = 64 * KB;
+constexpr WORD START_ADDR = 0x0600;
+constexpr char PROGRAM_PATH[] = "/home/pai/github/emu/app/snake.bin";
+constexpr int FRAME_DELAY_MICROSECONDS = 50;
 
-int main()
+void LoadProgramIntoRAM(RAM& ram, const std::string& filepath) 
 {
-    constexpr size_t CPU_RAM_SIZE = 64*KB;
-    constexpr WORD START_ADDR = 0x0600;
+    auto bytes = Loader::LoadFile(filepath);
     
-    RAM ram(CPU_RAM_SIZE);
-    ram.WriteWord(CPU::RESET_VECTOR, START_ADDR); // start the program at specific mem location
-    CPU cpu(&ram);
-    //PPU ppu(&ram);
-    
-    auto bytes = Loader::LoadFile("/home/pai/github/emu/app/snake.bin");
-
-    // map program directly into memory
-    for (int i = 0; i < bytes.size(); ++i)
+    for (size_t i = 0; i < bytes.size(); ++i) 
     {
-        ram.WriteByte((WORD)(START_ADDR + i), bytes.at(i));
+        ram.WriteByte(START_ADDR + i, bytes[i]);
     }
+}
 
-    Snake snake(&ram);
+void InitializeRAM(RAM& ram) 
+{
+    ram.WriteWord(CPU::RESET_VECTOR, START_ADDR);
+}
+
+void GameLoop(Snake& snake, CPU& cpu, std::unique_ptr<SnakeGUI>& gui, BYTE* screenBuffer) 
+{
+    SDL_Event event;
     
-    std::unique_ptr<SDLApp> m_app = std::make_unique<SDLApp>("Snake", SIZE, SIZE, SCALE);
-    uint8_t m_Screen[SIZE * SIZE * 3]{};
-    SDL_Event e{};
-    m_app->InitImGui();
-    while (true)
+    while (true) 
     {
-        while (SDL_PollEvent(&e))
+        while (SDL_PollEvent(&event)) 
         {
-            ImGui_ImplSDL2_ProcessEvent(&e);
-            snake.HandleEvent(e);
+            ImGui_ImplSDL2_ProcessEvent(&event);
+            snake.HandleEvent(event);
         }
 
-        snake.Run(m_Screen);
-
-        // render gui
-        SDL_RenderClear(m_app->GetRenderer());
+        snake.Run(screenBuffer);
         
-        SDL_UpdateTexture(m_app->GetTexture(), NULL, m_Screen, SIZE * 3);
-        SDL_RenderCopy(m_app->GetRenderer(), m_app->GetTexture(), NULL, NULL);
-        m_app->StartImGuiFrame();
-        m_app->RenderImGuiFrame();
+        gui->RenderFrame(screenBuffer, SIZE);
 
-        SDL_RenderPresent(m_app->GetRenderer());
-
-        if (m_app->GetShouldCPURun())
+        if (gui->GetShouldCPURun()) 
             cpu.Run();
 
-        std::this_thread::sleep_for(std::chrono::microseconds(50));
+        //std::this_thread::sleep_for(std::chrono::microseconds(50));
     }
-    m_app->ShutdownImGui();
+}
+
+int main() 
+{
+    RAM ram(CPU_RAM_SIZE);
+    InitializeRAM(ram);
+    CPU cpu(&ram);
+    LoadProgramIntoRAM(ram, PROGRAM_PATH);
+
+    Snake snake(&ram);
+    std::unique_ptr<SnakeGUI> gui = std::make_unique<SnakeGUI>(SIZE, SIZE, SCALE);
+    BYTE screenBuffer[SIZE * SIZE * 3]{};
+
+    gui->InitImGui();
+    GameLoop(snake, cpu, gui, screenBuffer);
+    gui->ShutdownImGui();
 
     return 0;
 }
