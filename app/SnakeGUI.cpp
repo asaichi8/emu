@@ -32,6 +32,14 @@ void SnakeGUI::StartImGuiFrame()
 
     if (ImGui::BeginMainMenuBar()) 
     {
+        if (ImGui::BeginMenu("File")) 
+        {
+            if (ImGui::MenuItem("Restart")) 
+            {
+                shouldRestart = true;
+            }
+            ImGui::EndMenu();
+        }
         if (ImGui::BeginMenu("Debug")) 
         {
             if (ImGui::MenuItem(shouldCPURun ? "Pause" : "Resume")) 
@@ -57,11 +65,6 @@ void SnakeGUI::ShutdownImGui()
     ImGui_ImplSDLRenderer2_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
-}
-
-bool SnakeGUI::GetShouldCPURun() 
-{ 
-    return shouldCPURun; 
 }
 
 void SnakeGUI::RenderFrame(uint8_t* screenBuffer, int size)

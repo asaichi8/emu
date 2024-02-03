@@ -6,6 +6,8 @@
 class SnakeGUI : public SDLApp
 {
     bool shouldCPURun = true;
+    bool shouldRestart = false;
+    bool shouldStepThrough = false;
 
     void StartImGuiFrame();
     void RenderImGuiFrame();
@@ -17,5 +19,10 @@ public:
     void RenderFrame(uint8_t* screenBuffer, int size);
     void ShutdownImGui();
 
-    bool GetShouldCPURun();
+    bool GetShouldCPURun() { return shouldCPURun; }
+    bool GetShouldRestart() { return shouldRestart; }
+    void SetShouldRestart(bool b) { shouldRestart = b; }
+
+    bool GetShouldStepThrough() { return shouldStepThrough; }
+    void SetShouldStepThrough(bool b) { shouldStepThrough = b; }
 };

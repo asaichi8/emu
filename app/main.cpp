@@ -29,7 +29,7 @@ void InitializeRAM(RAM& ram)
     ram.WriteWord(CPU::RESET_VECTOR, START_ADDR);
 }
 
-void GameLoop(Snake& snake, CPU& cpu, std::unique_ptr<SnakeGUI>& gui, BYTE* screenBuffer) 
+void GameLoop(Snake& snake, CPU& cpu, RAM& ram, std::unique_ptr<SnakeGUI>& gui, BYTE* screenBuffer) 
 {
     SDL_Event event;
     
@@ -47,6 +47,20 @@ void GameLoop(Snake& snake, CPU& cpu, std::unique_ptr<SnakeGUI>& gui, BYTE* scre
 
         if (gui->GetShouldCPURun()) 
             cpu.Run();
+        if (gui->GetShouldRestart())
+        {
+            InitializeRAM(ram);
+            cpu.Reset();
+            LoadProgramIntoRAM(ram, PROGRAM_PATH);
+
+            gui->SetShouldRestart(false);
+        }
+        if (gui->GetShouldStepThrough())
+        {
+            
+
+            gui->SetShouldStepThrough(false);
+        }
 
         //std::this_thread::sleep_for(std::chrono::microseconds(50));
     }
@@ -64,7 +78,7 @@ int main()
     BYTE screenBuffer[SIZE * SIZE * 3]{};
 
     gui->InitImGui();
-    GameLoop(snake, cpu, gui, screenBuffer);
+    GameLoop(snake, cpu, ram, gui, screenBuffer);
     gui->ShutdownImGui();
 
     return 0;
