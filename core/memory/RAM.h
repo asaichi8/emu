@@ -25,12 +25,13 @@ public:
 
 class Bus : public RAM
 {
-    std::vector<BYTE> m_RAM;
+    std::vector<BYTE> m_RAM{};
 
 public:
     Bus()
     {
         m_RAM.resize(64 * 1024);
+        Reset();
     }
 
     BYTE ReadByte(WORD addr)
@@ -83,5 +84,10 @@ public:
 
         m_RAM[effectiveAddr] = BYTE(val & 0x00FF); // set low byte
         m_RAM[effectiveAddr + 1] = BYTE((val >> 8) & 0xFF); // set high byte
+    }
+
+    void Reset()
+    {
+        std::fill(m_RAM.begin(), m_RAM.end(), 0);
     }
 };

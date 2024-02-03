@@ -38,7 +38,7 @@ void CPU::Reset()
     // "This reset sequence lasts for seven clock cycles and after this, the computer will be usable. "
     m_nCycles += 7;
 
-    //m_Bus->Reset();
+    m_Bus->Reset();
 }
 
 
