@@ -8,6 +8,8 @@
 #include "Snake.h"
 #include "SnakeGUI.h"
 
+#include "ROM.h"
+
 constexpr size_t KB = 1024;
 constexpr size_t CPU_RAM_SIZE = 64 * KB;
 constexpr WORD START_ADDR = 0x0600;
@@ -71,6 +73,10 @@ void GameLoop(Snake& snake, CPU& cpu, RAM& ram, std::unique_ptr<SnakeGUI>& gui, 
 
 int main() 
 {
+    ROM rom;
+    std::cout << rom.LoadROM("/home/pai/Downloads/nestest.nes") << std::endl;
+    return 0;
+
     RAM ram(CPU_RAM_SIZE);
     InitializeRAM(ram);
     CPU cpu(&ram);
