@@ -174,7 +174,7 @@ public:
     // http://www.6502.org/users/obelisk/6502/reference.html#BRK : "IRQ interrupt vector at $FFFE/F"   
     static const WORD IRQ_VECTOR = 0xFFFE;
 
-    void Run(std::function<void()> callbackFunc = nullptr);
+    void Run();
     void Reset();
     void IRQ();
     void NMI();

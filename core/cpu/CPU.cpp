@@ -5,13 +5,9 @@ CPU::CPU(RAM* ram) : m_RAM(ram)
     this->Reset();
 }
 
-#include <iostream>
 /// @brief Starts running the CPU (https://en.wikipedia.org/wiki/Instruction_cycle)
-void CPU::Run(std::function<void()> callbackFunc)
+void CPU::Run()
 {
-    if (callbackFunc)
-        callbackFunc();
-
     m_curOpcode = m_RAM->ReadByte(reg.program_counter);
     reg.program_counter++;
     
