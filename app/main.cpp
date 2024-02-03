@@ -6,6 +6,7 @@
 #include "CPU.h"
 #include "PPU.h"
 #include "Snake.h"
+#include "SDLApp.h"
 
 #define KB 1024
 
@@ -29,12 +30,36 @@ int main()
 
     Snake snake(&ram);
     
+    std::unique_ptr<SDLApp> m_app = std::make_unique<SDLApp>("Snake", SIZE, SIZE, SCALE);
+    uint8_t m_Screen[SIZE * SIZE * 3]{};
+    SDL_Event e{};
+    m_app->InitImGui();
     while (true)
     {
-        std::this_thread::sleep_for(std::chrono::microseconds(50));
-        if (snake.Run())
+        while (SDL_PollEvent(&e))
+        {
+            ImGui_ImplSDL2_ProcessEvent(&e);
+            snake.HandleEvent(e);
+        }
+
+        snake.Run(m_Screen);
+
+        // render gui
+        SDL_RenderClear(m_app->GetRenderer());
+        
+        SDL_UpdateTexture(m_app->GetTexture(), NULL, m_Screen, SIZE * 3);
+        SDL_RenderCopy(m_app->GetRenderer(), m_app->GetTexture(), NULL, NULL);
+        m_app->StartImGuiFrame();
+        m_app->RenderImGuiFrame();
+
+        SDL_RenderPresent(m_app->GetRenderer());
+
+        if (m_app->GetShouldCPURun())
             cpu.Run();
+
+        std::this_thread::sleep_for(std::chrono::microseconds(50));
     }
+    m_app->ShutdownImGui();
 
     return 0;
 }

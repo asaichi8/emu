@@ -1,5 +1,5 @@
 #include "RAM.h"
-#include "SDL/SDLApp.h"
+#include <SDL2/SDL.h>
 
 #define UP_KEY      0x77
 #define DOWN_KEY    0x73
@@ -18,18 +18,15 @@
 class Snake
 {
     RAM* m_RAM{};
-    std::unique_ptr<SDLApp> m_app = nullptr;
-    uint8_t m_Screen[SIZE * SIZE * 3]{};
     SDL_Event m_Event{};
 
-    void HandleInput(SDL_Event &e);
     SDL_Color GetColor(uint8_t byte);
     bool ReadScreen(BYTE* frame);
-    void RenderScreen();
 
 public:
     Snake(RAM* ram);
     ~Snake();
 
-    bool Run();
+    bool Run(BYTE* m_Screen);
+    void HandleEvent(const SDL_Event& e);
 };
