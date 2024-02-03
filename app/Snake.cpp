@@ -1,6 +1,6 @@
 #include "Snake.h"
 
-Snake::Snake(RAM* ram) : m_RAM(ram)
+Snake::Snake(Bus* bus_ptr) : m_Bus(bus_ptr)
 {
 
 }
@@ -15,7 +15,7 @@ bool Snake::Run(BYTE* m_Screen)
 {
     HandleEvent(m_Event);
 
-    m_RAM->WriteByte(RNG_POS, (BYTE)(rand() % 14) + 1);
+    m_Bus->WriteByte(RNG_POS, (BYTE)(rand() % 14) + 1);
 
     return ReadScreen(m_Screen);
 }
@@ -28,16 +28,16 @@ void Snake::HandleEvent(const SDL_Event& e)
         switch (e.key.keysym.sym) 
         {
             case SDLK_w:
-                m_RAM->WriteByte(DIR_POS, UP_KEY);
+                m_Bus->WriteByte(DIR_POS, UP_KEY);
                 break;
             case SDLK_s:
-                m_RAM->WriteByte(DIR_POS, DOWN_KEY);
+                m_Bus->WriteByte(DIR_POS, DOWN_KEY);
                 break;
             case SDLK_a:
-                m_RAM->WriteByte(DIR_POS, LEFT_KEY);
+                m_Bus->WriteByte(DIR_POS, LEFT_KEY);
                 break;
             case SDLK_d:
-                m_RAM->WriteByte(DIR_POS, RIGHT_KEY);
+                m_Bus->WriteByte(DIR_POS, RIGHT_KEY);
                 break;
             default:
                 break;
@@ -76,7 +76,7 @@ bool Snake::ReadScreen(BYTE* szFrame)
 
     for (WORD addr = SCREEN_START; addr < SCREEN_END; ++addr) 
     {
-        SDL_Color color = GetColor(m_RAM->ReadByte(addr));
+        SDL_Color color = GetColor(m_Bus->ReadByte(addr));
 
         if (szFrame[frame_i] != color.r || szFrame[frame_i + 1] != color.g || szFrame[frame_i + 2] != color.b) 
         {

@@ -13,7 +13,7 @@
 
 class CPU
 {
-    RAM* m_RAM = nullptr;
+    Bus* m_Bus{};
     CPURegisters reg{};
     BYTE m_curOpcode{};
     DWORD m_curCycles{};
@@ -165,7 +165,7 @@ class CPU
     void Execute(const Instruction& instruction);
 
 public:
-    CPU(RAM* ram);
+    CPU(Bus* bus_ptr);
 
     // https://www.pagetable.com/?p=410
     static const WORD NMI_VECTOR = 0xFFFA;

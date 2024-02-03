@@ -1,6 +1,6 @@
 #include "CPU.h"
 #include <thread>
-CPU::CPU(RAM* ram) : m_RAM(ram)
+CPU::CPU(Bus* bus_ptr) : m_Bus(bus_ptr)
 {
     this->Reset();
 }
@@ -8,7 +8,7 @@ CPU::CPU(RAM* ram) : m_RAM(ram)
 /// @brief Starts running the CPU (https://en.wikipedia.org/wiki/Instruction_cycle)
 void CPU::Run()
 {
-    m_curOpcode = m_RAM->ReadByte(reg.program_counter);
+    m_curOpcode = m_Bus->ReadByte(reg.program_counter);
     reg.program_counter++;
     
     /*if (reg.program_counter == 0x6cf) // if we're currently drawing a new frame (snake)
@@ -22,7 +22,7 @@ void CPU::Run()
 /// @brief Resets the processor to a known state.
 void CPU::Reset()
 {
-    reg.program_counter = m_RAM->ReadWord(RESET_VECTOR); 
+    reg.program_counter = m_Bus->ReadWord(RESET_VECTOR); 
     reg.accumulator = 0;
     reg.X = 0;
     reg.Y = 0;
@@ -38,7 +38,7 @@ void CPU::Reset()
     // "This reset sequence lasts for seven clock cycles and after this, the computer will be usable. "
     m_nCycles += 7;
 
-    m_RAM->Reset();
+    //m_Bus->Reset();
 }
 
 
@@ -57,7 +57,7 @@ void CPU::IRQ()
 
     reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
 
-    reg.program_counter = m_RAM->ReadWord(IRQ_VECTOR);
+    reg.program_counter = m_Bus->ReadWord(IRQ_VECTOR);
 }
     
 void CPU::NMI()
@@ -71,7 +71,7 @@ void CPU::NMI()
 
     reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
 
-    reg.program_counter = m_RAM->ReadWord(NMI_VECTOR);
+    reg.program_counter = m_Bus->ReadWord(NMI_VECTOR);
 }
 
 
@@ -95,7 +95,7 @@ void CPU::Execute(const Instruction& instruction)
 /// @param val Byte to be pushed.
 void CPU::PushStackByte(BYTE val)
 {
-    m_RAM->WriteByte(STACK + reg.stack_pointer, val);
+    m_Bus->WriteByte(STACK + reg.stack_pointer, val);
 
     reg.stack_pointer--;
 }
@@ -106,7 +106,7 @@ BYTE CPU::PopStackByte()
 {
     reg.stack_pointer++;
 
-    return m_RAM->ReadByte(STACK + reg.stack_pointer);
+    return m_Bus->ReadByte(STACK + reg.stack_pointer);
 }
 
 

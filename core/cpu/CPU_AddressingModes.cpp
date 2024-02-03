@@ -32,7 +32,7 @@ WORD CPU::ACC()
 /// @brief Takes a two-byte address as an operand (e.g. JMP $3000.)
 WORD CPU::ABS() 
 {
-    WORD addr = m_RAM->ReadWord(reg.program_counter);
+    WORD addr = m_Bus->ReadWord(reg.program_counter);
     reg.program_counter += 2;
 
     return addr;
@@ -79,16 +79,16 @@ WORD CPU::IND()
     // https://atariwiki.org/wiki/Wiki.jsp?page=6502%20bugs
     // "An indirect JMP (xxFF) will fail because the MSB will be fetched from address xx00 instead of page xx+1."
     if (SIMULATE_BUGS)
-        return m_RAM->ReadWord(addr, true);
+        return m_Bus->ReadWord(addr, true);
 
-    return m_RAM->ReadWord(addr);
+    return m_Bus->ReadWord(addr);
 }
 
 // RELATIVE
 /// @brief Takes a single operand containing a signed 8-bit number (ranging from -128 to +127) as a label.
 WORD CPU::REL()
 {
-    WORD addr = m_RAM->ReadByte(reg.program_counter); // read the offset
+    WORD addr = m_Bus->ReadByte(reg.program_counter); // read the offset
     reg.program_counter++;
 
     int8_t offset = (int8_t)addr;
@@ -102,7 +102,7 @@ WORD CPU::REL()
 ///        (e.g. DEC $5F would decrement the byte found at $005F by one.)
 WORD CPU::ZPG()
 {
-    return m_RAM->ReadByte(reg.program_counter++); // increment program counter AFTER reading
+    return m_Bus->ReadByte(reg.program_counter++); // increment program counter AFTER reading
 }
 // ZERO PAGE, X
 WORD CPU::ZPX()
@@ -126,10 +126,10 @@ WORD CPU::IZY()
         Y = 0x40
     */
 
-    WORD zpAddrLow = m_RAM->ReadByte(reg.program_counter); // Read supplied ZP address, result: 0x60 (low byte of effective address)
+    WORD zpAddrLow = m_Bus->ReadByte(reg.program_counter); // Read supplied ZP address, result: 0x60 (low byte of effective address)
     reg.program_counter++; // Increment PC: it's now 0x1001
 
-    WORD addr = m_RAM->ReadWord(zpAddrLow, true); // Read word at 0x60-0x61 (0x7000). 
+    WORD addr = m_Bus->ReadWord(zpAddrLow, true); // Read word at 0x60-0x61 (0x7000). 
     WORD result = addr + reg.Y; // Add Y for a final result of 0x7040.
 
     //  An additional clock cycle is used when the result of the operation is on a new page.
@@ -141,9 +141,9 @@ WORD CPU::IZY()
 // INDEXED INDIRECT
 WORD CPU::IZX()
 {
-    WORD zpAddrLow = m_RAM->ReadByte(reg.program_counter);
+    WORD zpAddrLow = m_Bus->ReadByte(reg.program_counter);
     reg.program_counter++;
 
     WORD addr = (zpAddrLow + reg.X) & 0x00FF; // add X and wrap around
-    return m_RAM->ReadWord(addr, true);
+    return m_Bus->ReadWord(addr, true);
 }

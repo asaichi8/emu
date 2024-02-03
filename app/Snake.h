@@ -19,14 +19,14 @@
 
 class Snake
 {
-    RAM* m_RAM{};
+    Bus* m_Bus{};
     SDL_Event m_Event{};
 
     SDL_Color GetColor(uint8_t byte);
     bool ReadScreen(BYTE* frame);
 
 public:
-    Snake(RAM* ram);
+    Snake(Bus* bus_ptr);
     ~Snake();
 
     bool Run(BYTE* m_Screen);

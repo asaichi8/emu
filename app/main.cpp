@@ -2,7 +2,7 @@
 #include <filesystem>
 #include <memory>
 #include "Loader.h"
-#include "RAM.h"
+#include "CPUmem.h"
 #include "CPU.h"
 #include "PPU.h"
 #include "Snake.h"
@@ -16,22 +16,22 @@ constexpr WORD START_ADDR = 0x0600;
 constexpr char PROGRAM_PATH[] = "/home/pai/github/emu/app/snake.bin";
 constexpr int FRAME_DELAY_MICROSECONDS = 50;
 
-void LoadProgramIntoRAM(RAM& ram, const std::string& filepath) 
+void LoadProgramIntoRAM(Bus* bus, const std::string& filepath) 
 {
     auto bytes = Loader::LoadFile(filepath);
     
     for (size_t i = 0; i < bytes.size(); ++i) 
     {
-        ram.WriteByte(START_ADDR + i, bytes[i]);
+        bus->WriteByte(START_ADDR + i, bytes[i]);
     }
 }
 
-void InitializeRAM(RAM& ram) 
+void InitializeRAM(Bus* bus) 
 {
-    ram.WriteWord(CPU::RESET_VECTOR, START_ADDR);
+    bus->WriteWord(CPU::RESET_VECTOR, START_ADDR);
 }
 
-void GameLoop(Snake& snake, CPU& cpu, RAM& ram, std::unique_ptr<SnakeGUI>& gui, BYTE* screenBuffer) 
+void GameLoop(Snake& snake, CPU& cpu, Bus* bus, std::unique_ptr<SnakeGUI>& gui, BYTE* screenBuffer) 
 {
     SDL_Event event;
     
@@ -55,9 +55,9 @@ void GameLoop(Snake& snake, CPU& cpu, RAM& ram, std::unique_ptr<SnakeGUI>& gui, 
             cpu.Run();
         if (gui->GetShouldRestart())
         {
-            InitializeRAM(ram);
+            InitializeRAM(bus);
             cpu.Reset();
-            LoadProgramIntoRAM(ram, PROGRAM_PATH);
+            LoadProgramIntoRAM(bus, PROGRAM_PATH);
             gui->SetShouldRestart(false);
         }
         if (gui->GetShouldStepThrough())
@@ -73,21 +73,17 @@ void GameLoop(Snake& snake, CPU& cpu, RAM& ram, std::unique_ptr<SnakeGUI>& gui, 
 
 int main() 
 {
-    ROM rom;
-    std::cout << rom.LoadROM("/home/pai/Downloads/nestest.nes") << std::endl;
-    return 0;
+    Bus bus;
+    InitializeRAM(&bus);
+    CPU cpu(&bus);
+    LoadProgramIntoRAM(&bus, PROGRAM_PATH);
 
-    RAM ram(CPU_RAM_SIZE);
-    InitializeRAM(ram);
-    CPU cpu(&ram);
-    LoadProgramIntoRAM(ram, PROGRAM_PATH);
-
-    Snake snake(&ram);
+    Snake snake(&bus);
     std::unique_ptr<SnakeGUI> gui = std::make_unique<SnakeGUI>(SIZE, SIZE, SCALE);
     BYTE screenBuffer[SIZE * SIZE * 3]{};
 
     gui->InitImGui();
-    GameLoop(snake, cpu, ram, gui, screenBuffer);
+    GameLoop(snake, cpu, &bus, gui, screenBuffer);
     gui->ShutdownImGui();
 
     return 0;

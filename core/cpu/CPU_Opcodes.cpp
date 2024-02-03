@@ -31,7 +31,7 @@ CPU::Instruction CPU::instructions[256] = {
 /// @brief Loads value at the address into the accumulator.
 void CPU::LDA(WORD addr) 
 { 
-    reg.accumulator = m_RAM->ReadByte(addr);
+    reg.accumulator = m_Bus->ReadByte(addr);
     
     reg.CheckNegative(reg.accumulator);
     reg.CheckZero(reg.accumulator);
@@ -40,7 +40,7 @@ void CPU::LDA(WORD addr)
 /// @brief Loads value at the address into the X register.
 void CPU::LDX(WORD addr) 
 { 
-    reg.X = m_RAM->ReadByte(addr);
+    reg.X = m_Bus->ReadByte(addr);
     
     reg.CheckNegative(reg.X);
     reg.CheckZero(reg.X);
@@ -49,7 +49,7 @@ void CPU::LDX(WORD addr)
 /// @brief Loads value at the address into the Y register.
 void CPU::LDY(WORD addr) 
 { 
-    reg.Y = m_RAM->ReadByte(addr);
+    reg.Y = m_Bus->ReadByte(addr);
     
     reg.CheckNegative(reg.Y);
     reg.CheckZero(reg.Y);
@@ -60,19 +60,19 @@ void CPU::LDY(WORD addr)
 /// @brief Stores the value in the accumulator to the address.
 void CPU::STA(WORD addr) 
 { 
-    m_RAM->WriteByte(addr, reg.accumulator);
+    m_Bus->WriteByte(addr, reg.accumulator);
 }
 
 /// @brief Stores the value in the X register to the address.
 void CPU::STX(WORD addr) 
 { 
-    m_RAM->WriteByte(addr, reg.X);
+    m_Bus->WriteByte(addr, reg.X);
 }
 
 /// @brief Stores the value in the Y register to the address.
 void CPU::STY(WORD addr) 
 { 
-    m_RAM->WriteByte(addr, reg.Y);
+    m_Bus->WriteByte(addr, reg.Y);
 }
 
 
@@ -80,13 +80,13 @@ void CPU::STY(WORD addr)
 /// @brief Increment the stored value at a given address by one.
 void CPU::INC(WORD addr) 
 { 
-    BYTE val = m_RAM->ReadByte(addr);
+    BYTE val = m_Bus->ReadByte(addr);
     val++;
 
     reg.CheckNegative(val);
     reg.CheckZero(val);
 
-    m_RAM->WriteByte(addr, val);
+    m_Bus->WriteByte(addr, val);
 }
 
 /// @brief Increment the value in the X register.
@@ -112,13 +112,13 @@ void CPU::INY(WORD addr)
 /// @brief Decrement the stored value at a given address by one.
 void CPU::DEC(WORD addr) 
 { 
-    BYTE val = m_RAM->ReadByte(addr);
+    BYTE val = m_Bus->ReadByte(addr);
     val--;
 
     reg.CheckNegative(val);
     reg.CheckZero(val);
         
-    m_RAM->WriteByte(addr, val);
+    m_Bus->WriteByte(addr, val);
 }
 
 /// @brief Decrement the value in the X register.
@@ -145,7 +145,7 @@ void CPU::DEY(WORD addr)
 ///        Stores the result in the accumulator.
 void CPU::ADC(WORD addr) 
 { 
-    BYTE val = m_RAM->ReadByte(addr);
+    BYTE val = m_Bus->ReadByte(addr);
 
     WORD added16 = val + reg.accumulator; // add values together
     
@@ -178,7 +178,7 @@ void CPU::ADC(WORD addr)
 ///        Stores the result in the accumulator.
 void CPU::SBC(WORD addr) 
 { 
-    BYTE val = m_RAM->ReadByte(addr);
+    BYTE val = m_Bus->ReadByte(addr);
 
     WORD negated16 = reg.accumulator - val; // negate values
 
@@ -211,7 +211,7 @@ void CPU::SBC(WORD addr)
 ///        Sets the carry, zero and negative bits in the status register accordingly.
 void CPU::CMP(WORD addr) 
 { 
-    BYTE val = m_RAM->ReadByte(addr);
+    BYTE val = m_Bus->ReadByte(addr);
     WORD negated16 = reg.accumulator - val;
 
     BYTE result = negated16 & 0x00FF; // convert word to byte
@@ -225,7 +225,7 @@ void CPU::CMP(WORD addr)
 ///        Sets the carry, zero and negative bits in the status register accordingly.
 void CPU::CPX(WORD addr) 
 { 
-    BYTE val = m_RAM->ReadByte(addr);
+    BYTE val = m_Bus->ReadByte(addr);
     WORD negated16 = reg.X - val;
 
     BYTE result = negated16 & 0x00FF; // convert word to byte
@@ -239,7 +239,7 @@ void CPU::CPX(WORD addr)
 ///        Sets the carry, zero and negative bits in the status register accordingly.
 void CPU::CPY(WORD addr) 
 { 
-    BYTE val = m_RAM->ReadByte(addr);
+    BYTE val = m_Bus->ReadByte(addr);
     WORD negated16 = reg.Y - val;
 
     BYTE result = negated16 & 0x00FF; // convert word to byte
@@ -255,7 +255,7 @@ void CPU::CPY(WORD addr)
 ///        Updates the accumulator with the result.
 void CPU::AND(WORD addr) 
 { 
-    BYTE val = m_RAM->ReadByte(addr);
+    BYTE val = m_Bus->ReadByte(addr);
 
     BYTE result = val & reg.accumulator;
 
@@ -269,7 +269,7 @@ void CPU::AND(WORD addr)
 ///        Updates the accumulator with the result.
 void CPU::EOR(WORD addr) 
 { 
-    BYTE val = m_RAM->ReadByte(addr);
+    BYTE val = m_Bus->ReadByte(addr);
 
     BYTE result = val ^ reg.accumulator;
 
@@ -283,7 +283,7 @@ void CPU::EOR(WORD addr)
 ///        Updates the accumulator with the result.
 void CPU::ORA(WORD addr) 
 { 
-    BYTE val = m_RAM->ReadByte(addr);
+    BYTE val = m_Bus->ReadByte(addr);
 
     BYTE result = val | reg.accumulator;
 
@@ -298,7 +298,7 @@ void CPU::ORA(WORD addr)
 ///        Updates the zero and negative flags, and sets the overflow flag depending on the 6th bit.
 void CPU::BIT(WORD addr) 
 { 
-    BYTE val = m_RAM->ReadByte(addr);
+    BYTE val = m_Bus->ReadByte(addr);
 
     BYTE result = reg.accumulator & val;
 
@@ -480,7 +480,7 @@ void CPU::ASL(WORD addr)
     BYTE val{};
     bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP);
     
-    val = (isImplicit ? reg.accumulator : m_RAM->ReadByte(addr));
+    val = (isImplicit ? reg.accumulator : m_Bus->ReadByte(addr));
 
     // set carry flag if 7th bit (the one we're about to shift away) is set
     reg.status_register.set(StatusRegisterFlags::CARRY, val & 0x80);
@@ -493,7 +493,7 @@ void CPU::ASL(WORD addr)
     if (isImplicit)
         reg.accumulator = result;
     else
-        m_RAM->WriteByte(addr, result); // write value back to same location
+        m_Bus->WriteByte(addr, result); // write value back to same location
 }
 
 /// @brief Shifts the contents of the accumulator or memory location one bit to the right.
@@ -502,7 +502,7 @@ void CPU::LSR(WORD addr)
     BYTE val{};
     bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP);
 
-    val = (isImplicit ? reg.accumulator : m_RAM->ReadByte(addr));
+    val = (isImplicit ? reg.accumulator : m_Bus->ReadByte(addr));
 
     // set carry flag if 1st bit (the one we're about to shift away) is set
     reg.status_register.set(StatusRegisterFlags::CARRY, val & 0x01);
@@ -515,7 +515,7 @@ void CPU::LSR(WORD addr)
     if (isImplicit)
         reg.accumulator = result;
     else
-        m_RAM->WriteByte(addr, result); // write value back to same location
+        m_Bus->WriteByte(addr, result); // write value back to same location
 }
 
 /// @brief Rotates the contents of the accumulator or memory location to the left through the carry flag.
@@ -524,7 +524,7 @@ void CPU::ROL(WORD addr)
     BYTE val{};
     bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP);
     
-    val = (isImplicit ? reg.accumulator : m_RAM->ReadByte(addr));
+    val = (isImplicit ? reg.accumulator : m_Bus->ReadByte(addr));
 
     // shift to left while setting bit 0 to value of carry flag
     BYTE result = (val << 1) | reg.status_register.test(StatusRegisterFlags::CARRY);
@@ -539,7 +539,7 @@ void CPU::ROL(WORD addr)
     if (isImplicit)
         reg.accumulator = result;
     else
-        m_RAM->WriteByte(addr, result); // write value back to same location
+        m_Bus->WriteByte(addr, result); // write value back to same location
 }
 
 /// @brief Rotates the contents of the accumulator or memory location to the right through the carry flag.
@@ -548,7 +548,7 @@ void CPU::ROR(WORD addr)
     BYTE val{};
     bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP);
     
-    val = (isImplicit ? reg.accumulator : m_RAM->ReadByte(addr));
+    val = (isImplicit ? reg.accumulator : m_Bus->ReadByte(addr));
 
     // shift to left while setting bit 7 to value of carry flag
     BYTE result = (val >> 1) | (reg.status_register.test(StatusRegisterFlags::CARRY) << 7);
@@ -563,7 +563,7 @@ void CPU::ROR(WORD addr)
     if (isImplicit)
         reg.accumulator = result;
     else
-        m_RAM->WriteByte(addr, result); // write value back to same location
+        m_Bus->WriteByte(addr, result); // write value back to same location
 }
 
 
@@ -683,7 +683,7 @@ void CPU::BRK(WORD addr)
 
     reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
 
-    reg.program_counter = m_RAM->ReadWord(IRQ_VECTOR);
+    reg.program_counter = m_Bus->ReadWord(IRQ_VECTOR);
 }
 
 /// @brief No operation - does nothing but consume CPU cycles.
