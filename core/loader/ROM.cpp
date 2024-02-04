@@ -39,8 +39,16 @@ bool ROM::LoadROM(const std::string& filePath)
     size_t PRG_ROM_start = sizeof(iNES_Header) + ((header->flags6 & Flags6::HasTrainer) ? TRAINER_SIZE : 0);
     size_t CHR_ROM_start = PRG_ROM_start + (header->PRG_ROM_banks * PRG_ROM_BANK_SIZE);
 
-    PRG_ROM.assign(rawFile.begin() + PRG_ROM_start, rawFile.begin() + PRG_ROM_start + (header->PRG_ROM_banks * PRG_ROM_BANK_SIZE));
-    CHR_ROM.assign(rawFile.begin() + CHR_ROM_start, rawFile.begin() + CHR_ROM_start + (header->CHR_ROM_banks * CHR_ROM_BANK_SIZE));
+    auto PRG_begin = rawFile.begin() + PRG_ROM_start;
+    auto PRG_end   = rawFile.begin() + PRG_ROM_start + (header->PRG_ROM_banks * PRG_ROM_BANK_SIZE);
+    auto CHR_begin = rawFile.begin() + CHR_ROM_start;
+    auto CHR_end   = rawFile.begin() + CHR_ROM_start + (header->CHR_ROM_banks * CHR_ROM_BANK_SIZE);
+
+    PRG_ROM.assign(PRG_begin, PRG_end);
+    CHR_ROM.assign(CHR_begin, CHR_end); 
+
+    PRG_ROM = std::vector<BYTE>(PRG_begin, PRG_end);
+    CHR_ROM = std::vector<BYTE>(CHR_begin, CHR_end);
 
     return true;
 }

@@ -1,5 +1,6 @@
 #include <thread>
 #include <filesystem>
+#include <algorithm>
 #include <memory>
 #include "Loader.h"
 #include "CPU.h"
@@ -11,9 +12,10 @@
 
 constexpr size_t KB = 1024;
 constexpr size_t CPU_RAM_SIZE = 64 * KB;
-constexpr WORD START_ADDR = 0x0600;
+constexpr WORD START_ADDR = 0xC000;
 constexpr char PROGRAM_PATH[] = "/home/pai/github/emu/app/snake.bin";
 constexpr int FRAME_DELAY_MICROSECONDS = 50;
+constexpr int SCREEN_BUFFER_SIZE = SIZE * SIZE * 3;
 
 void LoadProgramIntoRAM(Bus* bus, const std::string& filepath) 
 {
@@ -45,18 +47,15 @@ void GameLoop(Snake& snake, CPU& cpu, Bus* bus, std::unique_ptr<SnakeGUI>& gui, 
         snake.Run(screenBuffer);
 
         if (gui->GetShouldReadRegisters()) 
-        {
             gui->UpdateRegisters(cpu.ReadRegisters());
-        }
+
         gui->RenderFrame(screenBuffer, SIZE);
 
         if (gui->GetShouldCPURun()) 
             cpu.Run();
         if (gui->GetShouldRestart())
         {
-            InitializeRAM(bus);
             cpu.Reset();
-            LoadProgramIntoRAM(bus, PROGRAM_PATH);
             gui->SetShouldRestart(false);
         }
         if (gui->GetShouldStepThrough())
@@ -72,14 +71,15 @@ void GameLoop(Snake& snake, CPU& cpu, Bus* bus, std::unique_ptr<SnakeGUI>& gui, 
 
 int main() 
 {
-    Bus bus;
-    InitializeRAM(&bus);
+    ROM rom;
+    if (!rom.LoadROM("/home//Downloads/snake.nes"))
+        std::cout << "bad";
+    Bus bus(&rom);
     CPU cpu(&bus);
-    LoadProgramIntoRAM(&bus, PROGRAM_PATH);
-
     Snake snake(&bus);
+
     std::unique_ptr<SnakeGUI> gui = std::make_unique<SnakeGUI>(SIZE, SIZE, SCALE);
-    BYTE screenBuffer[SIZE * SIZE * 3]{};
+    BYTE screenBuffer[SCREEN_BUFFER_SIZE]{};
 
     gui->InitImGui();
     GameLoop(snake, cpu, &bus, gui, screenBuffer);
