@@ -27,11 +27,23 @@ void InitializeRAM(Bus* bus)
     bus->WriteWord(CPU::RESET_VECTOR, START_ADDR);
 }*/
 
+#include <chrono>
+#include <thread>
 void GameLoop(Snake* snake, CPU* cpu, ROM* rom, std::unique_ptr<SnakeGUI>& gui) 
 {
     SDL_Event event{};
     BYTE screenBuffer[SCREEN_BUFFER_SIZE]{};
+    int FPS = 60;
+
+    // get ui render rate
+    SDL_DisplayMode currentDisplay{};
+    int display = 0; // primary display
+    if (SDL_GetCurrentDisplayMode(display, &currentDisplay) == 0)
+        FPS = currentDisplay.refresh_rate;
     
+    auto FPStime = std::chrono::milliseconds(1000) / FPS;
+    auto nextFrameTime = std::chrono::high_resolution_clock::now() + FPStime;
+
     while (true) 
     {
         while (SDL_PollEvent(&event)) 
@@ -45,7 +57,15 @@ void GameLoop(Snake* snake, CPU* cpu, ROM* rom, std::unique_ptr<SnakeGUI>& gui)
         if (gui->GetShouldReadRegisters()) 
             gui->UpdateRegisters(cpu->ReadRegisters());
 
-        gui->RenderFrame(screenBuffer, SIZE);
+        auto now = std::chrono::high_resolution_clock::now();
+        if (now >= nextFrameTime) // only render gui every FPS frames (dependant on monitor hz)
+        {
+            gui->RenderFrame(screenBuffer, SIZE);
+            nextFrameTime += FPStime;
+
+            if (now > nextFrameTime)
+                nextFrameTime = now + FPStime;
+        }
 
         if (gui->GetShouldCPURun()) 
             cpu->Run();
