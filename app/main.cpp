@@ -32,7 +32,7 @@ void InitializeRAM(Bus* bus)
     bus->WriteWord(CPU::RESET_VECTOR, START_ADDR);
 }
 
-void GameLoop(Snake& snake, CPU& cpu, Bus* bus, std::unique_ptr<SnakeGUI>& gui, BYTE* screenBuffer) 
+void GameLoop(Snake* snake, CPU* cpu, ROM* rom, std::unique_ptr<SnakeGUI>& gui, BYTE* screenBuffer) 
 {
     SDL_Event event;
     
@@ -41,26 +41,26 @@ void GameLoop(Snake& snake, CPU& cpu, Bus* bus, std::unique_ptr<SnakeGUI>& gui, 
         while (SDL_PollEvent(&event)) 
         {
             ImGui_ImplSDL2_ProcessEvent(&event);
-            snake.HandleEvent(event);
+            snake->HandleEvent(event);
         }
 
-        snake.Run(screenBuffer);
+        snake->Run(screenBuffer);
 
         if (gui->GetShouldReadRegisters()) 
-            gui->UpdateRegisters(cpu.ReadRegisters());
+            gui->UpdateRegisters(cpu->ReadRegisters());
 
         gui->RenderFrame(screenBuffer, SIZE);
 
         if (gui->GetShouldCPURun()) 
-            cpu.Run();
+            cpu->Run();
         if (gui->GetShouldRestart())
         {
-            cpu.Reset();
+            cpu->Reset();
             gui->SetShouldRestart(false);
         }
         if (gui->GetShouldStepThrough())
         {
-            cpu.Run();
+            cpu->Run();
             gui->SetShouldStepThrough(false);
         }
         
@@ -72,7 +72,7 @@ void GameLoop(Snake& snake, CPU& cpu, Bus* bus, std::unique_ptr<SnakeGUI>& gui, 
 int main() 
 {
     ROM rom;
-    if (!rom.LoadROM("/home//Downloads/snake.nes"))
+    if (!rom.LoadROM("/home/---/github/emu/app/snake.nes"))
         std::cout << "bad";
     Bus bus(&rom);
     CPU cpu(&bus);
@@ -82,7 +82,7 @@ int main()
     BYTE screenBuffer[SCREEN_BUFFER_SIZE]{};
 
     gui->InitImGui();
-    GameLoop(snake, cpu, &bus, gui, screenBuffer);
+    GameLoop(&snake, &cpu, &rom, gui, screenBuffer);
     gui->ShutdownImGui();
 
     return 0;
