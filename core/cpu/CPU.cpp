@@ -5,15 +5,57 @@ CPU::CPU(Bus* bus_ptr) : m_Bus(bus_ptr)
     this->Reset();
 }
 
+size_t CPU::GetOperandLength(const Instruction& instruction)
+{
+    if (instruction.addrMode == &CPU::IMP || 
+        instruction.addrMode == &CPU::ACC)
+    {
+        return 1;
+    }
+    else if (instruction.addrMode == &CPU::IMM || 
+        instruction.addrMode == &CPU::ZPG ||
+        instruction.addrMode == &CPU::REL ||
+        instruction.addrMode == &CPU::ZPX ||
+        instruction.addrMode == &CPU::ZPY)
+    {
+        return 2;
+    }
+
+    return 3;
+}
+
+#include <iomanip>
+#include <fstream>
+std::ofstream out("mynestest.log");
 /// @brief Starts running the CPU (https://en.wikipedia.org/wiki/Instruction_cycle)
 void CPU::Run()
 {
-    std::cout << std::hex << reg.program_counter << " : " << std::dec << m_nCycles << std::endl;
     m_curOpcode = m_Bus->ReadByte(reg.program_counter);
+
+    out << std::hex << std::uppercase << std::setw(4) << std::setfill('0') << reg.program_counter << "  ";
+    out << std::hex << std::setw(2) << std::setfill('0') << (int)m_curOpcode << ' ';
+    for (int i = 1; i < GetOperandLength(instructions[m_curOpcode]); ++i)
+    {
+        out << std::hex << std::setw(2) << std::setfill('0') << (int)(m_Bus->ReadByte(reg.program_counter + i)) << ' ';
+    }
+    for (int i = 0; i < 3 - GetOperandLength(instructions[m_curOpcode]); ++i)
+    {
+        out << "   ";
+    }
+    out << " A:" << std::hex << std::setw(2) << std::setfill('0') << (int)reg.accumulator << ' ';
+    out << "X:" << std::hex << std::setw(2) << std::setfill('0') << (int)reg.X << ' ';
+    out << "Y:" << std::hex << std::setw(2) << std::setfill('0') << (int)reg.Y << ' ';
+    out << "P:" << std::hex << std::setw(2) << std::setfill('0') << reg.status_register.to_ulong() << ' ';
+    out << "SP:" << std::hex << std::setw(2) << std::setfill('0') << (int)reg.stack_pointer << ' ';
+    out << "CYC:" << std::dec << (int)m_nCycles;
+    out << std::endl;
     reg.program_counter++;
     
     /*if (reg.program_counter == 0x6cf) // if we're currently drawing a new frame (snake)
         std::this_thread::sleep_for(std::chrono::milliseconds(50));*/
+
+    if (reg.program_counter == 0xF7A7)
+        out.close();
 
     Execute(instructions[m_curOpcode]);
     m_nCycles += m_curCycles;
@@ -33,7 +75,7 @@ void CPU::Reset()
     reg.status_register.set(StatusRegisterFlags::UNUSED); // https://www.nesdev.org/wiki/Status_flags "No CPU effect; always pushed as 1"
     // https://www.nesdev.org/wiki/CPU_power_up_state#cite_note-1
     reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
-    reg.status_register.set(StatusRegisterFlags::BREAK_COMMAND);
+    //reg.status_register.set(StatusRegisterFlags::BREAK_COMMAND);
 
     // https://6502.co.uk/lesson/reset
     // "This reset sequence lasts for seven clock cycles and after this, the computer will be usable. "
