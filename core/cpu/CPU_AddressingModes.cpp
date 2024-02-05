@@ -50,7 +50,7 @@ WORD CPU::ABX()
     WORD addr = ABS();
     WORD result = addr + reg.X;
 
-    if (!CPU::IsOnSamePage(addr, result))
+    if (m_bNeedsExtraCycle && !CPU::IsOnSamePage(addr, result))
         m_curCycles++;
 
     return result;
@@ -61,7 +61,7 @@ WORD CPU::ABY()
     WORD addr = ABS();
     WORD result = addr + reg.Y;
 
-    if (!CPU::IsOnSamePage(addr, result))
+    if (m_bNeedsExtraCycle && !CPU::IsOnSamePage(addr, result))
         m_curCycles++;
 
     return result;
@@ -133,7 +133,7 @@ WORD CPU::IZY()
     WORD result = addr + reg.Y; // Add Y for a final result of 0x7040.
 
     //  An additional clock cycle is used when the result of the operation is on a new page.
-    if (!CPU::IsOnSamePage(addr, result))
+    if (m_bNeedsExtraCycle && !CPU::IsOnSamePage(addr, result))
         m_curCycles++;
 
     return result; 

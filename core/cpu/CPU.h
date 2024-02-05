@@ -18,6 +18,7 @@ class CPU
     BYTE m_curOpcode{};
     DWORD m_curCycles{};
     QWORD m_nCycles{};
+    bool m_bNeedsExtraCycle{};
 
 
     struct Instruction
@@ -25,6 +26,7 @@ class CPU
         void (CPU::*opcode)(WORD);
         WORD (CPU::*addrMode)();
         DWORD cycles;
+        bool extraCycle;
     };
 
     void PushStackByte(BYTE val);

@@ -32,6 +32,8 @@ std::ofstream out("mynestest.log");
 /// @brief Starts running the CPU (https://en.wikipedia.org/wiki/Instruction_cycle)
 void CPU::Run()
 {
+    if (reg.program_counter == 0xE3BD)
+        std::cout << std::endl;
     m_curOpcode = m_Bus->ReadByte(reg.program_counter);
 
     out << std::hex << std::uppercase << std::setw(4) << std::setfill('0') << reg.program_counter << "  ";
@@ -126,6 +128,7 @@ void CPU::NMI()
 void CPU::Execute(const Instruction& instruction)
 { 
     m_curCycles = instruction.cycles;
+    m_bNeedsExtraCycle = instruction.extraCycle; // sets member variable if we need to check for extra cycle
 
     // first call the addressing mode, so we can get the address of what we're acting upon
     WORD operand = (this->*(instruction.addrMode))();
