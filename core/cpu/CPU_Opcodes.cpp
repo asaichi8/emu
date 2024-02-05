@@ -705,6 +705,7 @@ void CPU::RTI(WORD addr)
 
 
 // === Illegal/unused operations ===
+// https://www.nesdev.org/wiki/Programming_with_unofficial_opcodes
 void CPU::SHY(WORD addr) 
 { 
 
@@ -743,22 +744,26 @@ void CPU::KIL(WORD addr)
 
 void CPU::SLO(WORD addr) 
 { 
-
+    ASL(addr);
+    ORA(addr);
 }
 
 void CPU::RLA(WORD addr) 
 { 
-
+    ROL(addr);
+    AND(addr);
 }
 
 void CPU::SRE(WORD addr) 
 { 
-
+    LSR(addr);
+    EOR(addr);
 }
 
 void CPU::RRA(WORD addr) 
 { 
-
+    ROR(addr);
+    ADC(addr);
 }
 
 void CPU::SAX(WORD addr) 
@@ -776,17 +781,26 @@ void CPU::DCP(WORD addr)
 
 void CPU::ANC(WORD addr) 
 { 
-
+    AND(addr);
+    // copy negative flag to carry
+    reg.status_register.set(StatusRegisterFlags::CARRY, StatusRegisterFlags::NEGATIVE);
 }
 
-void CPU::ALR(WORD addr) 
+void CPU::ALR(WORD addr) // ASR
 { 
-
+    AND(addr);
+    LSR(addr);
 }
 
 void CPU::ARR(WORD addr) 
 { 
+    AND(addr);
+    ROR(addr);
 
+    // set carry based on 6th bit
+    reg.status_register.set(StatusRegisterFlags::CARRY, reg.accumulator & (1 << 6));
+    // set overflow based on bit 5 XOR bit 6
+    reg.status_register.set(StatusRegisterFlags::OVERFLOW, (reg.accumulator & (1 << 5)) ^ (reg.accumulator & (1 << 6)));
 }
 
 void CPU::LAS(WORD addr) 
@@ -796,10 +810,16 @@ void CPU::LAS(WORD addr)
 
 void CPU::AXS(WORD addr) 
 { 
+    BYTE val = m_Bus->ReadByte(addr);
+    BYTE result = (reg.X & reg.accumulator) - val;
 
+    reg.status_register.set(StatusRegisterFlags::CARRY, val <= (reg.X & reg.accumulator));
+    reg.CheckNegative(result);
+    reg.CheckZero(result);
 }
 
-void CPU::ISC(WORD addr) 
+void CPU::ISC(WORD addr) // ISB
 { 
-
+    INC(addr);
+    SBC(addr);
 }
