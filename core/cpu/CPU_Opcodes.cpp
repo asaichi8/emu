@@ -763,7 +763,9 @@ void CPU::RRA(WORD addr)
 
 void CPU::SAX(WORD addr) 
 { 
-    
+    BYTE result = reg.X & reg.accumulator;
+
+    m_Bus->WriteByte(addr, result);
 }
 
 void CPU::DCP(WORD addr) 
