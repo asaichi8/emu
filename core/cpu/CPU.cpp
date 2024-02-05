@@ -53,13 +53,14 @@ void CPU::Run()
     out << "SP:" << std::hex << std::setw(2) << std::setfill('0') << (int)reg.stack_pointer << ' ';
     out << "CYC:" << std::dec << (int)m_nCycles;
     out << std::endl;
+
+    if (reg.program_counter == 0xC66E)
+        std::cout << std::endl; // breakpoint here
+
     reg.program_counter++;
     
     /*if (reg.program_counter == 0x6cf) // if we're currently drawing a new frame (snake)
         std::this_thread::sleep_for(std::chrono::milliseconds(50));*/
-
-    if (reg.program_counter == 0xF7A7)
-        out.close();
 
     Execute(instructions[m_curOpcode]);
     m_nCycles += m_curCycles;
