@@ -163,7 +163,7 @@ class CPU
     static Instruction instructions[256];
 
     void Execute(const Instruction& instruction);
-    size_t GetOperandLength(const Instruction& instruction);
+    size_t GetInstructionLenBytes(const Instruction& instruction);
 
 public:
     CPU(Bus* bus_ptr);

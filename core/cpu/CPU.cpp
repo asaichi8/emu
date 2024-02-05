@@ -5,7 +5,7 @@ CPU::CPU(Bus* bus_ptr) : m_Bus(bus_ptr)
     this->Reset();
 }
 
-size_t CPU::GetOperandLength(const Instruction& instruction)
+size_t CPU::GetInstructionLenBytes(const Instruction& instruction)
 {
     if (instruction.addrMode == &CPU::IMP || 
         instruction.addrMode == &CPU::ACC)
@@ -16,7 +16,9 @@ size_t CPU::GetOperandLength(const Instruction& instruction)
         instruction.addrMode == &CPU::ZPG ||
         instruction.addrMode == &CPU::REL ||
         instruction.addrMode == &CPU::ZPX ||
-        instruction.addrMode == &CPU::ZPY)
+        instruction.addrMode == &CPU::ZPY ||
+        instruction.addrMode == &CPU::IZX ||
+        instruction.addrMode == &CPU::IZY)
     {
         return 2;
     }
@@ -34,11 +36,11 @@ void CPU::Run()
 
     out << std::hex << std::uppercase << std::setw(4) << std::setfill('0') << reg.program_counter << "  ";
     out << std::hex << std::setw(2) << std::setfill('0') << (int)m_curOpcode << ' ';
-    for (int i = 1; i < GetOperandLength(instructions[m_curOpcode]); ++i)
+    for (int i = 1; i < GetInstructionLenBytes(instructions[m_curOpcode]); ++i)
     {
         out << std::hex << std::setw(2) << std::setfill('0') << (int)(m_Bus->ReadByte(reg.program_counter + i)) << ' ';
     }
-    for (int i = 0; i < 3 - GetOperandLength(instructions[m_curOpcode]); ++i)
+    for (int i = 0; i < 3 - GetInstructionLenBytes(instructions[m_curOpcode]); ++i)
     {
         out << "   ";
     }
