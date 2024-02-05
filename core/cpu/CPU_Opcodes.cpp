@@ -697,7 +697,7 @@ void CPU::NOP(WORD addr)
 void CPU::RTI(WORD addr) 
 {
     reg.status_register = PopStackByte();
-    reg.status_register.reset(StatusRegisterFlags::UNUSED);
+    reg.status_register.set(StatusRegisterFlags::UNUSED);
     reg.status_register.reset(StatusRegisterFlags::BREAK_COMMAND);
 
     reg.program_counter = PopStackWord();
