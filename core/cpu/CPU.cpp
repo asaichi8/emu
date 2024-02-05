@@ -8,6 +8,7 @@ CPU::CPU(Bus* bus_ptr) : m_Bus(bus_ptr)
 /// @brief Starts running the CPU (https://en.wikipedia.org/wiki/Instruction_cycle)
 void CPU::Run()
 {
+    std::cout << std::hex << reg.program_counter << " : " << std::dec << m_nCycles << std::endl;
     m_curOpcode = m_Bus->ReadByte(reg.program_counter);
     reg.program_counter++;
     
@@ -36,7 +37,7 @@ void CPU::Reset()
 
     // https://6502.co.uk/lesson/reset
     // "This reset sequence lasts for seven clock cycles and after this, the computer will be usable. "
-    m_nCycles += 7;
+    m_nCycles = 7;
 
     m_Bus->Reset();
 }
