@@ -304,7 +304,7 @@ void CPU::BIT(WORD addr)
 
     // http://www.6502.org/users/obelisk/6502/reference.html#BIT
     reg.CheckZero(result);
-    reg.CheckNegative(result);
+    reg.CheckNegative(val);
     // set overflow bit based on 6th bit of memory value
     reg.status_register.set(StatusRegisterFlags::OVERFLOW, val & (1 << 6));
 }
