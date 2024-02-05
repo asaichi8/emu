@@ -4,6 +4,8 @@
 
 #include <bitset>
 #include <functional>
+#include <iomanip>
+#include <fstream>
 #include "CPURegisters.h"
 #include "RAM.h"
 #include "typedefs.h"
@@ -166,6 +168,7 @@ class CPU
 
     void Execute(const Instruction& instruction);
     size_t GetInstructionLenBytes(const Instruction& instruction);
+    void Log();
 
 public:
     CPU(Bus* bus_ptr);
