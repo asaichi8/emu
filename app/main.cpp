@@ -7,17 +7,12 @@
 #include "PPU.h"
 #include "Snake.h"
 #include "SnakeGUI.h"
-
 #include "ROM.h"
+#include "Path.h"
 
-constexpr size_t KB = 1024;
-constexpr size_t CPU_RAM_SIZE = 64 * KB;
-constexpr WORD START_ADDR = 0xC000;
-constexpr char PROGRAM_PATH[] = "/home/---/github/emu/app/snake.bin";
-constexpr int FRAME_DELAY_MICROSECONDS = 50;
 constexpr int SCREEN_BUFFER_SIZE = SIZE * SIZE * 3;
 
-void LoadProgramIntoRAM(Bus* bus, const std::string& filepath) 
+/*void LoadProgramIntoRAM(Bus* bus, const std::string& filepath) 
 {
     auto bytes = Loader::LoadFile(filepath);
     
@@ -30,11 +25,12 @@ void LoadProgramIntoRAM(Bus* bus, const std::string& filepath)
 void InitializeRAM(Bus* bus) 
 {
     bus->WriteWord(CPU::RESET_VECTOR, START_ADDR);
-}
+}*/
 
-void GameLoop(Snake* snake, CPU* cpu, ROM* rom, std::unique_ptr<SnakeGUI>& gui, BYTE* screenBuffer) 
+void GameLoop(Snake* snake, CPU* cpu, ROM* rom, std::unique_ptr<SnakeGUI>& gui) 
 {
-    SDL_Event event;
+    SDL_Event event{};
+    BYTE screenBuffer[SCREEN_BUFFER_SIZE]{};
     
     while (true) 
     {
@@ -64,7 +60,6 @@ void GameLoop(Snake* snake, CPU* cpu, ROM* rom, std::unique_ptr<SnakeGUI>& gui, 
             gui->SetShouldStepThrough(false);
         }
         
-
         //std::this_thread::sleep_for(std::chrono::microseconds(50));
     }
 }
@@ -79,10 +74,9 @@ int main()
     Snake snake(&bus);
 
     std::unique_ptr<SnakeGUI> gui = std::make_unique<SnakeGUI>(SIZE, SIZE, SCALE);
-    BYTE screenBuffer[SCREEN_BUFFER_SIZE]{};
 
     gui->InitImGui();
-    GameLoop(&snake, &cpu, &rom, gui, screenBuffer);
+    GameLoop(&snake, &cpu, &rom, gui);
     gui->ShutdownImGui();
 
     return 0;
