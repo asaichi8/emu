@@ -732,7 +732,8 @@ void CPU::XAA(WORD addr)
 
 void CPU::LAX(WORD addr) 
 { 
-
+    LDA(addr);
+    TAX(addr);
 }
 
 void CPU::KIL(WORD addr) 
@@ -762,7 +763,7 @@ void CPU::RRA(WORD addr)
 
 void CPU::SAX(WORD addr) 
 { 
-
+    
 }
 
 void CPU::DCP(WORD addr) 
