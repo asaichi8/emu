@@ -64,11 +64,11 @@ public:
         else if (addr >= 0x8000 && addr <= 0xFFFF)
             return ReadPRGByte(addr);
         else if (addr < MIRRORED_PPU_REGISTER_END)
-            {
-                std::cout << "err!1" << std::endl;
-                return 0;
-            }
+        {
             //return m_RAM[addr % PPU_REGISTER_SIZE];
+            std::cerr << "Attempted to read byte from PPU (not implemented)" << std::endl;
+            return 0;
+        }
         
         return m_RAM[addr];
     }
@@ -79,10 +79,10 @@ public:
             addr %= INTERNAL_RAM_SIZE;
         else if (addr < MIRRORED_PPU_REGISTER_END)
         {
-            std::cout << "err!2" << std::endl;
+            //addr %= PPU_REGISTER_SIZE;
+            std::cerr << "Attempted to read word from PPU (not implemented)" << std::endl;
             return 0;
         }
-            //addr %= PPU_REGISTER_SIZE;
         else if (addr >= 0x8000 && addr <= 0xFFFF)
             return ReadPRGWord(addr, shouldWrapPage);
 
@@ -103,7 +103,7 @@ public:
             m_RAM[addr % INTERNAL_RAM_SIZE] = val;
         else
         {
-            std::cout << "err!2" << std::endl;
+            std::cerr << "Attempted to write byte outside of CPU (not implemented)" << std::endl;
         }
         /*else if (addr < MIRRORED_PPU_REGISTER_END)
             m_RAM[addr % PPU_REGISTER_SIZE] = val;
@@ -117,7 +117,7 @@ public:
             addr %= INTERNAL_RAM_SIZE;
         else
         {
-            std::cout << "err!2" << std::endl;
+            std::cerr << "Attempted to write word outside of CPU (not implemented)" << std::endl;
             return;
         }
         //else if (addr < MIRRORED_PPU_REGISTER_END)

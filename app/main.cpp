@@ -13,7 +13,7 @@
 constexpr size_t KB = 1024;
 constexpr size_t CPU_RAM_SIZE = 64 * KB;
 constexpr WORD START_ADDR = 0xC000;
-constexpr char PROGRAM_PATH[] = "/home/pai/github/emu/app/snake.bin";
+constexpr char PROGRAM_PATH[] = "/home/---/github/emu/app/snake.bin";
 constexpr int FRAME_DELAY_MICROSECONDS = 50;
 constexpr int SCREEN_BUFFER_SIZE = SIZE * SIZE * 3;
 
@@ -72,7 +72,7 @@ void GameLoop(Snake* snake, CPU* cpu, ROM* rom, std::unique_ptr<SnakeGUI>& gui, 
 int main() 
 {
     ROM rom;
-    if (!rom.LoadROM("/home/---/github/emu/app/snake.nes"))
+    if (!rom.LoadROM(PROGRAM_PATH))
         std::cout << "bad";
     Bus bus(&rom);
     CPU cpu(&bus);
