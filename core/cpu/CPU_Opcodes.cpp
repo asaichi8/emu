@@ -770,7 +770,8 @@ void CPU::SAX(WORD addr)
 
 void CPU::DCP(WORD addr) 
 { 
-
+    DEC(addr);
+    CMP(addr);
 }
 
 void CPU::ANC(WORD addr) 
