@@ -1,6 +1,6 @@
 #include "Snake.h"
 
-Snake::Snake(Bus* bus_ptr) : m_Bus(bus_ptr)
+Snake::Snake(std::shared_ptr<Bus> bus) : m_Bus(bus)
 {
 
 }

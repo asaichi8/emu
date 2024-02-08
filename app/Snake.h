@@ -2,6 +2,7 @@
 
 #include "RAM.h"
 #include <SDL2/SDL.h>
+#include <memory>
 
 #define UP_KEY      0x77
 #define DOWN_KEY    0x73
@@ -19,14 +20,14 @@
 
 class Snake
 {
-    Bus* m_Bus{};
+    std::shared_ptr<Bus> m_Bus{};
     SDL_Event m_Event{};
 
     SDL_Color GetColor(uint8_t byte);
     bool ReadScreen(BYTE* frame);
 
 public:
-    Snake(Bus* bus_ptr);
+    Snake(std::shared_ptr<Bus> bus);
     ~Snake();
 
     bool Run(BYTE* m_Screen);

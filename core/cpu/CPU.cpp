@@ -1,6 +1,6 @@
 #include "CPU.h"
 #include <thread>
-CPU::CPU(Bus* bus_ptr) : m_Bus(bus_ptr)
+CPU::CPU(std::shared_ptr<Bus> bus) : m_Bus(bus)
 {
     this->Reset();
 }
@@ -54,10 +54,10 @@ void CPU::Run()
 {
     m_curOpcode = m_Bus->ReadByte(reg.program_counter);
 
-    Log();
+    //Log();
 
-    if (reg.program_counter == 0xC66E)
-        std::cout << std::endl; // breakpoint here
+    //if (reg.program_counter == 0xC66E)
+    //    std::cout << std::endl; // breakpoint here
 
     reg.program_counter++;
 

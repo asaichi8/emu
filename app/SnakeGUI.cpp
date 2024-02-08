@@ -73,20 +73,20 @@ void SnakeGUI::StartImGuiFrame()
 
         ImGui::Begin("CPU", &shouldReadRegisters, ImGuiWindowFlags_AlwaysAutoResize);
         
-        ImGui::Text("PC: 0x%04X", m_curRegisters.program_counter);
-        ImGui::Text("SP: 0x%02X", m_curRegisters.stack_pointer);
-        ImGui::Text("A:  0x%02X", m_curRegisters.accumulator);
-        ImGui::Text("X:  0x%02X", m_curRegisters.X);
-        ImGui::Text("Y:  0x%02X", m_curRegisters.Y);
+        ImGui::Text("PC: 0x%04X", m_curReg.program_counter);
+        ImGui::Text("SP: 0x%02X", m_curReg.stack_pointer);
+        ImGui::Text("A:  0x%02X", m_curReg.accumulator);
+        ImGui::Text("X:  0x%02X", m_curReg.X);
+        ImGui::Text("Y:  0x%02X", m_curReg.Y);
         ImGui::Separator();
-        ImGui::TextColored(m_curRegisters.status_register.test(StatusRegisterFlags::CARRY) ? green : red, "C"); ImGui::SameLine();
-        ImGui::TextColored(m_curRegisters.status_register.test(StatusRegisterFlags::ZERO) ? green : red, "Z"); ImGui::SameLine();
-        ImGui::TextColored(m_curRegisters.status_register.test(StatusRegisterFlags::INTERRUPT_REQUEST) ? green : red, "I"); ImGui::SameLine();
-        ImGui::TextColored(m_curRegisters.status_register.test(StatusRegisterFlags::DECIMAL_MODE) ? green : red, "D"); ImGui::SameLine();
-        ImGui::TextColored(m_curRegisters.status_register.test(StatusRegisterFlags::BREAK_COMMAND) ? green : red, "B"); ImGui::SameLine();
-        ImGui::TextColored(m_curRegisters.status_register.test(StatusRegisterFlags::UNUSED) ? green : red, "U"); ImGui::SameLine();
-        ImGui::TextColored(m_curRegisters.status_register.test(StatusRegisterFlags::OVERFLOW) ? green : red, "O"); ImGui::SameLine();
-        ImGui::TextColored(m_curRegisters.status_register.test(StatusRegisterFlags::NEGATIVE) ? green : red, "N");
+        ImGui::TextColored(m_curReg.status_register.test(StatusRegisterFlags::CARRY) ? green : red, "C"); ImGui::SameLine();
+        ImGui::TextColored(m_curReg.status_register.test(StatusRegisterFlags::ZERO) ? green : red, "Z"); ImGui::SameLine();
+        ImGui::TextColored(m_curReg.status_register.test(StatusRegisterFlags::INTERRUPT_REQUEST) ? green : red, "I"); ImGui::SameLine();
+        ImGui::TextColored(m_curReg.status_register.test(StatusRegisterFlags::DECIMAL_MODE) ? green : red, "D"); ImGui::SameLine();
+        ImGui::TextColored(m_curReg.status_register.test(StatusRegisterFlags::BREAK_COMMAND) ? green : red, "B"); ImGui::SameLine();
+        ImGui::TextColored(m_curReg.status_register.test(StatusRegisterFlags::UNUSED) ? green : red, "U"); ImGui::SameLine();
+        ImGui::TextColored(m_curReg.status_register.test(StatusRegisterFlags::OVERFLOW) ? green : red, "O"); ImGui::SameLine();
+        ImGui::TextColored(m_curReg.status_register.test(StatusRegisterFlags::NEGATIVE) ? green : red, "N");
         
         ImGui::End();
             
@@ -107,7 +107,7 @@ void SnakeGUI::ShutdownImGui()
     ImGui::DestroyContext();
 }
 
-void SnakeGUI::RenderFrame(uint8_t* screenBuffer, int size)
+void SnakeGUI::RenderFrame(BYTE* screenBuffer, int size)
 {
     SDL_RenderClear(GetRenderer());
     

@@ -6,6 +6,7 @@
 #include <functional>
 #include <iomanip>
 #include <fstream>
+#include <memory>
 #include "CPURegisters.h"
 #include "RAM.h"
 #include "typedefs.h"
@@ -15,7 +16,7 @@
 
 class CPU
 {
-    Bus* m_Bus{};
+    std::shared_ptr<Bus> m_Bus{};
     CPURegisters reg{};
     BYTE m_curOpcode{};
     DWORD m_curCycles{};
@@ -171,7 +172,7 @@ class CPU
     void Log();
 
 public:
-    CPU(Bus* bus_ptr);
+    CPU(std::shared_ptr<Bus> bus);
 
     // https://www.pagetable.com/?p=410
     static const WORD NMI_VECTOR = 0xFFFA;
