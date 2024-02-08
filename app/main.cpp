@@ -16,6 +16,8 @@
 
 class Emulator
 {
+    static const int SIZE = 32;
+    static const int SCALE = 32;
     static const int SCREEN_BUFFER_SIZE = SIZE * SIZE * 3;
     int m_FPS = 60;
 
@@ -34,7 +36,7 @@ public:
         m_Bus   = std::make_shared<Bus>(&m_ROM);
         m_CPU   = std::make_unique<CPU>(m_Bus);
         m_Snake = std::make_unique<Snake>(m_Bus);
-        m_GUI   = std::make_unique<EmulatorDisplay>(SIZE, SIZE, SCALE);
+        m_GUI   = std::make_unique<EmulatorDisplay>("Emulator", SIZE, SIZE, SCALE);
 
         m_GUI->InitImGui();
     }

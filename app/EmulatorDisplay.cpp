@@ -1,7 +1,8 @@
 #include "EmulatorDisplay.h"
 
 
-EmulatorDisplay::EmulatorDisplay(int w, int h, int scale) : SDLApp("Snake", w, h, scale)
+EmulatorDisplay::EmulatorDisplay(const std::string& winName, int w, int h, int scale) 
+    : SDLApp(winName, w, h, scale)
 {
     
 }
