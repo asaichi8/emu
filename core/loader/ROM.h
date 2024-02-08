@@ -58,8 +58,8 @@ class ROM : public Loader
 {
     const BYTE NES_Sig[4] = {'N', 'E', 'S', 0x1A}; // "NES^Z"
     const size_t TRAINER_SIZE = 512;
-    const size_t PRG_ROM_BANK_SIZE = 16 * 1024;
-    const size_t CHR_ROM_BANK_SIZE = 8 * 1024;
+    const size_t PRG_ROM_BANK_SIZE = 16 * KB;
+    const size_t CHR_ROM_BANK_SIZE = 8 * KB;
 
     size_t m_nPRG_ROM_size{};
     size_t m_nCHR_ROM_size{};

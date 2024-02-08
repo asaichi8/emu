@@ -20,15 +20,15 @@ class Bus
 public:
     Bus(ROM* rom) : m_ROM(rom)
     {
-        m_RAM.assign(8 * 1024, 0);
+        m_RAM.assign(8 * KB, 0);
     }
 
     BYTE ReadPRGByte(WORD addr)
     {
-        addr -= 32 * 1024;
+        addr -= 32 * KB;
         
-        if (m_ROM->PRG_ROM.size() == (16 * 1024) && addr >= (16 * 1024))
-            addr %= 16 * 1024;
+        if (m_ROM->PRG_ROM.size() == (16 * KB) && addr >= (16 * KB))
+            addr %= 16 * KB;
         
         return m_ROM->PRG_ROM[addr];
     }
