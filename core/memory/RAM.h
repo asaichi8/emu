@@ -12,19 +12,7 @@
 #define MIRRORED_PPU_REGISTER_END 0x4000
 
 
-class RAM
-{
-
-public:
-    virtual ~RAM() {}
-
-    virtual BYTE ReadByte(WORD addr) = 0;
-    virtual WORD ReadWord(WORD addr, bool shouldWrapPage = false) = 0;
-    virtual void WriteByte(WORD addr, BYTE val) = 0;
-    virtual void WriteWord(WORD addr, WORD val) = 0;
-};
-
-class Bus : public RAM
+class Bus
 {
     std::vector<BYTE> m_RAM{};
     ROM* m_ROM{};
