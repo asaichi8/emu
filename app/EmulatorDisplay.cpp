@@ -1,13 +1,13 @@
-#include "SnakeGUI.h"
+#include "EmulatorDisplay.h"
 
 
-SnakeGUI::SnakeGUI(int w, int h, int scale) : SDLApp("Snake", w, h, scale)
+EmulatorDisplay::EmulatorDisplay(int w, int h, int scale) : SDLApp("Snake", w, h, scale)
 {
     
 }
 
 
-void SnakeGUI::InitImGui() 
+void EmulatorDisplay::InitImGui() 
 {
     if (!m_Window || !m_Renderer)       
         throw std::runtime_error("no window or renderer");
@@ -25,7 +25,7 @@ void SnakeGUI::InitImGui()
     ImGui_ImplSDLRenderer2_Init(m_Renderer);
 }
 
-void SnakeGUI::StartImGuiFrame() 
+void EmulatorDisplay::StartImGuiFrame() 
 {
     ImGui_ImplSDLRenderer2_NewFrame();
     ImGui_ImplSDL2_NewFrame(m_Window);
@@ -95,19 +95,19 @@ void SnakeGUI::StartImGuiFrame()
     ImGui::Render();
 }
 
-void SnakeGUI::RenderImGuiFrame() 
+void EmulatorDisplay::RenderImGuiFrame() 
 {
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
 }
 
-void SnakeGUI::ShutdownImGui() 
+void EmulatorDisplay::ShutdownImGui() 
 {
     ImGui_ImplSDLRenderer2_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
 }
 
-void SnakeGUI::RenderFrame(BYTE* screenBuffer, int size)
+void EmulatorDisplay::RenderFrame(BYTE* screenBuffer, int size)
 {
     SDL_RenderClear(GetRenderer());
     

@@ -9,7 +9,7 @@
 #include "CPU.h"
 #include "PPU.h"
 #include "Snake.h"
-#include "SnakeGUI.h"
+#include "EmulatorDisplay.h"
 #include "ROM.h"
 #include "Path.h"
 
@@ -23,7 +23,7 @@ class Emulator
     std::shared_ptr<Bus> m_Bus{};
     std::unique_ptr<CPU> m_CPU{};
     std::unique_ptr<Snake> m_Snake{};
-    std::unique_ptr<SnakeGUI> m_GUI{};
+    std::unique_ptr<EmulatorDisplay> m_GUI{};
 
 public:
     Emulator() 
@@ -34,7 +34,7 @@ public:
         m_Bus   = std::make_shared<Bus>(&m_ROM);
         m_CPU   = std::make_unique<CPU>(m_Bus);
         m_Snake = std::make_unique<Snake>(m_Bus);
-        m_GUI   = std::make_unique<SnakeGUI>(SIZE, SIZE, SCALE);
+        m_GUI   = std::make_unique<EmulatorDisplay>(SIZE, SIZE, SCALE);
 
         m_GUI->InitImGui();
     }

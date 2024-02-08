@@ -7,7 +7,7 @@
 #include "CPURegisters.h"
 #include "typedefs.h"
 
-class SnakeGUI : public SDLApp
+class EmulatorDisplay : public SDLApp
 {
     CPURegisters m_curReg{};
 
@@ -20,7 +20,7 @@ class SnakeGUI : public SDLApp
     void RenderImGuiFrame();
 
 public:
-    SnakeGUI(int w, int h, int scale);
+    EmulatorDisplay(int w, int h, int scale);
 
     void InitImGui();
     void RenderFrame(BYTE* screenBuffer, int size);
