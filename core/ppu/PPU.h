@@ -4,8 +4,7 @@
 
 class PPU
 {
-    RAM* m_RAM = nullptr;
-
+    
 public:
-    PPU(RAM* ram);
+    PPU();
 };
