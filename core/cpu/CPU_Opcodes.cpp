@@ -1,5 +1,6 @@
 #include "CPU.h"
 
+
 #define i(x, y, z, w) {&CPU::x, &CPU::y, z, w}
 
 // http://www.oxyron.de/html/opcodes02.html

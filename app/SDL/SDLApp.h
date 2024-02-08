@@ -4,6 +4,7 @@
 #include <string>
 #include <stdexcept>
 
+
 class SDLApp
 {
     void SetupWindow(const std::string& windowName, int w, int h, int scale);

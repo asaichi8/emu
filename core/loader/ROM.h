@@ -5,6 +5,7 @@
 #include "Loader.h"
 #include "typedefs.h"
 
+
 // https://www.nesdev.org/wiki/INES#Nametable_Arrangement
 // https://www.nesdev.org/wiki/Mirroring#Nametable_Mirroring
 enum MirrorType
@@ -13,6 +14,7 @@ enum MirrorType
     Horizontal,
     FourScreen
 };
+
 
 // https://www.nesdev.org/wiki/INES#Flags_6
 enum Flags6 : BYTE
@@ -27,6 +29,7 @@ enum Flags6 : BYTE
     MapperNoLow3         = 1 << 7
 };
 
+
 // https://www.nesdev.org/wiki/INES#Flags_7
 enum Flags7 : BYTE
 {
@@ -39,6 +42,7 @@ enum Flags7 : BYTE
     MapperNoHigh2   = 1 << 6,  
     MapperNoHigh3   = 1 << 7
 };
+
 
 #pragma pack(push, 1) // ensure no padding
 struct iNES_Header
@@ -53,6 +57,7 @@ struct iNES_Header
     BYTE reserved[6];
 };
 #pragma pack(pop)
+
 
 class ROM : public Loader
 {

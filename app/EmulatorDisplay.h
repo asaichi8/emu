@@ -7,6 +7,7 @@
 #include "CPURegisters.h"
 #include "typedefs.h"
 
+
 class EmulatorDisplay : public SDLApp
 {
     CPURegisters m_curReg{};

@@ -6,8 +6,8 @@
 #include <fstream>
 #include <cstdint>
 #include <iostream>
-
 #include "typedefs.h"
+
 
 class Loader
 {

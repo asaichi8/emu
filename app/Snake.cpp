@@ -1,5 +1,6 @@
 #include "Snake.h"
 
+
 Snake::Snake(std::shared_ptr<Bus> bus) : m_Bus(bus)
 {
 
@@ -9,6 +10,7 @@ Snake::~Snake()
 {
 
 }
+
 
 // return should read screen or not
 bool Snake::Run(BYTE* m_Screen)

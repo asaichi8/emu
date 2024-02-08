@@ -14,6 +14,7 @@
 #define MODE(addressingMode) WORD addressingMode()
 #define OPCODE(opcodeName) void opcodeName(WORD addr)
 
+
 class CPU
 {
     std::shared_ptr<Bus> m_Bus{};

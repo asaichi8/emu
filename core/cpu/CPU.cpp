@@ -1,9 +1,11 @@
 #include "CPU.h"
-#include <thread>
+
+
 CPU::CPU(std::shared_ptr<Bus> bus) : m_Bus(bus)
 {
     this->Reset();
 }
+
 
 size_t CPU::GetInstructionLenBytes(const Instruction& instruction)
 {

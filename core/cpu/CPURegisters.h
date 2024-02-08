@@ -3,6 +3,7 @@
 #include <bitset>
 #include "typedefs.h"
 
+
 // "Flags of the status register" - http://www.oxyron.de/html/opcodes02.html
 enum StatusRegisterFlags
 {

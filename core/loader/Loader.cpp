@@ -1,9 +1,11 @@
 #include "Loader.h"
 
+
 Loader::Loader()
 {
 
 }
+
 
 std::vector<BYTE> Loader::HexStrToBytes(const std::string& hexString) 
 {

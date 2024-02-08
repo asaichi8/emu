@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Bus.h"
 #include <SDL2/SDL.h>
 #include <memory>
+#include "Bus.h"
 
 #define UP_KEY      0x77
 #define DOWN_KEY    0x73
@@ -17,6 +17,7 @@
 
 #define SIZE 32
 #define SCALE 20
+
 
 class Snake
 {
