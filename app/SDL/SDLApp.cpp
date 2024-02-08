@@ -13,14 +13,9 @@ SDLApp::SDLApp(const std::string& windowName, int w, int h, int scale)
 
 SDLApp::~SDLApp()
 {
-    if (m_Texture)
-        SDL_DestroyTexture(m_Texture);
-
-    if (m_Renderer)
-        SDL_DestroyRenderer(m_Renderer);
-
-    if (m_Window)
-        SDL_DestroyWindow(m_Window);
+    if (m_Texture)  SDL_DestroyTexture(m_Texture);
+    if (m_Renderer) SDL_DestroyRenderer(m_Renderer);
+    if (m_Window)   SDL_DestroyWindow(m_Window);
 
     SDL_Quit();
 }
@@ -57,21 +52,4 @@ void SDLApp::SetupTexture(int w, int h)
 
     if (!m_Texture) 
         throw std::runtime_error(std::string("Failed to init texture: ") + SDL_GetError());
-}
-
-
-
-SDL_Window* SDLApp::GetWindow()
-{
-    return m_Window;
-}
-
-SDL_Renderer* SDLApp::GetRenderer()
-{
-    return m_Renderer;
-}
-
-SDL_Texture* SDLApp::GetTexture()
-{
-    return m_Texture;
 }

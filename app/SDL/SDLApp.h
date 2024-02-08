@@ -20,7 +20,7 @@ public:
     SDLApp(const std::string& windowName, int w, int h, int scale);
     ~SDLApp();
 
-    SDL_Window* GetWindow();
-    SDL_Renderer* GetRenderer();
-    SDL_Texture* GetTexture();
+    SDL_Window* GetWindow() { return m_Window; }
+    SDL_Renderer* GetRenderer() { return m_Renderer; }
+    SDL_Texture* GetTexture() { return m_Texture; }
 };
