@@ -26,9 +26,7 @@ public:
     void InitImGui();
     void RenderFrame(BYTE* screenBuffer, int size);
     void ShutdownImGui();
-    void UpdateRegisters(const CPURegisters& registers) {
-        m_curReg = registers;
-    }
+    void UpdateRegisters(const CPURegisters& registers) { m_curReg = registers; }
 
 
     bool GetShouldCPURun() { return shouldCPURun; }
