@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RAM.h"
+#include "Bus.h"
 #include <SDL2/SDL.h>
 #include <memory>
 

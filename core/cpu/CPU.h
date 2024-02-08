@@ -8,7 +8,7 @@
 #include <fstream>
 #include <memory>
 #include "CPURegisters.h"
-#include "RAM.h"
+#include "Bus.h"
 #include "typedefs.h"
 
 #define MODE(addressingMode) WORD addressingMode()
