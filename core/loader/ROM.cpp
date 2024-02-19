@@ -67,7 +67,7 @@ bool ROM::CheckHeaderFits(const std::vector<BYTE> rawFile)
 
 bool ROM::CheckHeaderIsINES(const iNES_Header* header)
 {
-    if (memcmp(header->signature, NES_Sig, 4) != 0)
+    if (memcmp(header->signature, NES_SIG, 4) != 0)
     {
         std::cerr << "Not an NES file!" << std::endl;
         return false;

@@ -61,7 +61,7 @@ struct iNES_Header
 
 class ROM : public Loader
 {
-    const BYTE NES_Sig[4] = {'N', 'E', 'S', 0x1A}; // "NES^Z"
+    const BYTE NES_SIG[4] = {'N', 'E', 'S', 0x1A}; // "NES^Z"
     const size_t TRAINER_SIZE = 512;
     const size_t PRG_ROM_BANK_SIZE = 16 * KB;
     const size_t CHR_ROM_BANK_SIZE = 8 * KB;
