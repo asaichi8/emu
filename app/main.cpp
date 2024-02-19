@@ -3,7 +3,7 @@
 int main() 
 {
     Emulator emulator;
-    emulator.Run();
+    emulator.Run(); // Start the emulator.
 
     return 0;
 }

@@ -8,9 +8,10 @@
 #include "typedefs.h"
 
 
+/// @brief Responsible for the GUI/video of the emulator.
 class EmulatorDisplay : public SDLApp
 {
-    CPURegisters m_curReg{};
+    CPURegisters m_curReg{}; // A copy of the CPU's registers so they can be displayed.
 
     bool shouldCPURun = true;
     bool shouldRestart = false;
@@ -29,6 +30,7 @@ public:
     void UpdateRegisters(const CPURegisters& registers) { m_curReg = registers; }
 
 
+    // Getters/setters
     bool GetShouldCPURun() { return shouldCPURun; }
 
     bool GetShouldRestart() { return shouldRestart; }

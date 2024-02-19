@@ -21,6 +21,11 @@ SDLApp::~SDLApp()
 }
 
 
+/// @brief Initialise the SDL window.
+/// @param windowName Title of the window
+/// @param w Raw width of the window
+/// @param h Raw height of the window
+/// @param scale Scale to multiply width/height by
 void SDLApp::SetupWindow(const std::string& windowName, int w, int h, int scale)
 {
     m_Window = SDL_CreateWindow(
@@ -36,6 +41,8 @@ void SDLApp::SetupWindow(const std::string& windowName, int w, int h, int scale)
         throw std::runtime_error(std::string("Failed to init window: ") + SDL_GetError());
 }
 
+/// @brief Initialise the SDL renderer.
+/// @param scale Scale to scale renderer by
 void SDLApp::SetupRenderer(int scale)
 {
     m_Renderer = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_ACCELERATED);
@@ -46,6 +53,9 @@ void SDLApp::SetupRenderer(int scale)
     //SDL_RenderSetScale(m_Renderer, scale, scale);
 }
 
+/// @brief Initialise a texture for the renderer.
+/// @param w Width of the texture
+/// @param h Height of the texture
 void SDLApp::SetupTexture(int w, int h)
 {
     m_Texture = SDL_CreateTexture(m_Renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STATIC, w, h);

@@ -8,6 +8,7 @@ EmulatorDisplay::EmulatorDisplay(const std::string& winName, int w, int h, int s
 }
 
 
+/// @brief Initialise the ImGui window and integrate it with the SDL2 renderer
 void EmulatorDisplay::InitImGui() 
 {
     if (!m_Window || !m_Renderer)       
@@ -26,8 +27,10 @@ void EmulatorDisplay::InitImGui()
     ImGui_ImplSDLRenderer2_Init(m_Renderer);
 }
 
+/// @brief Called every frame that the GUI is rendered - consists of the actual UI
 void EmulatorDisplay::StartImGuiFrame() 
 {
+    // Begin a new frame for our window
     ImGui_ImplSDLRenderer2_NewFrame();
     ImGui_ImplSDL2_NewFrame(m_Window);
 
@@ -96,11 +99,13 @@ void EmulatorDisplay::StartImGuiFrame()
     ImGui::Render();
 }
 
+/// @brief Renders the ImGui frame within the SDL2 context
 void EmulatorDisplay::RenderImGuiFrame() 
 {
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
 }
 
+/// @brief Cleans up GUI stuff
 void EmulatorDisplay::ShutdownImGui() 
 {
     ImGui_ImplSDLRenderer2_Shutdown();
@@ -108,6 +113,9 @@ void EmulatorDisplay::ShutdownImGui()
     ImGui::DestroyContext();
 }
 
+/// @brief Responsible for starting and rendering ImGui and SDL2 frames
+/// @param screenBuffer Texture raw data
+/// @param size Size of each row of data
 void EmulatorDisplay::RenderFrame(BYTE* screenBuffer, int size)
 {
     SDL_RenderClear(GetRenderer());

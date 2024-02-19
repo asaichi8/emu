@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 
+/// @brief Responsible for setting up the SDL2 renderer.
 class SDLApp
 {
     void SetupWindow(const std::string& windowName, int w, int h, int scale);
