@@ -16,19 +16,19 @@
 
 class Bus
 {
-    std::vector<BYTE> m_RAM{};
-    ROM* m_ROM{};
+	std::vector<BYTE> m_RAM{};
+	ROM* m_ROM{};
 
 public:
-    Bus(ROM* rom);
+	Bus(ROM* rom);
 
-    void Reset();
+	void Reset();
 
-    BYTE ReadPRGByte(WORD addr);
-    WORD ReadPRGWord(WORD addr, bool shouldWrapPage = false);
+	BYTE ReadPRGByte(WORD addr);
+	WORD ReadPRGWord(WORD addr, bool shouldWrapPage = false);
 
-    BYTE ReadByte(WORD addr);
-    WORD ReadWord(WORD addr, bool shouldWrapPage = false);
-    void WriteByte(WORD addr, BYTE val);
-    void WriteWord(WORD addr, WORD val);
+	BYTE ReadByte(WORD addr);
+	WORD ReadWord(WORD addr, bool shouldWrapPage = false);
+	void WriteByte(WORD addr, BYTE val);
+	void WriteWord(WORD addr, WORD val);
 };

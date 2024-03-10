@@ -13,8 +13,8 @@ class Loader
 {
 
 public:
-    Loader();
+	Loader();
 
-    static std::vector<BYTE> HexStrToBytes(const std::string& hexString);
-    static std::vector<BYTE> LoadFile(const std::string& filePath);
+	static std::vector<BYTE> HexStrToBytes(const std::string& hexString);
+	static std::vector<BYTE> LoadFile(const std::string& filePath);
 };

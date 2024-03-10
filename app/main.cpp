@@ -2,8 +2,8 @@
 
 int main() 
 {
-    Emulator emulator;
-    emulator.Run(); // Start the emulator.
+	Emulator emulator;
+	emulator.Run(); // Start the emulator.
 
-    return 0;
+	return 0;
 }

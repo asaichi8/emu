@@ -73,6 +73,7 @@
         "variant": "cpp",
         "forward_list": "cpp",
         "unordered_set": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "coroutine": "cpp"
     }
 }

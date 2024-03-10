@@ -19,19 +19,19 @@
 /// @brief Responsible for the execution of all the emulator components.
 class Emulator
 {
-    static const int SCREEN_BUFFER_SIZE = SIZE * SIZE * 3; // [Snake] Size of the buffer required for the Snake game.
-    int m_FPS = 60; // FPS of the GUI
+	static const int SCREEN_BUFFER_SIZE = SIZE * SIZE * 3; // [Snake] Size of the buffer required for the Snake game.
+	int m_FPS = 60; // FPS of the GUI
 
-    ROM m_ROM{};
-    std::shared_ptr<Bus> m_Bus{};
-    std::unique_ptr<CPU> m_CPU{};
-    std::unique_ptr<PPU> m_PPU{};
-    std::unique_ptr<Snake> m_Snake{};
-    std::unique_ptr<EmulatorDisplay> m_GUI{};
+	ROM m_ROM{};
+	std::shared_ptr<Bus> m_Bus{};
+	std::unique_ptr<CPU> m_CPU{};
+	std::unique_ptr<PPU> m_PPU{};
+	std::unique_ptr<Snake> m_Snake{};
+	std::unique_ptr<EmulatorDisplay> m_GUI{};
 
 public:
-    Emulator();
-    ~Emulator();
+	Emulator();
+	~Emulator();
 
-    void Run();
+	void Run();
 };

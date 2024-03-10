@@ -5,8 +5,8 @@
 
 class PPU
 {
-    std::shared_ptr<Bus> m_Bus{};
-    
+	std::shared_ptr<Bus> m_Bus{};
+	
 public:
-    PPU(std::shared_ptr<Bus> bus);
+	PPU(std::shared_ptr<Bus> bus);
 };

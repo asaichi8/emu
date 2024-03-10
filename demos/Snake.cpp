@@ -15,82 +15,82 @@ Snake::~Snake()
 // return should read screen or not
 bool Snake::Run(BYTE* m_Screen)
 {
-    HandleEvent(m_Event);
+	HandleEvent(m_Event);
 
-    m_Bus->WriteByte(RNG_POS, (BYTE)(rand() % 14) + 1);
+	m_Bus->WriteByte(RNG_POS, (BYTE)(rand() % 14) + 1);
 
-    return ReadScreen(m_Screen);
+	return ReadScreen(m_Screen);
 }
 
 
 void Snake::HandleEvent(const SDL_Event& e) 
 {
-    if (e.type == SDL_KEYDOWN) 
-    {
-        switch (e.key.keysym.sym) 
-        {
-            case SDLK_w:
-                m_Bus->WriteByte(DIR_POS, UP_KEY);
-                break;
-            case SDLK_s:
-                m_Bus->WriteByte(DIR_POS, DOWN_KEY);
-                break;
-            case SDLK_a:
-                m_Bus->WriteByte(DIR_POS, LEFT_KEY);
-                break;
-            case SDLK_d:
-                m_Bus->WriteByte(DIR_POS, RIGHT_KEY);
-                break;
-            default:
-                break;
-        }
-    }
-    else if (e.type == SDL_QUIT) 
-        std::exit(0);
+	if (e.type == SDL_KEYDOWN) 
+	{
+		switch (e.key.keysym.sym) 
+		{
+			case SDLK_w:
+				m_Bus->WriteByte(DIR_POS, UP_KEY);
+				break;
+			case SDLK_s:
+				m_Bus->WriteByte(DIR_POS, DOWN_KEY);
+				break;
+			case SDLK_a:
+				m_Bus->WriteByte(DIR_POS, LEFT_KEY);
+				break;
+			case SDLK_d:
+				m_Bus->WriteByte(DIR_POS, RIGHT_KEY);
+				break;
+			default:
+				break;
+		}
+	}
+	else if (e.type == SDL_QUIT) 
+		std::exit(0);
 }
 
 SDL_Color Snake::GetColor(BYTE byte) 
 {
-    switch (byte) 
-    {
-        case 0: return SDL_Color{0, 0, 0, 255};       // BLACK
-        case 1: return SDL_Color{255, 255, 255, 255}; // WHITE
-        case 2:
-        case 9: return SDL_Color{128, 128, 128, 255}; // GREY
-        case 3:
-        case 10: return SDL_Color{255, 0, 0, 255};    // RED
-        case 4:
-        case 11: return SDL_Color{0, 255, 0, 255};    // GREEN
-        case 5:
-        case 12: return SDL_Color{0, 0, 255, 255};    // BLUE
-        case 6:
-        case 13: return SDL_Color{255, 0, 255, 255};  // MAGENTA
-        case 7:
-        case 14: return SDL_Color{255, 255, 0, 255};  // YELLOW
-        default: return SDL_Color{0, 255, 255, 255};  // CYAN
-    }
+	switch (byte) 
+	{
+		case 0: return SDL_Color{0, 0, 0, 255};       // BLACK
+		case 1: return SDL_Color{255, 255, 255, 255}; // WHITE
+		case 2:
+		case 9: return SDL_Color{128, 128, 128, 255}; // GREY
+		case 3:
+		case 10: return SDL_Color{255, 0, 0, 255};    // RED
+		case 4:
+		case 11: return SDL_Color{0, 255, 0, 255};    // GREEN
+		case 5:
+		case 12: return SDL_Color{0, 0, 255, 255};    // BLUE
+		case 6:
+		case 13: return SDL_Color{255, 0, 255, 255};  // MAGENTA
+		case 7:
+		case 14: return SDL_Color{255, 255, 0, 255};  // YELLOW
+		default: return SDL_Color{0, 255, 255, 255};  // CYAN
+	}
 }
 
 bool Snake::ReadScreen(BYTE* szFrame)
 {
-    bool shouldUpdate = false;
-    int frame_i = 0;
+	bool shouldUpdate = false;
+	int frame_i = 0;
 
-    for (WORD addr = SCREEN_START; addr < SCREEN_END; ++addr) 
-    {
-        SDL_Color color = GetColor(m_Bus->ReadByte(addr));
+	for (WORD addr = SCREEN_START; addr < SCREEN_END; ++addr) 
+	{
+		SDL_Color color = GetColor(m_Bus->ReadByte(addr));
 
-        if (szFrame[frame_i] != color.r || szFrame[frame_i + 1] != color.g || szFrame[frame_i + 2] != color.b) 
-        {
-            szFrame[frame_i] = color.r;
-            szFrame[frame_i + 1] = color.g;
-            szFrame[frame_i + 2] = color.b;
+		if (szFrame[frame_i] != color.r || szFrame[frame_i + 1] != color.g || szFrame[frame_i + 2] != color.b) 
+		{
+			szFrame[frame_i] = color.r;
+			szFrame[frame_i + 1] = color.g;
+			szFrame[frame_i + 2] = color.b;
 
-            shouldUpdate = true;
-        }
+			shouldUpdate = true;
+		}
 
-        frame_i += 3;
-    }
+		frame_i += 3;
+	}
 
-    return shouldUpdate;
+	return shouldUpdate;
 }

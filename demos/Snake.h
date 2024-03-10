@@ -18,16 +18,16 @@
 
 class Snake
 {
-    std::shared_ptr<Bus> m_Bus{};
-    SDL_Event m_Event{};
+	std::shared_ptr<Bus> m_Bus{};
+	SDL_Event m_Event{};
 
-    SDL_Color GetColor(BYTE byte);
-    bool ReadScreen(BYTE* frame);
+	SDL_Color GetColor(BYTE byte);
+	bool ReadScreen(BYTE* frame);
 
 public:
-    Snake(std::shared_ptr<Bus> bus);
-    ~Snake();
+	Snake(std::shared_ptr<Bus> bus);
+	~Snake();
 
-    bool Run(BYTE* m_Screen);
-    void HandleEvent(const SDL_Event& e);
+	bool Run(BYTE* m_Screen);
+	void HandleEvent(const SDL_Event& e);
 };
