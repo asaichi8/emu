@@ -49,7 +49,7 @@ void Snake::HandleEvent(const SDL_Event& e)
         std::exit(0);
 }
 
-SDL_Color Snake::GetColor(uint8_t byte) 
+SDL_Color Snake::GetColor(BYTE byte) 
 {
     switch (byte) 
     {

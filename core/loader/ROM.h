@@ -44,23 +44,22 @@ enum Flags7 : BYTE
 };
 
 
-#pragma pack(push, 1) // ensure no padding
-struct iNES_Header
-{
-    BYTE signature[4];
-    BYTE PRG_ROM_banks;
-    BYTE CHR_ROM_banks;
-    Flags6 flags6;
-    Flags7 flags7;
-    BYTE PRG_RAM_size;
-    BYTE TV_System;
-    BYTE reserved[6];
-};
-#pragma pack(pop)
-
-
 class ROM : public Loader
 {
+    #pragma pack(push, 1) // ensure no padding
+    struct iNES_Header
+    {
+        BYTE signature[4];
+        BYTE PRG_ROM_banks;
+        BYTE CHR_ROM_banks;
+        Flags6 flags6;
+        Flags7 flags7;
+        BYTE PRG_RAM_size;
+        BYTE TV_System;
+        BYTE reserved[6];
+    };
+    #pragma pack(pop)
+    
     const BYTE NES_SIG[4] = {'N', 'E', 'S', 0x1A}; // "NES^Z"
     const size_t TRAINER_SIZE = 512;
     const size_t PRG_ROM_BANK_SIZE = 16 * KB;

@@ -21,7 +21,7 @@ class Snake
     std::shared_ptr<Bus> m_Bus{};
     SDL_Event m_Event{};
 
-    SDL_Color GetColor(uint8_t byte);
+    SDL_Color GetColor(BYTE byte);
     bool ReadScreen(BYTE* frame);
 
 public:
