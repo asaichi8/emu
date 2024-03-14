@@ -3,7 +3,7 @@
 #include <vector>
 #include <stdexcept>
 #include "Loader.h"
-#include "typedefs.h"
+#include "../../include/typedefs.h"
 
 
 // https://www.nesdev.org/wiki/INES#Nametable_Arrangement

@@ -2,8 +2,8 @@
 
 #include <vector>
 #include <memory>
-#include "ROM.h"
-#include "typedefs.h"
+#include "../loader/ROM.h"
+#include "../../include/typedefs.h"
 
 // https://www.nesdev.org/wiki/CPU_memory_map
 #define INTERNAL_RAM_SIZE 0x800

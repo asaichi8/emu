@@ -1,7 +1,7 @@
 #pragma once
 
 #include <bitset>
-#include "typedefs.h"
+#include "../../include/typedefs.h"
 
 
 // "Flags of the status register" - http://www.oxyron.de/html/opcodes02.html
