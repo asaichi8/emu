@@ -33,10 +33,10 @@ void Emulator::Run()
 	SDL_DisplayMode currentDisplay{};
 	int primaryDisplay = 0; // primary display
 	// Attempt to set FPS to the refresh rate of the focused monitor
-	if (SDL_GetCurrentDisplayMode(primaryDisplay, &currentDisplay) == 0)
-		m_FPS = currentDisplay.refresh_rate;
+	//if (SDL_GetCurrentDisplayMode(primaryDisplay, &currentDisplay) == 0)
+	//	m_FPS = currentDisplay.refresh_rate;
 	
-	auto FPStime = std::chrono::milliseconds(1000) / m_FPS; // time each frame should run
+	auto FPStime = std::chrono::milliseconds(1000) / 60; // time each frame should run
 	auto nextFrameTime = std::chrono::high_resolution_clock::now() + FPStime; // time the next frame will be drawn
 
 	while (true) // Main loop
