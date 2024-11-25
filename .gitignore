@@ -1,3 +1,5 @@
 bin/emu
+bin/emu.exe
 app/mynestest.log
 core/cpu/mynestest.log
+include/SDL2
