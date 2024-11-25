@@ -1,5 +1,3 @@
 bin/emu
-include/Path.h
 app/mynestest.log
 core/cpu/mynestest.log
-Makefile

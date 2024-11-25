@@ -4,7 +4,7 @@
 Emulator::Emulator() 
 {
 	// Map ROM into appropriate variables
-	if (!m_ROM.LoadROM(PROGRAM_PATH))
+	if (!m_ROM.LoadROM(GetROMPath().c_str()))
 		throw std::runtime_error("Failed to load ROM!");
 
 	// Create devices
