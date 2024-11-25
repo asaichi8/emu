@@ -53,6 +53,7 @@ BYTE Bus::ReadByte(WORD addr)
 	return m_RAM[addr];
 }
 
+// TODO: what if addr = INTERNAL_RAM_SIZE, or PRG_RAM_END?
 WORD Bus::ReadWord(WORD addr, bool shouldWrapPage)
 {
 	if (addr < MIRRORED_INTERNAL_RAM_END)
@@ -104,5 +105,6 @@ void Bus::WriteWord(WORD addr, WORD val)
 	//   addr %= PPU_REGISTER_SIZE;
 
 	m_RAM[addr] = BYTE(val & 0x00FF); // set low byte
-	m_RAM[addr + 1] = BYTE((val >> 8) & 0xFF); // set high byte
+	// ensure addr is correctly wrapped around with % INTERNAL_RAM_SIZE
+	m_RAM[(addr + 1) % INTERNAL_RAM_SIZE] = BYTE((val >> 8) & 0xFF); // set high byte
 }
