@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Bus.h"
+#include "../memory/Bus.h"
 
 
 class PPU

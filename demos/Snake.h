@@ -2,7 +2,7 @@
 
 #include <SDL2/SDL.h>
 #include <memory>
-#include "Bus.h"
+#include "../core/memory/Bus.h"
 
 #define UP_KEY      0x77
 #define DOWN_KEY    0x73

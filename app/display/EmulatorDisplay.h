@@ -1,11 +1,11 @@
 #pragma once
 
-#include <imgui.h>
-#include <imgui_impl_sdl2.h>
-#include <imgui_impl_sdlrenderer2.h>
-#include "SDLApp.h"
-#include "CPURegisters.h"
-#include "typedefs.h"
+#include "../../include/imgui/imgui.h"
+#include "../../include/imgui/imgui_impl_sdl2.h"
+#include "../../include/imgui/imgui_impl_sdlrenderer2.h"
+#include "SDL/SDLApp.h"
+#include "../../core/cpu/CPURegisters.h"
+#include "../../include/typedefs.h"
 
 
 /// @brief Responsible for the GUI/video of the emulator.

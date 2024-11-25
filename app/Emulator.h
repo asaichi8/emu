@@ -4,13 +4,13 @@
 #include <chrono>
 #include <thread>
 #include <stdexcept>
-#include "ROM.h"
-#include "Bus.h"
-#include "CPU.h"
-#include "PPU.h"
-#include "EmulatorDisplay.h"
-#include "Path.h"
-#include "Snake.h"
+#include "../core/loader/ROM.h"
+#include "../core/memory/Bus.h"
+#include "../core/cpu/CPU.h"
+#include "../core/ppu/PPU.h"
+#include "display/EmulatorDisplay.h"
+#include "../include/Path.h"
+#include "../demos/Snake.h"
 
 #define SIZE 32  // Size of each internal pixel
 #define SCALE 20 // Amount to scale the internal pixels up by

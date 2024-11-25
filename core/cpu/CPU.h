@@ -8,8 +8,8 @@
 #include <fstream>
 #include <memory>
 #include "CPURegisters.h"
-#include "Bus.h"
-#include "typedefs.h"
+#include "../memory/Bus.h"
+#include "../../include/typedefs.h"
 
 #define MODE(addressingMode) WORD addressingMode()
 #define OPCODE(opcodeName) void opcodeName(WORD addr)
