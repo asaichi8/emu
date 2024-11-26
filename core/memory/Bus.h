@@ -20,9 +20,9 @@ class Bus
 	std::vector<BYTE> m_CPURAM{};
 	ROM* m_ROM{};
 
-	WORD MirrorAddress(WORD addr, WORD size, WORD startAddr = 0x0);
-	BYTE ReadPPUByte(PPURegisters::Registers PPUReg);
-	BYTE WritePPUByte(PPURegisters::Registers PPUreg);
+	static WORD MirrorAddress(WORD addr, WORD size, WORD startAddr = 0x0);
+	BYTE ReadPPURegister(PPURegisters::Registers PPUReg);
+	BYTE WritePPURegister(PPURegisters::Registers PPUreg);
 	BYTE ReadPRGByte(WORD addr);
 	WORD ReadPRGWord(WORD addr, bool shouldWrapPage = false);
 

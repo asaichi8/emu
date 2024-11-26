@@ -21,7 +21,7 @@ BYTE Bus::ReadByte(WORD addr)
 	if (addr < MIRRORED_INTERNAL_RAM_END)
 		return m_CPURAM[MirrorAddress(addr, INTERNAL_RAM_SIZE)]; // clamp to 0x000 - 0x7FF
 	else if (addr < MIRRORED_PPU_REGISTER_END)
-		return ReadPPUByte((PPURegisters::Registers)(MirrorAddress(addr, PPU_REGISTER_SIZE, MIRRORED_INTERNAL_RAM_END))); // clamp to 0x2000 - 0x2007
+		return ReadPPURegister((PPURegisters::Registers)(MirrorAddress(addr, PPU_REGISTER_SIZE, MIRRORED_INTERNAL_RAM_END))); // clamp to 0x2000 - 0x2007
 	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
 		return ReadPRGByte(addr);
 	
@@ -57,9 +57,9 @@ void Bus::WriteByte(WORD addr, BYTE val)
 	if (addr < MIRRORED_INTERNAL_RAM_END)
 		m_CPURAM[MirrorAddress(addr, INTERNAL_RAM_SIZE)] = val;
 	else if (addr < MIRRORED_PPU_REGISTER_END)
-		WritePPUByte((PPURegisters::Registers)(MirrorAddress(addr, PPU_REGISTER_SIZE, MIRRORED_INTERNAL_RAM_END)));
+		WritePPURegister((PPURegisters::Registers)(MirrorAddress(addr, PPU_REGISTER_SIZE, MIRRORED_INTERNAL_RAM_END)));
 	else if (addr == PPURegisters::Registers::OAMDMA) // 0x4014
-		WritePPUByte(PPURegisters::Registers::OAMDMA);
+		WritePPURegister(PPURegisters::Registers::OAMDMA);
 	else
 		std::cerr << "Attempted to write byte outside of CPU/PPU (not implemented)" << std::endl;
 }
@@ -94,7 +94,7 @@ WORD Bus::MirrorAddress(WORD addr, WORD size, WORD startAddr)
 	return addr;
 }
 
-BYTE Bus::ReadPPUByte(PPURegisters::Registers PPUreg)
+BYTE Bus::ReadPPURegister(PPURegisters::Registers PPUreg)
 {
 	if (!PPURegisters::IsReadable(PPUreg))
 	{
@@ -120,7 +120,7 @@ BYTE Bus::ReadPPUByte(PPURegisters::Registers PPUreg)
 	}
 }
 
-BYTE Bus::WritePPUByte(PPURegisters::Registers PPUreg)
+BYTE Bus::WritePPURegister(PPURegisters::Registers PPUreg)
 {
 	if (!PPURegisters::IsWritable(PPUreg))
 	{
