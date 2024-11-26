@@ -20,7 +20,7 @@ class Bus
 	std::vector<BYTE> m_CPURAM{};
 	ROM* m_ROM{};
 
-	//WORD ClampAddress(WORD addr, WORD size);
+	WORD MirrorAddress(WORD addr, WORD size, WORD startAddr = 0x0);
 	BYTE ReadPPUByte(PPURegisters::Registers PPUReg);
 	BYTE WritePPUByte(PPURegisters::Registers PPUreg);
 	BYTE ReadPRGByte(WORD addr);

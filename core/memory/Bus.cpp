@@ -19,15 +19,9 @@ BYTE Bus::ReadByte(WORD addr)
 	// is an 8KiB range. As a result, any time the CPU attempts to access an address past 2KB (0x800), the address is mirrored back to an address
 	// within the initial 2KiB.
 	if (addr < MIRRORED_INTERNAL_RAM_END)
-		return m_CPURAM[addr % INTERNAL_RAM_SIZE]; // clamp to 0x000 - 0x7FF
+		return m_CPURAM[MirrorAddress(addr, INTERNAL_RAM_SIZE)]; // clamp to 0x000 - 0x7FF
 	else if (addr < MIRRORED_PPU_REGISTER_END)
-	{
-		addr -= MIRRORED_INTERNAL_RAM_END; // normalise from 0x2000 - 0x3FFF to 0x0000 - 0x1FFF so we can mirror the address
-		addr %= PPU_REGISTER_SIZE; // clamp to 0x00 - 0x07
-		addr += MIRRORED_INTERNAL_RAM_END; // go back to 0x2000 - 0x2007
-		
-		return ReadPPUByte((PPURegisters::Registers)addr);
-	}
+		return ReadPPUByte((PPURegisters::Registers)(MirrorAddress(addr, PPU_REGISTER_SIZE, MIRRORED_INTERNAL_RAM_END))); // clamp to 0x2000 - 0x2007
 	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
 		return ReadPRGByte(addr);
 	
@@ -38,12 +32,11 @@ BYTE Bus::ReadByte(WORD addr)
 WORD Bus::ReadWord(WORD addr, bool shouldWrapPage)
 {
 	if (addr < MIRRORED_INTERNAL_RAM_END)
-		addr %= INTERNAL_RAM_SIZE;
+		addr = MirrorAddress(addr, INTERNAL_RAM_SIZE);
 	else if (addr < MIRRORED_PPU_REGISTER_END)
 	{
-		//addr %= PPU_REGISTER_SIZE;
 		std::cerr << "Attempted to read word from PPU (not implemented)" << std::endl;
-		return 0;
+		return NULL;
 	}
 	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
 		return ReadPRGWord(addr, shouldWrapPage);
@@ -62,15 +55,9 @@ WORD Bus::ReadWord(WORD addr, bool shouldWrapPage)
 void Bus::WriteByte(WORD addr, BYTE val)
 {
 	if (addr < MIRRORED_INTERNAL_RAM_END)
-		m_CPURAM[addr % INTERNAL_RAM_SIZE] = val;
+		m_CPURAM[MirrorAddress(addr, INTERNAL_RAM_SIZE)] = val;
 	else if (addr < MIRRORED_PPU_REGISTER_END)
-	{
-		addr -= MIRRORED_INTERNAL_RAM_END; // normalise from 0x2000 - 0x3FFF to 0x0000 - 0x1FFF so we can mirror the address
-		addr %= PPU_REGISTER_SIZE; // clamp to 0x00 - 0x07
-		addr += MIRRORED_INTERNAL_RAM_END; // go back to 0x2000 - 0x2007
-		
-		WritePPUByte((PPURegisters::Registers)addr);
-	}
+		WritePPUByte((PPURegisters::Registers)(MirrorAddress(addr, PPU_REGISTER_SIZE, MIRRORED_INTERNAL_RAM_END)));
 	else if (addr == PPURegisters::Registers::OAMDMA) // 0x4014
 		WritePPUByte(PPURegisters::Registers::OAMDMA);
 	else
@@ -93,12 +80,19 @@ void Bus::WriteWord(WORD addr, WORD val)
 }
 
 
-/*
-WORD Bus::ClampAddress(WORD addr, WORD size)
+// e.g. for PPU, size = PPU_REGISTER_SIZE (0x08), startAddr = MIRRORED_INTERNAL_RAM_END (0x2000)
+WORD Bus::MirrorAddress(WORD addr, WORD size, WORD startAddr)
 {
+	if (addr >= startAddr)
+		addr -= startAddr; // e.g. for PPU registers, normalise from 0x2000 - 0x3FFF to 0x0000 - 0x1FFF so we can mirror the address
+	else
+		addr = 0x0;
 
+	addr %= size; // e.g. for PPU registers, clamp to 0x00 - 0x07
+	addr += startAddr; // e.g. for PPU registers, go back to 0x2000 - 0x2007
+
+	return addr;
 }
-*/
 
 BYTE Bus::ReadPPUByte(PPURegisters::Registers PPUreg)
 {
@@ -169,14 +163,15 @@ BYTE Bus::WritePPUByte(PPURegisters::Registers PPUreg)
 
 BYTE Bus::ReadPRGByte(WORD addr)
 {
-	addr -= 32 * KB; // normalise address - CPU addresses it from 32KiB to 64KiB
-	
-	if (m_ROM->PRG_ROM.size() == (16 * KB) && addr >= (16 * KB))
-		addr %= 16 * KB; // mirror address if it's outside the PRG ROM size range
-	
+	// mirror address if it's outside the PRG ROM size range
+	if (m_ROM->PRG_ROM.size() == (16 * KB) && addr >= (PRG_RAM_START + 16 * KB))
+		addr = MirrorAddress(addr, m_ROM->PRG_ROM.size(), PRG_RAM_START);
+
+	addr -= PRG_RAM_START;
 	return m_ROM->PRG_ROM[addr];
 }
 
+// TODO: probably delete this that doesn't look right
 WORD Bus::ReadPRGWord(WORD addr, bool shouldWrapPage)
 {    
 	BYTE low = ReadPRGByte(addr);
