@@ -3,13 +3,13 @@
 
 Bus::Bus(ROM* rom) : m_ROM(rom)
 {
-	m_RAM.assign(8 * KB, 0);
+	m_CPURAM.assign(8 * KB, 0); // the CPU's RAM is actually only 2KB in size - the rest of the 6KB are mirrored.
 }
 
 
 void Bus::Reset()
 {
-	std::fill(m_RAM.begin(), m_RAM.end(), 0);
+	std::fill(m_CPURAM.begin(), m_CPURAM.end(), 0);
 }
 
 BYTE Bus::ReadPRGByte(WORD addr)
@@ -37,20 +37,20 @@ WORD Bus::ReadPRGWord(WORD addr, bool shouldWrapPage)
 BYTE Bus::ReadByte(WORD addr)
 {
 	// On the NES, only 2KiB of RAM is accessible due to hardware limitations. The CPU accesses RAM through addresses 0x0000 to 0x1FFF, however, which
-	// is an 8KiB range. As a result, any time the CPU attempts to access an address past 2KiB (0x800), the address is mirrored back to an address
+	// is an 8KiB range. As a result, any time the CPU attempts to access an address past 2KB (0x800), the address is mirrored back to an address
 	// within the initial 2KiB.
 	if (addr < MIRRORED_INTERNAL_RAM_END)
-		return m_RAM[addr % INTERNAL_RAM_SIZE]; // return mirrored address
+		return m_CPURAM[addr % INTERNAL_RAM_SIZE]; // return mirrored address
 	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
 		return ReadPRGByte(addr);
 	else if (addr < MIRRORED_PPU_REGISTER_END)
 	{
-		//return m_RAM[addr % PPU_REGISTER_SIZE];
+		//return m_CPURAM[addr % PPU_REGISTER_SIZE];
 		std::cerr << "Attempted to read byte from PPU (not implemented)" << std::endl;
 		return 0;
 	}
 	
-	return m_RAM[addr];
+	return m_CPURAM[addr];
 }
 
 // TODO: what if addr = INTERNAL_RAM_SIZE, or PRG_RAM_END?
@@ -67,13 +67,13 @@ WORD Bus::ReadWord(WORD addr, bool shouldWrapPage)
 	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
 		return ReadPRGWord(addr, shouldWrapPage);
 
-	BYTE low = m_RAM[addr];
+	BYTE low = m_CPURAM[addr];
 
 	BYTE high{};
 	if (shouldWrapPage)
-		high = m_RAM[(addr & 0xFF00) | ((addr + 1) & 0x00FF)];
+		high = m_CPURAM[(addr & 0xFF00) | ((addr + 1) & 0x00FF)];
 	else
-		high = m_RAM[addr + 1];
+		high = m_CPURAM[addr + 1];
 
 	return (WORD(high) << 8) + low;
 }
@@ -81,15 +81,15 @@ WORD Bus::ReadWord(WORD addr, bool shouldWrapPage)
 void Bus::WriteByte(WORD addr, BYTE val)
 {
 	if (addr < MIRRORED_INTERNAL_RAM_END)
-		m_RAM[addr % INTERNAL_RAM_SIZE] = val;
+		m_CPURAM[addr % INTERNAL_RAM_SIZE] = val;
 	else
 	{
 		std::cerr << "Attempted to write byte outside of CPU (not implemented)" << std::endl;
 	}
 	/*else if (addr < MIRRORED_PPU_REGISTER_END)
-		m_RAM[addr % PPU_REGISTER_SIZE] = val;
+		m_CPURAM[addr % PPU_REGISTER_SIZE] = val;
 	else
-		m_RAM[addr] = val;*/
+		m_CPURAM[addr] = val;*/
 }
 
 void Bus::WriteWord(WORD addr, WORD val)
@@ -104,7 +104,7 @@ void Bus::WriteWord(WORD addr, WORD val)
 	//else if (addr < MIRRORED_PPU_REGISTER_END)
 	//   addr %= PPU_REGISTER_SIZE;
 
-	m_RAM[addr] = BYTE(val & 0x00FF); // set low byte
+	m_CPURAM[addr] = BYTE(val & 0x00FF); // set low byte
 	// ensure addr is correctly wrapped around with % INTERNAL_RAM_SIZE
-	m_RAM[(addr + 1) % INTERNAL_RAM_SIZE] = BYTE((val >> 8) & 0xFF); // set high byte
+	m_CPURAM[(addr + 1) % INTERNAL_RAM_SIZE] = BYTE((val >> 8) & 0xFF); // set high byte
 }

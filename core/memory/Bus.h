@@ -16,7 +16,7 @@
 
 class Bus
 {
-	std::vector<BYTE> m_RAM{};
+	std::vector<BYTE> m_CPURAM{};
 	ROM* m_ROM{};
 
 public:
