@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include "../loader/ROM.h"
+#include "../ppu/PPURegisters.h"
 #include "../../include/typedefs.h"
 
 // https://www.nesdev.org/wiki/CPU_memory_map
@@ -19,13 +20,16 @@ class Bus
 	std::vector<BYTE> m_CPURAM{};
 	ROM* m_ROM{};
 
+	//WORD ClampAddress(WORD addr, WORD size);
+	BYTE ReadPPUByte(PPURegisters::Registers PPUReg);
+	BYTE WritePPUByte(PPURegisters::Registers PPUreg);
+	BYTE ReadPRGByte(WORD addr);
+	WORD ReadPRGWord(WORD addr, bool shouldWrapPage = false);
+
 public:
 	Bus(ROM* rom);
 
 	void Reset();
-
-	BYTE ReadPRGByte(WORD addr);
-	WORD ReadPRGWord(WORD addr, bool shouldWrapPage = false);
 
 	BYTE ReadByte(WORD addr);
 	WORD ReadWord(WORD addr, bool shouldWrapPage = false);
