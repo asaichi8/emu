@@ -12,6 +12,87 @@ void Bus::Reset()
 	std::fill(m_CPURAM.begin(), m_CPURAM.end(), 0);
 }
 
+// https://www.nesdev.org/wiki/CPU_memory_map
+BYTE Bus::ReadByte(WORD addr)
+{
+	// On the NES, only 2KiB of RAM is accessible due to hardware limitations. The CPU accesses RAM through addresses 0x0000 to 0x1FFF, however, which
+	// is an 8KiB range. As a result, any time the CPU attempts to access an address past 2KB (0x800), the address is mirrored back to an address
+	// within the initial 2KiB.
+	if (addr < MIRRORED_INTERNAL_RAM_END)
+		return m_CPURAM[addr % INTERNAL_RAM_SIZE]; // clamp to 0x000 - 0x7FF
+	else if (addr < MIRRORED_PPU_REGISTER_END)
+	{
+		addr -= MIRRORED_INTERNAL_RAM_END; // normalise from 0x2000 - 0x3FFF to 0x0000 - 0x1FFF so we can mirror the address
+		addr %= PPU_REGISTER_SIZE; // clamp to 0x00 - 0x07
+		addr += MIRRORED_INTERNAL_RAM_END; // go back to 0x2000 - 0x2007
+		
+		return ReadPPUByte((PPURegisters::Registers)addr);
+	}
+	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
+		return ReadPRGByte(addr);
+	
+	return m_CPURAM[addr];
+}
+
+// TODO: what if addr = INTERNAL_RAM_SIZE, or PRG_RAM_END?
+WORD Bus::ReadWord(WORD addr, bool shouldWrapPage)
+{
+	if (addr < MIRRORED_INTERNAL_RAM_END)
+		addr %= INTERNAL_RAM_SIZE;
+	else if (addr < MIRRORED_PPU_REGISTER_END)
+	{
+		//addr %= PPU_REGISTER_SIZE;
+		std::cerr << "Attempted to read word from PPU (not implemented)" << std::endl;
+		return 0;
+	}
+	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
+		return ReadPRGWord(addr, shouldWrapPage);
+
+	BYTE low = m_CPURAM[addr];
+
+	BYTE high{};
+	if (shouldWrapPage)
+		high = m_CPURAM[(addr & 0xFF00) | ((addr + 1) & 0x00FF)];
+	else
+		high = m_CPURAM[addr + 1];
+
+	return (WORD(high) << 8) + low;
+}
+
+void Bus::WriteByte(WORD addr, BYTE val)
+{
+	if (addr < MIRRORED_INTERNAL_RAM_END)
+		m_CPURAM[addr % INTERNAL_RAM_SIZE] = val;
+	else if (addr < MIRRORED_PPU_REGISTER_END)
+	{
+		addr -= MIRRORED_INTERNAL_RAM_END; // normalise from 0x2000 - 0x3FFF to 0x0000 - 0x1FFF so we can mirror the address
+		addr %= PPU_REGISTER_SIZE; // clamp to 0x00 - 0x07
+		addr += MIRRORED_INTERNAL_RAM_END; // go back to 0x2000 - 0x2007
+		
+		WritePPUByte((PPURegisters::Registers)addr);
+	}
+	else if (addr == PPURegisters::Registers::OAMDMA) // 0x4014
+		WritePPUByte(PPURegisters::Registers::OAMDMA);
+	else
+		std::cerr << "Attempted to write byte outside of CPU/PPU (not implemented)" << std::endl;
+}
+
+void Bus::WriteWord(WORD addr, WORD val)
+{
+	if (addr < MIRRORED_INTERNAL_RAM_END)
+		addr %= INTERNAL_RAM_SIZE;
+	else
+	{
+		std::cerr << "Attempted to write word outside of CPU (not implemented)" << std::endl;
+		return;
+	}
+
+	m_CPURAM[addr] = BYTE(val & 0x00FF); // set low byte
+	// ensure addr is correctly wrapped around with % INTERNAL_RAM_SIZE
+	m_CPURAM[(addr + 1) % INTERNAL_RAM_SIZE] = BYTE((val >> 8) & 0xFF); // set high byte
+}
+
+
 /*
 WORD Bus::ClampAddress(WORD addr, WORD size)
 {
@@ -106,85 +187,4 @@ WORD Bus::ReadPRGWord(WORD addr, bool shouldWrapPage)
 		high = ReadPRGByte(addr + 1);
 		
 	return (WORD(high) << 8) + low;
-}
-
-
-// https://www.nesdev.org/wiki/CPU_memory_map
-BYTE Bus::ReadByte(WORD addr)
-{
-	// On the NES, only 2KiB of RAM is accessible due to hardware limitations. The CPU accesses RAM through addresses 0x0000 to 0x1FFF, however, which
-	// is an 8KiB range. As a result, any time the CPU attempts to access an address past 2KB (0x800), the address is mirrored back to an address
-	// within the initial 2KiB.
-	if (addr < MIRRORED_INTERNAL_RAM_END)
-		return m_CPURAM[addr % INTERNAL_RAM_SIZE]; // clamp to 0x000 - 0x7FF
-	else if (addr < MIRRORED_PPU_REGISTER_END)
-	{
-		addr -= MIRRORED_INTERNAL_RAM_END; // normalise from 0x2000 - 0x3FFF to 0x0000 - 0x1FFF so we can mirror the address
-		addr %= PPU_REGISTER_SIZE; // clamp to 0x00 - 0x07
-		addr += MIRRORED_INTERNAL_RAM_END; // go back to 0x2000 - 0x2007
-		
-		return ReadPPUByte((PPURegisters::Registers)addr);
-	}
-	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
-		return ReadPRGByte(addr);
-	
-	return m_CPURAM[addr];
-}
-
-// TODO: what if addr = INTERNAL_RAM_SIZE, or PRG_RAM_END?
-WORD Bus::ReadWord(WORD addr, bool shouldWrapPage)
-{
-	if (addr < MIRRORED_INTERNAL_RAM_END)
-		addr %= INTERNAL_RAM_SIZE;
-	else if (addr < MIRRORED_PPU_REGISTER_END)
-	{
-		//addr %= PPU_REGISTER_SIZE;
-		std::cerr << "Attempted to read word from PPU (not implemented)" << std::endl;
-		return 0;
-	}
-	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
-		return ReadPRGWord(addr, shouldWrapPage);
-
-	BYTE low = m_CPURAM[addr];
-
-	BYTE high{};
-	if (shouldWrapPage)
-		high = m_CPURAM[(addr & 0xFF00) | ((addr + 1) & 0x00FF)];
-	else
-		high = m_CPURAM[addr + 1];
-
-	return (WORD(high) << 8) + low;
-}
-
-void Bus::WriteByte(WORD addr, BYTE val)
-{
-	if (addr < MIRRORED_INTERNAL_RAM_END)
-		m_CPURAM[addr % INTERNAL_RAM_SIZE] = val;
-	else if (addr < MIRRORED_PPU_REGISTER_END)
-	{
-		addr -= MIRRORED_INTERNAL_RAM_END; // normalise from 0x2000 - 0x3FFF to 0x0000 - 0x1FFF so we can mirror the address
-		addr %= PPU_REGISTER_SIZE; // clamp to 0x00 - 0x07
-		addr += MIRRORED_INTERNAL_RAM_END; // go back to 0x2000 - 0x2007
-		
-		WritePPUByte((PPURegisters::Registers)addr);
-	}
-	else if (addr == PPURegisters::Registers::OAMDMA) // 0x4014
-		WritePPUByte(PPURegisters::Registers::OAMDMA);
-	else
-		std::cerr << "Attempted to write byte outside of CPU/PPU (not implemented)" << std::endl;
-}
-
-void Bus::WriteWord(WORD addr, WORD val)
-{
-	if (addr < MIRRORED_INTERNAL_RAM_END)
-		addr %= INTERNAL_RAM_SIZE;
-	else
-	{
-		std::cerr << "Attempted to write word outside of CPU (not implemented)" << std::endl;
-		return;
-	}
-
-	m_CPURAM[addr] = BYTE(val & 0x00FF); // set low byte
-	// ensure addr is correctly wrapped around with % INTERNAL_RAM_SIZE
-	m_CPURAM[(addr + 1) % INTERNAL_RAM_SIZE] = BYTE((val >> 8) & 0xFF); // set high byte
 }
