@@ -6,6 +6,6 @@
 class PPUSCROLL : public IPPURegister
 {
 public:
-    PPUSCROLL() : IPPURegister((WORD)Registers::PPUSCROLL) {}
+    PPUSCROLL() : IPPURegister((WORD)PPURegAddr::PPUSCROLL) {}
     ~PPUSCROLL() override {}
 };

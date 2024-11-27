@@ -6,6 +6,6 @@
 class PPUSTATUS : public IPPURegister
 {
 public:
-    PPUSTATUS() : IPPURegister((WORD)Registers::PPUSTATUS) {}
+    PPUSTATUS() : IPPURegister((WORD)PPURegAddr::PPUSTATUS) {}
     ~PPUSTATUS() override {}
 };

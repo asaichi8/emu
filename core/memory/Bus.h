@@ -4,8 +4,8 @@
 #include <memory>
 #include "../ppu/PPU.h"
 #include "../loader/ROM.h"
-#include "../ppu/PPURegisters.h"
 #include "../../include/typedefs.h"
+#include "../ppu/registers/IPPURegister.h"
 
 // https://www.nesdev.org/wiki/CPU_memory_map
 #define INTERNAL_RAM_SIZE 0x800
@@ -15,6 +15,7 @@
 #define PRG_RAM_START 0x8000
 #define PRG_RAM_END   0xFFFF
 
+using PPURegAddr = IPPURegister::IPPURegister::PPURegAddr;
 
 class PPU;
 
@@ -25,8 +26,8 @@ class Bus
 	std::unique_ptr<PPU> m_PPU{};
 
 	static WORD MirrorAddress(WORD addr, WORD size, WORD startAddr = 0x0);
-	BYTE ReadPPURegister(PPURegisters::Registers PPUReg);
-	BYTE WritePPURegister(PPURegisters::Registers PPUreg);
+	BYTE ReadPPURegister(PPURegAddr PPUreg);
+	BYTE WritePPURegister(PPURegAddr PPUreg);
 	BYTE ReadPRGByte(WORD addr);
 	WORD ReadPRGWord(WORD addr, bool shouldWrapPage = false);
 

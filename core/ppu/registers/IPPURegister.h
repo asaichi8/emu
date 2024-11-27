@@ -3,13 +3,12 @@
 
 class IPPURegister
 {
-protected:
+public:
     WORD m_regAddr;
 
-public:
     IPPURegister(WORD regAddr) : m_regAddr(regAddr) {}
     virtual ~IPPURegister() {}
-
+    
     // https://www.nesdev.org/wiki/PPU_registers#Summary
     // ensure it's an enum class rather than an enum to ensure that e.g. PPUCTRL refers to the class, and PPURegAddr::PPUCTRL refers to the reg address
     enum class PPURegAddr : WORD
@@ -24,16 +23,6 @@ public:
         PPUDATA 	= 0x2007,	
         OAMDMA 		= 0x4014	
     };
-
-    bool IsReadable() const
-    {
-        return (m_regAddr == (WORD)PPURegAddr::PPUSTATUS || m_regAddr == (WORD)PPURegAddr::OAMDATA || m_regAddr == (WORD)PPURegAddr::PPUDATA);
-    }
-
-    bool IsWriteable() const
-    {
-        return m_regAddr != (WORD)PPURegAddr::PPUSTATUS;
-    }
 
     bool operator==(WORD r) const
     {

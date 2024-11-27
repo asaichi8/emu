@@ -6,6 +6,6 @@
 class PPUDATA : public IPPURegister
 {
 public:
-    PPUDATA() : IPPURegister((WORD)Registers::PPUDATA) {}
+    PPUDATA() : IPPURegister((WORD)PPURegAddr::PPUDATA) {}
     ~PPUDATA() override {}
 };

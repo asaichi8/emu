@@ -6,6 +6,6 @@
 class PPUCTRL : public IPPURegister
 {
 public:
-    PPUCTRL() : IPPURegister((WORD)Registers::PPUCTRL) {}
+    PPUCTRL() : IPPURegister((WORD)PPURegAddr::PPUCTRL) {}
     ~PPUCTRL() override {}
 };

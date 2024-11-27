@@ -6,6 +6,6 @@
 class OAMADDR : public IPPURegister
 {
 public:
-    OAMADDR() : IPPURegister((WORD)Registers::OAMADDR) {}
+    OAMADDR() : IPPURegister((WORD)PPURegAddr::OAMADDR) {}
     ~OAMADDR() override {}
 };

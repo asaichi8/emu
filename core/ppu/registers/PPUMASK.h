@@ -6,6 +6,6 @@
 class PPUMASK : public IPPURegister
 {
 public:
-    PPUMASK() : IPPURegister((WORD)Registers::PPUMASK) {}
+    PPUMASK() : IPPURegister((WORD)PPURegAddr::PPUMASK) {}
     ~PPUMASK() override {}
 };
