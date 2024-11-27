@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include "../ppu/PPU.h"
 #include "../loader/ROM.h"
 #include "../ppu/PPURegisters.h"
 #include "../../include/typedefs.h"
@@ -19,6 +20,7 @@ class Bus
 {
 	std::vector<BYTE> m_CPURAM{};
 	ROM* m_ROM{};
+	std::unique_ptr<PPU> m_PPU{};
 
 	static WORD MirrorAddress(WORD addr, WORD size, WORD startAddr = 0x0);
 	BYTE ReadPPURegister(PPURegisters::Registers PPUReg);

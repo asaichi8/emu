@@ -25,7 +25,6 @@ class Emulator
 	ROM m_ROM{};
 	std::shared_ptr<Bus> m_Bus{};
 	std::unique_ptr<CPU> m_CPU{};
-	std::unique_ptr<PPU> m_PPU{};
 	std::unique_ptr<Snake> m_Snake{};
 	std::unique_ptr<EmulatorDisplay> m_GUI{};
 
