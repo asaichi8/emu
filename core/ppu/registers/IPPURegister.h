@@ -3,9 +3,9 @@
 
 class IPPURegister
 {
-public:
     WORD m_regAddr;
 
+public:
     IPPURegister(WORD regAddr) : m_regAddr(regAddr) {}
     virtual ~IPPURegister() {}
     
