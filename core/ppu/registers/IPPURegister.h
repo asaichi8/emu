@@ -11,8 +11,8 @@ public:
     virtual ~IPPURegister() {}
 
     // https://www.nesdev.org/wiki/PPU_registers#Summary
-    // ensure it's an enum class rather than an enum to ensure that e.g. PPUCTRL refers to the class, and Registers::PPUCTRL refers to the reg address
-    enum class Registers : WORD
+    // ensure it's an enum class rather than an enum to ensure that e.g. PPUCTRL refers to the class, and PPURegAddr::PPUCTRL refers to the reg address
+    enum class PPURegAddr : WORD
     {
         PPUCTRL 	= 0x2000,	
         PPUMASK 	= 0x2001,	
@@ -27,12 +27,12 @@ public:
 
     bool IsReadable() const
     {
-        return (m_regAddr == (WORD)Registers::PPUSTATUS || m_regAddr == (WORD)Registers::OAMDATA || m_regAddr == (WORD)Registers::PPUDATA);
+        return (m_regAddr == (WORD)PPURegAddr::PPUSTATUS || m_regAddr == (WORD)PPURegAddr::OAMDATA || m_regAddr == (WORD)PPURegAddr::PPUDATA);
     }
 
     bool IsWriteable() const
     {
-        return m_regAddr != (WORD)Registers::PPUSTATUS;
+        return m_regAddr != (WORD)PPURegAddr::PPUSTATUS;
     }
 
     bool operator==(WORD r) const
