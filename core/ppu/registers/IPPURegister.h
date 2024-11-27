@@ -41,9 +41,13 @@ public:
     }
 };
 
-class PPUCTRL : public IPPURegister
-{
-public:
-    PPUCTRL() : IPPURegister((WORD)Registers::PPUCTRL) {}
-    ~PPUCTRL() override {}
-};
+// ensure we only need to include IPPURegister.h to include all PPU registers
+#include "PPUCTRL.h"
+#include "PPUMASK.h"
+#include "PPUSTATUS.h"
+#include "OAMADDR.h"
+#include "OAMDATA.h"
+#include "PPUSCROLL.h"
+#include "PPUADDR.h"
+#include "PPUDATA.h"
+#include "OAMDMA.h"
