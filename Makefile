@@ -7,6 +7,7 @@ INCLUDES = -I$(CUR_DIR)/app \
            -I$(CUR_DIR)/app/display/SDL \
            -I$(CUR_DIR)/core/cpu \
            -I$(CUR_DIR)/core/ppu \
+           -I$(CUR_DIR)/core/ppu/registers \
            -I$(CUR_DIR)/core/apu \
            -I$(CUR_DIR)/core/loader \
            -I$(CUR_DIR)/core/memory \
