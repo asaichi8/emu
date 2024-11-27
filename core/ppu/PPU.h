@@ -17,9 +17,11 @@ class PPU
 		std::unique_ptr<IPPURegister> ppuscroll = std::make_unique<PPUSCROLL>();
 		std::unique_ptr<IPPURegister> ppuaddr 	= std::make_unique<PPUADDR>	 ();
 		std::unique_ptr<IPPURegister> ppudata 	= std::make_unique<PPUDATA>	 ();
-		std::unique_ptr<IPPURegister> oamdata 	= std::make_unique<OAMDATA>	 ();
-	} registers;	 
+		std::unique_ptr<IPPURegister> oamdma 	= std::make_unique<OAMDMA>	 ();
+	};	 
 	
 public:
 	PPU();
+
+	Registers registers;
 };
