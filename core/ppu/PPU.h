@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IPPURegister.h"
 #include "../memory/Bus.h"
 
 
