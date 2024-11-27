@@ -16,6 +16,8 @@
 #define PRG_RAM_END   0xFFFF
 
 
+class PPU;
+
 class Bus
 {
 	std::vector<BYTE> m_CPURAM{};
