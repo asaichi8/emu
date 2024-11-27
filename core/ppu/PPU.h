@@ -1,7 +1,7 @@
 #pragma once
 
-#include "IPPURegister.h"
 #include "../memory/Bus.h"
+#include "registers/IPPURegister.h"
 
 
 class PPU
