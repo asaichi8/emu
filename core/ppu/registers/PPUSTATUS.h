@@ -5,11 +5,10 @@
 
 class PPUSTATUS : public IPPURegister
 {
-
     std::bitset<8> ppu_status_register;
 
 public:
-    PPUSTATUS() : IPPURegister((WORD)PPURegAddr::PPUSTATUS) {}
+    PPUSTATUS(InternalRegisters* _internal_registers) : IPPURegister((WORD)PPURegAddr::PPUSTATUS, _internal_registers) {}
     ~PPUSTATUS() override {}
 
     // https://www.nesdev.org/wiki/PPU_registers#PPUSTATUS_-_Rendering_events_($2002_read)
@@ -25,5 +24,14 @@ public:
         VBLANK // cleared on PPUSTATUS read - https://www.nesdev.org/wiki/PPU_registers#Vblank_flag
     };
 
-    std::bitset<8>* GetRegVal() override { return &ppu_status_register; }
+    //std::bitset<8>* GetRegVal() override { return &ppu_status_register; }
+    std::bitset<8> Read() override 
+    { 
+        auto preservedReg = ppu_status_register; // save data before affecting flags
+
+        ppu_status_register.reset(PPUStatusRegisterFlags::VBLANK);
+        internal_registers->w = false;
+
+        return preservedReg;
+    }
 };

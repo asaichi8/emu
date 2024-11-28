@@ -6,6 +6,6 @@
 class OAMDATA : public IPPURegister
 {
 public:
-    OAMDATA() : IPPURegister((WORD)PPURegAddr::OAMDATA) {}
+    OAMDATA(InternalRegisters* _internal_registers) : IPPURegister((WORD)PPURegAddr::OAMDATA, _internal_registers) {}
     ~OAMDATA() override {}
 };

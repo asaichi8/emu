@@ -8,9 +8,9 @@ class PPUMASK : public IPPURegister
     std::bitset<8> ppu_mask_register;
 
 public:
-    PPUMASK() : IPPURegister((WORD)PPURegAddr::PPUMASK) {}
+    PPUMASK(InternalRegisters* _internal_registers) : IPPURegister((WORD)PPURegAddr::PPUMASK, _internal_registers) {}
     ~PPUMASK() override {}
-    
+
     // https://www.nesdev.org/wiki/PPU_registers#PPUMASK_-_Rendering_settings_($2001_write)
     enum PPUMaskRegisterFlags
     {
@@ -24,5 +24,6 @@ public:
         EMPHASIZE_BLUE,
     };
 
-    std::bitset<8>* GetRegVal() override { return &ppu_mask_register; }
+    //std::bitset<8>* GetRegVal() override { return &ppu_mask_register; }
+    void Write(std::bitset<8> val) override { ppu_mask_register = val; }
 };

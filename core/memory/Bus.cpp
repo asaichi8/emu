@@ -97,36 +97,23 @@ WORD Bus::MirrorAddress(WORD addr, WORD size, WORD startAddr)
 
 BYTE Bus::ReadPPURegister(PPURegAddr PPUreg)
 {
-	BYTE data = 0;
-
 	// see enum definitions for why flags are cleared/set
 	// TODO: handle unhandled readable registers
 	switch (PPUreg)
 	{
 		case PPURegAddr::PPUSTATUS:
-			if (std::bitset<8>* regVal = m_PPU->registers.ppustatus->GetRegVal())
-			{
-				data = (BYTE)(regVal->to_ulong()); // save data before affecting flags
-
-				regVal->reset(PPUSTATUS::PPUStatusRegisterFlags::VBLANK);
-				m_PPU->registers_internal.w = false;
-			}
-			else // TODO: can probably delete this else statement if all is well
-				std::cerr << "ERROR: Failed to read PPUSTATUS register! (this should never occur)" << std::endl;
-			
+			return (BYTE)(m_PPU->registers.ppustatus->Read().to_ulong());
 			break;
 		case PPURegAddr::OAMDATA:
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register OAMDATA" << std::endl;
-			break;
+			return 0;
 		case PPURegAddr::PPUDATA:
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register PPUDATA" << std::endl;
-			break;
+			return 0;
 		default:
 			std::cerr << "ERROR: Not a readable PPU register! (this should never occur)" << std::endl;
-			break;
+			return 0;
 	}
-
-	return data;
 }
 
 void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
@@ -136,12 +123,10 @@ void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 	switch (PPUreg)
 	{
 		case PPURegAddr::PPUCTRL:
-			if (std::bitset<8>* regVal = m_PPU->registers.ppuctrl->GetRegVal())
-				*regVal = val;
+			m_PPU->registers.ppuctrl->Write(val);
 			break;
 		case PPURegAddr::PPUMASK:
-			if (std::bitset<8>* regVal = m_PPU->registers.ppumask->GetRegVal())
-				*regVal = val;
+			m_PPU->registers.ppumask->Write(val);
 			break;
 		case PPURegAddr::OAMADDR:
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register OAMADDR" << std::endl;
@@ -150,12 +135,15 @@ void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register OAMDATA" << std::endl;
 			break;
 		case PPURegAddr::PPUSCROLL:
+			m_PPU->registers.ppuscroll->Write(val); // TODO: UNFINISHED!
+			//m_PPU->registers_internal.w = !m_PPU->registers_internal.w;
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register PPUSCROLL" << std::endl;
 			break;
 		case PPURegAddr::PPUADDR:
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register PPUADDR" << std::endl;
 			break;
 		case PPURegAddr::PPUDATA:
+			m_PPU->registers.ppudata->Write(val); // TODO: UNFINISHED!
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register PPUDATA" << std::endl;
 			break;
 		case PPURegAddr::OAMDMA:

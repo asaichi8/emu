@@ -1,6 +1,7 @@
 #pragma once
 
 #include <bitset>
+#include <iostream>
 #include "typedefs.h"
 
 
@@ -9,7 +10,22 @@ class IPPURegister
     WORD m_regAddr;
 
 public:
-    IPPURegister(WORD regAddr) : m_regAddr(regAddr) {}
+	// https://www.nesdev.org/wiki/PPU_registers#Internal_registers
+	struct InternalRegisters {
+		WORD v = 0;	// "Current VRAM address (15 bits)"
+		WORD t = 0; // "Temporary VRAM address (15 bits)" : address of top-left onscreen tile
+		BYTE x = 0; // "Fine X scroll (3 bits)"
+		// Toggles on PPUSCROLL/PPUADDR Write, clears on PPUSTATUS read : https://www.nesdev.org/wiki/PPU_registers#Internal_registers
+		bool w = 0; // Determines whether we're writing the high/low bit (PPUADDR/PPUDATA registers)
+	};
+
+protected:
+    InternalRegisters* internal_registers;
+
+public:
+    //IPPURegister(WORD regAddr, InternalRegisters& internal_registers) : m_regAddr(regAddr) {}
+    IPPURegister(WORD regAddr, InternalRegisters* _internal_registers) : m_regAddr(regAddr), internal_registers(_internal_registers) {}
+    /// TODO: need to make every ppu register have access to internal registers bby passing a pointer
     virtual ~IPPURegister() {}
     
     // https://www.nesdev.org/wiki/PPU_registers#Summary
@@ -27,7 +43,9 @@ public:
         OAMDMA 		= 0x4014	
     };
 
-    virtual std::bitset<8>* GetRegVal() { return nullptr; }
+    //virtual std::bitset<8>* GetRegVal() { return nullptr; }
+    virtual void Write(std::bitset<8> val) { std::cerr << "ERROR: Unimplemented PPU register write!" << std::endl; }
+    virtual std::bitset<8> Read()          { std::cerr << "ERROR: Unimplemented PPU register read!"  << std::endl; return 0; }
 
     bool operator==(WORD r) const
     {
