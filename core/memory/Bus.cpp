@@ -97,31 +97,46 @@ WORD Bus::MirrorAddress(WORD addr, WORD size, WORD startAddr)
 
 BYTE Bus::ReadPPURegister(PPURegAddr PPUreg)
 {
+	BYTE data = 0;
+
+	// see enum definitions for why flags are cleared/set
 	// TODO: handle unhandled readable registers
 	switch (PPUreg)
 	{
 		case PPURegAddr::PPUSTATUS:
-			std::cerr << "ERROR: Attempted to read from unimplemented PPU register PPUSTATUS" << std::endl;
-			return 0;
+			if (std::bitset<8>* regVal = m_PPU->registers.ppustatus->GetRegVal())
+			{
+				data = (BYTE)(regVal->to_ulong()); // save data before affecting flags
+
+				regVal->reset(PPUSTATUS::PPUStatusRegisterFlags::VBLANK);
+				m_PPU->registers_internal.w = false;
+			}
+			else // TODO: can probably delete this else statement if all is well
+				std::cerr << "ERROR: Failed to read PPUSTATUS register! (this should never occur)" << std::endl;
+			
+			break;
 		case PPURegAddr::OAMDATA:
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register OAMDATA" << std::endl;
-			return 0;
+			break;
 		case PPURegAddr::PPUDATA:
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register PPUDATA" << std::endl;
-			return 0;
+			break;
 		default:
-			std::cerr << "ERROR: Not a readable PPU register!" << std::endl;
-			return 0;
+			std::cerr << "ERROR: Not a readable PPU register! (this should never occur)" << std::endl;
+			break;
 	}
+
+	return data;
 }
 
 void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 {
+	// see enum definitions for why flags are cleared/set
 	// TODO: handle unhandled writeable registers
 	switch (PPUreg)
 	{
 		case PPURegAddr::PPUCTRL:
-			if (std::bitset<8>* regVal = m_PPU->registers.ppuctrl->GetRegVal()) // if nullptr, evaluates to false
+			if (std::bitset<8>* regVal = m_PPU->registers.ppuctrl->GetRegVal())
 				*regVal = val;
 			break;
 		case PPURegAddr::PPUMASK:
@@ -147,7 +162,7 @@ void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register OAMDMA" << std::endl;
 			break;
 		default:
-			std::cerr << "ERROR: Not a writeable PPU register!" << std::endl;
+			std::cerr << "ERROR: Not a writeable PPU register! (this should never occur)" << std::endl;
 			break;
 	}
 }

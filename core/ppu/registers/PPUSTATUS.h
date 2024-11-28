@@ -22,7 +22,7 @@ public:
         PPUIDENTIFIER4,
         SPRITE_OVERFLOW,
         SPRITE_0_HIT,
-        VBLANK
+        VBLANK // cleared on PPUSTATUS read - https://www.nesdev.org/wiki/PPU_registers#Vblank_flag
     };
 
     std::bitset<8>* GetRegVal() override { return &ppu_status_register; }
