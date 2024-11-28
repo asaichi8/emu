@@ -18,9 +18,11 @@ class PPUSTATUS : public IPPURegister
         VBLANK
     };
 
+    std::bitset<8> ppu_status_register;
+
 public:
     PPUSTATUS() : IPPURegister((WORD)PPURegAddr::PPUSTATUS) {}
     ~PPUSTATUS() override {}
 
-    std::bitset<8> ppu_status_register; // TODO: can/should this be abstracted further?
+    std::bitset<8>* GetRegVal() override { return &ppu_status_register; }
 };

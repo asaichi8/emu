@@ -58,9 +58,9 @@ void Bus::WriteByte(WORD addr, BYTE val)
 	if (addr < MIRRORED_INTERNAL_RAM_END)
 		m_CPURAM[MirrorAddress(addr, INTERNAL_RAM_SIZE)] = val;
 	else if (addr < MIRRORED_PPU_REGISTER_END)
-		WritePPURegister((PPURegAddr)(MirrorAddress(addr, PPU_REGISTER_SIZE, MIRRORED_INTERNAL_RAM_END)));
+		WritePPURegister((PPURegAddr)(MirrorAddress(addr, PPU_REGISTER_SIZE, MIRRORED_INTERNAL_RAM_END)), val);
 	else if (addr == (WORD)PPURegAddr::OAMDMA) // 0x4014
-		WritePPURegister(PPURegAddr::OAMDMA);
+		WritePPURegister(PPURegAddr::OAMDMA, val);
 	else
 		std::cerr << "Attempted to write byte outside of CPU/PPU (not implemented)" << std::endl;
 }
@@ -115,38 +115,40 @@ BYTE Bus::ReadPPURegister(PPURegAddr PPUreg)
 	}
 }
 
-BYTE Bus::WritePPURegister(PPURegAddr PPUreg)
+void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 {
 	// TODO: handle unhandled writeable registers
 	switch (PPUreg)
 	{
 		case PPURegAddr::PPUCTRL:
-			std::cerr << "ERROR: Attempted to read from unimplemented PPU register PPUCTRL" << std::endl;
-			return 0;
+			if (std::bitset<8>* regVal = m_PPU->registers.ppuctrl->GetRegVal()) // if nullptr, evaluates to false
+				*regVal = val;
+			break;
 		case PPURegAddr::PPUMASK:
-			std::cerr << "ERROR: Attempted to read from unimplemented PPU register PPUMASK" << std::endl;
-			return 0;
+			if (std::bitset<8>* regVal = m_PPU->registers.ppumask->GetRegVal())
+				*regVal = val;
+			break;
 		case PPURegAddr::OAMADDR:
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register OAMADDR" << std::endl;
-			return 0;
+			break;
 		case PPURegAddr::OAMDATA:
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register OAMDATA" << std::endl;
-			return 0;
+			break;
 		case PPURegAddr::PPUSCROLL:
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register PPUSCROLL" << std::endl;
-			return 0;
+			break;
 		case PPURegAddr::PPUADDR:
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register PPUADDR" << std::endl;
-			return 0;
+			break;
 		case PPURegAddr::PPUDATA:
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register PPUDATA" << std::endl;
-			return 0;
+			break;
 		case PPURegAddr::OAMDMA:
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register OAMDMA" << std::endl;
-			return 0;
+			break;
 		default:
 			std::cerr << "ERROR: Not a writeable PPU register!" << std::endl;
-			return 0;
+			break;
 	}
 }
 

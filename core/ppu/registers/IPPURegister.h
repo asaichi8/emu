@@ -27,6 +27,8 @@ public:
         OAMDMA 		= 0x4014	
     };
 
+    virtual std::bitset<8>* GetRegVal() { return nullptr; }
+
     bool operator==(WORD r) const
     {
         return m_regAddr == r;

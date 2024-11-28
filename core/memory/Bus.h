@@ -27,7 +27,7 @@ class Bus
 
 	static WORD MirrorAddress(WORD addr, WORD size, WORD startAddr = 0x0);
 	BYTE ReadPPURegister(PPURegAddr PPUreg);
-	BYTE WritePPURegister(PPURegAddr PPUreg);
+	void WritePPURegister(PPURegAddr PPUreg, BYTE val);
 	BYTE ReadPRGByte(WORD addr);
 	WORD ReadPRGWord(WORD addr, bool shouldWrapPage = false);
 

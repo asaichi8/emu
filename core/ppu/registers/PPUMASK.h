@@ -18,9 +18,11 @@ class PPUMASK : public IPPURegister
         EMPHASIZE_BLUE,
     };
 
+    std::bitset<8> ppu_mask_register;
+
 public:
     PPUMASK() : IPPURegister((WORD)PPURegAddr::PPUMASK) {}
     ~PPUMASK() override {}
 
-    std::bitset<8> ppu_mask_register;
+    std::bitset<8>* GetRegVal() override { return &ppu_mask_register; }
 };

@@ -18,9 +18,11 @@ class PPUCTRL : public IPPURegister
         VBLANK_NMI
     };
 
+    std::bitset<8> ppu_ctrl_register;
+
 public:
     PPUCTRL() : IPPURegister((WORD)PPURegAddr::PPUCTRL) {}
     ~PPUCTRL() override {}
 
-    std::bitset<8> ppu_ctrl_register;
+    std::bitset<8>* GetRegVal() override { return &ppu_ctrl_register; }
 };
