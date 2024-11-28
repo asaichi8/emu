@@ -50,3 +50,5 @@ $(TARGET):
 
 clean:
 	$(CLEAN_CMD)
+
+rebuild: clean all
