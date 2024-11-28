@@ -5,6 +5,12 @@
 
 class PPUCTRL : public IPPURegister
 {
+    std::bitset<8> ppu_ctrl_register;
+
+public:
+    PPUCTRL() : IPPURegister((WORD)PPURegAddr::PPUCTRL) {}
+    ~PPUCTRL() override {}
+    
     // https://www.nesdev.org/wiki/PPU_registers#PPUCTRL_-_Miscellaneous_settings_($2000_write)
     enum PPUCtrlRegisterFlags
     {
@@ -17,12 +23,6 @@ class PPUCTRL : public IPPURegister
         MASTER_SLAVE_SELECT,
         VBLANK_NMI
     };
-
-    std::bitset<8> ppu_ctrl_register;
-
-public:
-    PPUCTRL() : IPPURegister((WORD)PPURegAddr::PPUCTRL) {}
-    ~PPUCTRL() override {}
 
     std::bitset<8>* GetRegVal() override { return &ppu_ctrl_register; }
 };
