@@ -5,7 +5,22 @@
 
 class PPUMASK : public IPPURegister
 {
+    // https://www.nesdev.org/wiki/PPU_registers#PPUMASK_-_Rendering_settings_($2001_write)
+    enum PPUMaskRegisterFlags
+    {
+        GREYSCALE,
+        LEFT_BACKGROUND, // leftmost 8 pixels
+        LEFT_SPRITES,    // leftmost 8 pixels
+        BACKGROUND,
+        SPRITES,         
+        EMPHASIZE_RED,          // green on PAL
+        EMPHASIZE_GREEN,        // red on PAL
+        EMPHASIZE_BLUE,
+    };
+
 public:
     PPUMASK() : IPPURegister((WORD)PPURegAddr::PPUMASK) {}
     ~PPUMASK() override {}
+
+    std::bitset<8> ppu_mask_register;
 };

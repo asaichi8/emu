@@ -1,5 +1,8 @@
 #pragma once
+
+#include <bitset>
 #include "typedefs.h"
+
 
 class IPPURegister
 {
