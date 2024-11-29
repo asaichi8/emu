@@ -111,15 +111,16 @@ std::pair<size_t, size_t> PPU::GetNametableRAMIndx(WORD addr)
     addr -= NAMETABLES_TOTAL_SIZE; // normalise address to 0x0 - 1EFF
     addr = Bus::MirrorAddress(addr, NAMETABLES_TOTAL_SIZE); // mirror to 0x0000 - 0x0FFF
 
+    size_t indx = 0;
     switch (*m_pMirrorType)
     {
         case MirrorType::Vertical:
             // To determine which nametable we need, we check the 11th bit. This tells equates to 1 if addr is between 0x400 and 0x800,
             // or between 0xC00 and 0x1000 - otherwise it's 0.
-            size_t indx = (addr & 0x0400) >> 11;
+            indx = (addr & 0x0400) >> 11;
             return {indx, Bus::MirrorAddress(addr, NAMETABLE_SIZE)};
         case MirrorType::Horizontal:
-            size_t indx = (addr >= 0x800); // 0 if 0x7ff or lower, 1 otherwise
+            indx = (addr >= 0x800); // 0 if 0x7ff or lower, 1 otherwise
             return {indx, Bus::MirrorAddress(addr, NAMETABLE_SIZE)};
 
         default:
