@@ -26,4 +26,26 @@ public:
 
     //std::bitset<8>* GetRegVal() override { return &ppu_ctrl_register; }
     void Write(std::bitset<8> val) override { ppu_ctrl_register = val; }
+
+    WORD GetNametableAddr()
+    {
+        // return 0x2000 * ((ppu_ctrl_register.to_ulong() & 0b00000011) * 0x400)
+        switch (ppu_ctrl_register.to_ulong() & 0b00000011) // switch bottom two bits : 0-3
+        {
+            case 0:
+                return 0x2000;
+            case 1:
+                return 0x2400;
+            case 2:
+                return 0x2800;
+            case 3:
+                return 0x2C00;
+        }
+    }
+    BYTE GetVRAMAddrIncrement()    { return ppu_ctrl_register.test(VRAM_ADDR_INCREMENT) ? 32 : 1; }
+    WORD GetSpritePTableAddr()     { return ppu_ctrl_register.test(SPRITE_PTABLE_ADDR) ? 0x1000 : 0x0000; }
+    WORD GetBackgroundPTableAddr() { return ppu_ctrl_register.test(BACKGROUND_PTABLE_ADDR) ? 0x1000 : 0x0000; }
+    BYTE GetSpriteSize()           { return ppu_ctrl_register.test(SPRITE_SIZE) ? 16 : 8; }
+    bool GetMasterSlaveSelect()    { return ppu_ctrl_register.test(MASTER_SLAVE_SELECT); }
+    bool GetVBlankNMI()            { return ppu_ctrl_register.test(VBLANK_NMI); }
 };

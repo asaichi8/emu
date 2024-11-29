@@ -20,7 +20,7 @@ public:
 	};
 
 protected:
-    InternalRegisters* internal_registers;
+    InternalRegisters* internal_registers; // all registers point to one InternalRegisters class
 
 public:
     //IPPURegister(WORD regAddr, InternalRegisters& internal_registers) : m_regAddr(regAddr) {}
