@@ -48,6 +48,8 @@ class PPU
 			oamdma 		= std::make_unique<OAMDMA>	 (nullptr);
 		}
 	};	 
+
+	WORD GetPPUADDRAddress(bool shouldIncrement = false);
 	
 public:
 	PPU();
@@ -55,4 +57,5 @@ public:
 	Registers registers;
 
 	BYTE ReadPPUByte();
+	void WritePPUByte(BYTE val);
 };
