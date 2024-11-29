@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../memory/Bus.h"
+#include "../loader/ROM.h"
 #include "registers/IPPURegister.h"
 
 // https://www.nesdev.org/wiki/PPU_memory_map
@@ -31,6 +32,7 @@ class PPU
 	std::vector<BYTE> m_PPURAM{};
 	std::vector<BYTE> m_OAM{};
 	std::vector<BYTE> m_PaletteRAM{};
+	std::vector<BYTE>* pCHR_ROM;
 
 	IPPURegister::InternalRegisters internal_registers;
 
@@ -64,7 +66,7 @@ class PPU
 	WORD MirrorPaletteRAMAddress(WORD addr);
 	
 public:
-	PPU();
+	PPU(std::vector<BYTE>* _pCHR_ROM);
 
 	Registers registers;
 

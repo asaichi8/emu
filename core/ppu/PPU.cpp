@@ -1,7 +1,7 @@
 #include "PPU.h"
 
 
-PPU::PPU() : registers(&internal_registers) 
+PPU::PPU(std::vector<BYTE>* _pCHR_ROM) : pCHR_ROM(_pCHR_ROM), registers(&internal_registers) 
 {
 	m_PPURAM.assign(2 * KB, 0);
     m_OAM.assign(BYTE_MAX + 1, 0); // https://www.nesdev.org/wiki/PPU_memory_map#OAM
