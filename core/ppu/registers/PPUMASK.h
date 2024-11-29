@@ -19,11 +19,20 @@ public:
         LEFT_SPRITES,    // leftmost 8 pixels
         BACKGROUND,
         SPRITES,         
-        EMPHASIZE_RED,          // green on PAL
-        EMPHASIZE_GREEN,        // red on PAL
-        EMPHASIZE_BLUE,
+        EMPHASISE_RED,          // green on PAL
+        EMPHASISE_GREEN,        // red on PAL
+        EMPHASISE_BLUE,
     };
 
     //std::bitset<8>* GetRegVal() override { return &ppu_mask_register; }
     void Write(std::bitset<8> val) override { ppu_mask_register = val; }
+
+    bool IsGrayscale()             { return ppu_mask_register.test(GREYSCALE); }
+    bool IsLeftBackgroundShowing() { return ppu_mask_register.test(LEFT_BACKGROUND); }
+    bool IsLeftSpritesShowing()    { return ppu_mask_register.test(LEFT_SPRITES); }
+    bool IsBackgroundShowing()     { return ppu_mask_register.test(BACKGROUND); }
+    bool IsSpritesShowing()        { return ppu_mask_register.test(SPRITES); }
+    bool GetRedEmphasis()          { return ppu_mask_register.test(EMPHASISE_RED); }
+    bool GetGreenEmphasis()        { return ppu_mask_register.test(EMPHASISE_BLUE); }
+    bool GetBlueEmphasis()         { return ppu_mask_register.test(EMPHASISE_BLUE); }
 };
