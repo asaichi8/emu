@@ -14,8 +14,11 @@ BYTE PPU::ReadPPUByte()
     WORD addr = GetMirroredPPUADDRAddress(true);
 
     if (addr < PATTERN_TABLES_END) // pattern table 0x0 - 0x1FFF
-    { // TODO:
-        std::cerr << "ERROR: Reading from PPU pattern table is unimplemented!" << std::endl;
+    {
+        PPUDATA* ppuDataRegister = dynamic_cast<PPUDATA*>(registers.ppudata.get());
+
+        data = ppuDataRegister->ReadBuffer();
+        ppuDataRegister->WriteBuffer(pCHR_ROM->at(addr));
     }
     else if (addr < NAMETABLES_END) // nametable 0x2000 - 0x2FFF
     { // TODO:
@@ -26,7 +29,7 @@ BYTE PPU::ReadPPUByte()
     else // palette ram 0x3F00 - 0x3FFF
     {
         addr = MirrorPaletteRAMAddress(addr);
-        data = m_PaletteRAM[addr - PALETTE_RAM_BEGIN];
+        data = m_PaletteRAM.at(addr - PALETTE_RAM_BEGIN);
     }
 
     return data;
@@ -49,7 +52,7 @@ void PPU::WritePPUByte(BYTE val)
     else // palette ram 0x3F00 - 0x3FFF
     {
         addr = MirrorPaletteRAMAddress(addr);
-        m_PaletteRAM[addr - PALETTE_RAM_BEGIN] = val;
+        m_PaletteRAM.at(addr - PALETTE_RAM_BEGIN) = val;
     }
 }
 

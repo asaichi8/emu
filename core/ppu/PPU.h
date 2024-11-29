@@ -68,7 +68,7 @@ class PPU
 public:
 	PPU(std::vector<BYTE>* _pCHR_ROM);
 
-	Registers registers;
+	Registers registers; // TODO: this should probably be private, create (mostly) 1 liner functions instead
 
 	BYTE ReadPPUByte();
 	void WritePPUByte(BYTE val);
