@@ -60,7 +60,7 @@ class PPU
 		}
 	};	 
 
-	WORD GetPPUADDRAddress(bool shouldIncrement = false);
+	WORD GetMirroredPPUADDRAddress(bool shouldIncrement = false);
 	WORD MirrorPaletteRAMAddress(WORD addr);
 	
 public:

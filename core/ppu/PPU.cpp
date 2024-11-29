@@ -11,7 +11,7 @@ PPU::PPU() : registers(&internal_registers)
 BYTE PPU::ReadPPUByte()
 {
     BYTE data = 0x0;
-    WORD addr = GetPPUADDRAddress(true);
+    WORD addr = GetMirroredPPUADDRAddress(true);
 
     if (addr < PATTERN_TABLES_END) // pattern table 0x0 - 0x1FFF
     { // TODO:
@@ -26,7 +26,7 @@ BYTE PPU::ReadPPUByte()
     else // palette ram 0x3F00 - 0x3FFF
     {
         addr = MirrorPaletteRAMAddress(addr);
-        std::cerr << "ERROR: Reading from PPU palette ram is unimplemented!" << std::endl;
+        data = m_PaletteRAM[addr - PALETTE_RAM_BEGIN];
     }
 
     return data;
@@ -34,7 +34,7 @@ BYTE PPU::ReadPPUByte()
 
 void PPU::WritePPUByte(BYTE val)
 {
-    WORD addr = GetPPUADDRAddress(true);
+    WORD addr = GetMirroredPPUADDRAddress(true);
 
     if (addr < PATTERN_TABLES_END) // pattern table 0x0 - 0x1FFF
     { // TODO:
@@ -49,12 +49,12 @@ void PPU::WritePPUByte(BYTE val)
     else // palette ram 0x3F00 - 0x3FFF
     {
         addr = MirrorPaletteRAMAddress(addr);
-        std::cerr << "ERROR: Writing to PPU palette ram is unimplemented!" << std::endl;
+        m_PaletteRAM[addr - PALETTE_RAM_BEGIN] = val;
     }
 }
 
 
-WORD PPU::GetPPUADDRAddress(bool shouldIncrement)
+WORD PPU::GetMirroredPPUADDRAddress(bool shouldIncrement)
 {
     // get address & mirror
     PPUADDR* ppuAddrRegister = dynamic_cast<PPUADDR*>(registers.ppuaddr.get());
