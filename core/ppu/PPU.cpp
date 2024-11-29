@@ -1,9 +1,10 @@
 #include "PPU.h"
 
 
-PPU::PPU(std::vector<BYTE>* _pCHR_ROM, MirrorType* _pMirrorType) : pCHR_ROM(_pCHR_ROM), pMirrorType(_pMirrorType), registers(&internal_registers) 
+PPU::PPU(std::vector<BYTE>* _pCHR_ROM, MirrorType* _pMirrorType) : m_pCHR_ROM(_pCHR_ROM), m_pMirrorType(_pMirrorType), registers(&internal_registers) 
 {
-	m_PPURAM.assign(2 * KB, 0);
+    for (auto& pTable : m_NametableRAM)
+        pTable.assign(NAMETABLE_SIZE, 0);
     m_OAM.assign(BYTE_MAX + 1, 0); // https://www.nesdev.org/wiki/PPU_memory_map#OAM
     m_PaletteRAM.assign(PALETTE_RAM_TOTAL_SIZE, 0);
 }
@@ -18,14 +19,16 @@ BYTE PPU::ReadPPUByte()
         PPUDATA* ppuDataRegister = dynamic_cast<PPUDATA*>(registers.ppudata.get());
 
         data = ppuDataRegister->ReadBuffer();
-        ppuDataRegister->WriteBuffer(pCHR_ROM->at(addr));
+        ppuDataRegister->WriteBuffer(m_pCHR_ROM->at(addr));
     }
-    else if (addr < NAMETABLES_END) // nametable 0x2000 - 0x2FFF
+    else if (addr < NAMETABLES_MIRRORED_END) // nametable 0x2000 - 0x3EFF
     { // TODO:
-        std::cerr << "ERROR: Reading from PPU nametable is unimplemented!" << std::endl;
+        PPUDATA* ppuDataRegister = dynamic_cast<PPUDATA*>(registers.ppudata.get());
+
+        data = ppuDataRegister->ReadBuffer();
+        auto indexes = GetNametableRAMIndx(addr);
+        ppuDataRegister->WriteBuffer(m_NametableRAM[indexes.first][indexes.second]);
     }
-    else if (addr < UNUSED_END) // unused 0x3000 - 0x3EFF
-        std::cerr << "ERROR: Attempted to read unusable PPU address space: 0x" << std::hex << addr << std::dec << std::endl;
     else // palette ram 0x3F00 - 0x3FFF
     {
         addr = MirrorPaletteRAMAddress(addr);
@@ -40,15 +43,14 @@ void PPU::WritePPUByte(BYTE val)
     WORD addr = GetMirroredPPUADDRAddress(true);
 
     if (addr < PATTERN_TABLES_END) // pattern table 0x0 - 0x1FFF
-    { // TODO:
-        std::cerr << "ERROR: Writing to PPU pattern table is unimplemented!" << std::endl;
+    {
+        std::cerr << "ERROR: Can't write to CHR_ROM in PPU pattern table!" << std::endl;
     }
-    else if (addr < NAMETABLES_END) // nametable 0x2000 - 0x2FFF
-    { // TODO:
-        std::cerr << "ERROR: Writing to PPU nametable is unimplemented!" << std::endl;
+    else if (addr < NAMETABLES_MIRRORED_END) // nametable 0x2000 - 0x3EFF
+    {
+        auto indexes = GetNametableRAMIndx(addr);
+        m_NametableRAM[indexes.first][indexes.second] = val;
     }
-    else if (addr < UNUSED_END) // unused 0x3000 - 0x3EFF
-        std::cerr << "ERROR: Attempted to write to unusable PPU address space: 0x" << std::hex << addr << std::dec << std::endl;
     else // palette ram 0x3F00 - 0x3FFF
     {
         addr = MirrorPaletteRAMAddress(addr);
@@ -82,8 +84,7 @@ WORD PPU::MirrorPaletteRAMAddress(WORD addr)
         return addr;
     }
 
-    if (addr > PALETTE_RAM_END) // 0x3F20
-        addr = Bus::MirrorAddress(addr, PALETTE_RAM_TOTAL_SIZE, PALETTE_RAM_BEGIN); 
+    addr = Bus::MirrorAddress(addr, PALETTE_RAM_TOTAL_SIZE, PALETTE_RAM_BEGIN); 
 
     // palette ram 0x3F00 - 0x3F20
     /* https://www.nesdev.org/wiki/PPU_palettes#Palette_RAM :
@@ -96,4 +97,33 @@ WORD PPU::MirrorPaletteRAMAddress(WORD addr)
     }
 
     return addr;
+}
+
+// https://www.nesdev.org/wiki/Mirroring#Nametable_Mirroring
+std::pair<size_t, size_t> PPU::GetNametableRAMIndx(WORD addr)
+{
+    if (addr < NAMETABLES_BEGIN || addr >= NAMETABLES_MIRRORED_END)
+    {
+        std::cerr << "WARNING: Attempted to nametable ram mirror \"Nametable RAM\" address 0x" << std::hex << addr << std::dec << std::endl;
+        return {};
+    }
+
+    addr -= NAMETABLES_TOTAL_SIZE; // normalise address to 0x0 - 1EFF
+    addr = Bus::MirrorAddress(addr, NAMETABLES_TOTAL_SIZE); // mirror to 0x0000 - 0x0FFF
+
+    switch (*m_pMirrorType)
+    {
+        case MirrorType::Vertical:
+            // To determine which nametable we need, we check the 11th bit. This tells equates to 1 if addr is between 0x400 and 0x800,
+            // or between 0xC00 and 0x1000 - otherwise it's 0.
+            size_t indx = (addr & 0x0400) >> 11;
+            return {indx, Bus::MirrorAddress(addr, NAMETABLE_SIZE)};
+        case MirrorType::Horizontal:
+            size_t indx = (addr >= 0x800); // 0 if 0x7ff or lower, 1 otherwise
+            return {indx, Bus::MirrorAddress(addr, NAMETABLE_SIZE)};
+
+        default:
+            std::cerr << "Unimplemented nametable mirror type: " << *m_pMirrorType << std::endl;
+            return {};
+    }
 }

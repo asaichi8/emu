@@ -11,14 +11,11 @@
 
 #define NAMETABLES_BEGIN 0x2000
 #define NAMETABLE_SIZE 0x0400
-#define NAMETABLES_TOTAL_SIZE (NAMETABLE_SIZE * 4) // 0x1000
+#define NAMETABLES_TOTAL_SIZE (NAMETABLE_SIZE * 4) // 0x1000 - nametable is mirrored
 #define NAMETABLES_END NAMETABLES_BEGIN + NAMETABLES_TOTAL_SIZE
+#define NAMETABLES_MIRRORED_END 0x3F00
 
-#define UNUSED_BEGIN (PATTERN_TABLE_SIZE + NAMETABLES_TOTAL_SIZE) // 0x3000
-#define UNUSED_TOTAL_SIZE 0x0F00
-#define UNUSED_END UNUSED_BEGIN + UNUSED_TOTAL_SIZE
-
-#define PALETTE_RAM_BEGIN (PATTERN_TABLE_SIZE + NAMETABLES_TOTAL_SIZE + UNUSED_BEGIN) // 0x3F00
+#define PALETTE_RAM_BEGIN NAMETABLES_MIRRORED_END // 0x3F00
 #define PALETTE_SIZE 0x04 // https://www.nesdev.org/wiki/PPU_palettes#Palette_RAM
 #define PALETTE_RAM_TOTAL_SIZE (PALETTE_SIZE * 8)
 #define PALETTE_RAM_END PALETTE_RAM_BEGIN + PALETTE_RAM_TOTAL_SIZE // 0x3F20
@@ -29,12 +26,12 @@
 
 class PPU
 {
-	std::vector<BYTE> m_PPURAM{};
+	std::vector<BYTE> m_NametableRAM[2];
 	std::vector<BYTE> m_OAM{};
 	std::vector<BYTE> m_PaletteRAM{};
 
-	std::vector<BYTE>* pCHR_ROM;
-	MirrorType* pMirrorType;
+	std::vector<BYTE>* m_pCHR_ROM;
+	MirrorType* m_pMirrorType;
 
 	IPPURegister::InternalRegisters internal_registers;
 
@@ -66,6 +63,7 @@ class PPU
 
 	WORD GetMirroredPPUADDRAddress(bool shouldIncrement = false);
 	WORD MirrorPaletteRAMAddress(WORD addr);
+	std::pair<size_t, size_t> GetNametableRAMIndx(WORD addr);
 	
 public:
 	PPU(std::vector<BYTE>* _pCHR_ROM, MirrorType* _pMirrorType);
