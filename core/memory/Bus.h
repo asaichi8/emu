@@ -15,6 +15,7 @@
 #define PRG_RAM_START 0x8000
 #define PRG_RAM_END   0xFFFF
 
+
 using PPURegAddr = IPPURegister::IPPURegister::PPURegAddr;
 
 class PPU;
@@ -25,7 +26,6 @@ class Bus
 	ROM* m_ROM{};
 	std::unique_ptr<PPU> m_PPU{};
 
-	static WORD MirrorAddress(WORD addr, WORD size, WORD startAddr = 0x0);
 	BYTE ReadPPURegister(PPURegAddr PPUreg);
 	void WritePPURegister(PPURegAddr PPUreg, BYTE val);
 	BYTE ReadPRGByte(WORD addr);
@@ -34,8 +34,9 @@ class Bus
 public:
 	Bus(ROM* rom);
 
-	void Reset();
+	static WORD MirrorAddress(WORD addr, WORD size, WORD startAddr = 0x0);
 
+	void Reset();
 	BYTE ReadByte(WORD addr);
 	WORD ReadWord(WORD addr, bool shouldWrapPage = false);
 	void WriteByte(WORD addr, BYTE val);

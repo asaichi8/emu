@@ -8,6 +8,21 @@ Bus::Bus(ROM* rom) : m_ROM(rom)
 }
 
 
+// e.g. for PPU, size = PPU_REGISTER_SIZE (0x08), startAddr = MIRRORED_INTERNAL_RAM_END (0x2000)
+WORD Bus::MirrorAddress(WORD addr, WORD size, WORD startAddr)
+{
+	if (addr >= startAddr)
+		addr -= startAddr; // e.g. for PPU registers, normalise from 0x2000 - 0x3FFF to 0x0000 - 0x1FFF so we can mirror the address
+	else
+		addr = 0x0;
+
+	addr %= size; // e.g. for PPU registers, clamp to 0x00 - 0x07
+	addr += startAddr; // e.g. for PPU registers, go back to 0x2000 - 0x2007
+
+	return addr;
+}
+
+
 void Bus::Reset()
 {
 	std::fill(m_CPURAM.begin(), m_CPURAM.end(), 0);
@@ -80,20 +95,6 @@ void Bus::WriteWord(WORD addr, WORD val)
 	m_CPURAM[(addr + 1) % INTERNAL_RAM_SIZE] = BYTE((val >> 8) & 0xFF); // set high byte
 }
 
-
-// e.g. for PPU, size = PPU_REGISTER_SIZE (0x08), startAddr = MIRRORED_INTERNAL_RAM_END (0x2000)
-WORD Bus::MirrorAddress(WORD addr, WORD size, WORD startAddr)
-{
-	if (addr >= startAddr)
-		addr -= startAddr; // e.g. for PPU registers, normalise from 0x2000 - 0x3FFF to 0x0000 - 0x1FFF so we can mirror the address
-	else
-		addr = 0x0;
-
-	addr %= size; // e.g. for PPU registers, clamp to 0x00 - 0x07
-	addr += startAddr; // e.g. for PPU registers, go back to 0x2000 - 0x2007
-
-	return addr;
-}
 
 BYTE Bus::ReadPPURegister(PPURegAddr PPUreg)
 {
