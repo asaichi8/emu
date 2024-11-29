@@ -3,6 +3,18 @@
 #include "../memory/Bus.h"
 #include "registers/IPPURegister.h"
 
+// https://www.nesdev.org/wiki/PPU_memory_map
+#define PATTERN_TABLE_SIZE 0x1000
+#define PATTERN_TABLE_TOTAL_SIZE (PATTERN_TABLE_SIZE * 2) // 0x2000
+#define NAMETABLE_BEGIN 0x2000
+#define NAMETABLE_SIZE 0x0400
+#define NAMETABLE_TOTAL_SIZE (NAMETABLE_SIZE * 4) // 0x1000
+#define UNUSED_BEGIN (PATTERN_TABLE_SIZE + NAMETABLE_TOTAL_SIZE) // 0x3000
+#define UNUSED_TOTAL_SIZE 0x0F00
+#define PALETTE_RAM_BEGIN (PATTERN_TABLE_SIZE + NAMETABLE_TOTAL_SIZE + UNUSED_BEGIN) // 0x3F00
+#define PALETTE_RAM_SIZE 0x20
+#define PPU_ADDRESS_SPACE_END 0x4000
+
 
 class PPU
 {
@@ -41,4 +53,6 @@ public:
 	PPU();
 
 	Registers registers;
+
+	BYTE ReadPPUByte();
 };
