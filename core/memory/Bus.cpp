@@ -155,6 +155,7 @@ void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 	}
 }
 
+// addr must be between 0x8000 - 0xFFFF
 BYTE Bus::ReadPRGByte(WORD addr)
 {
 	// mirror address if it's outside the PRG ROM size range

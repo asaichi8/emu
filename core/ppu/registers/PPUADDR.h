@@ -22,5 +22,16 @@ public:
         internal_registers->w = !internal_registers->w;
     }
 
+    void IncrementAddr(BYTE increment)
+    {
+        if ((WORD_MAX - ppuAddr) < increment) // check for overflow
+        {
+            ppuAddr += increment - (WORD_MAX + 1); // handle overflow
+            return;
+        }
+
+        ppuAddr += increment;
+    }
+
     WORD GetAddress() { return ppuAddr; }
 };
