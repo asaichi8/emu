@@ -32,7 +32,9 @@ class PPU
 	std::vector<BYTE> m_PPURAM{};
 	std::vector<BYTE> m_OAM{};
 	std::vector<BYTE> m_PaletteRAM{};
+
 	std::vector<BYTE>* pCHR_ROM;
+	MirrorType* pMirrorType;
 
 	IPPURegister::InternalRegisters internal_registers;
 
@@ -66,7 +68,7 @@ class PPU
 	WORD MirrorPaletteRAMAddress(WORD addr);
 	
 public:
-	PPU(std::vector<BYTE>* _pCHR_ROM);
+	PPU(std::vector<BYTE>* _pCHR_ROM, MirrorType* _pMirrorType);
 
 	Registers registers; // TODO: this should probably be private, create (mostly) 1 liner functions instead
 

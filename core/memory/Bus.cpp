@@ -3,7 +3,7 @@
 
 Bus::Bus(ROM* rom) : m_ROM(rom)
 {
-	m_PPU = std::make_unique<PPU>(&(m_ROM->CHR_ROM));
+	m_PPU = std::make_unique<PPU>(&(m_ROM->CHR_ROM), &(m_ROM->mirrorType));
 	m_CPURAM.assign(8 * KB, 0); // the CPU's RAM is actually only 2KB in size - the rest of the 6KB are mirrored.
 }
 
