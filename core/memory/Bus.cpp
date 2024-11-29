@@ -111,6 +111,7 @@ BYTE Bus::ReadPPURegister(PPURegAddr PPUreg)
 		case PPURegAddr::PPUDATA:
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register PPUDATA" << std::endl;
 			return 0;
+
 		default:
 			std::cerr << "ERROR: Not a readable PPU register! (this should never occur)" << std::endl;
 			return 0;
@@ -150,6 +151,7 @@ void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 		case PPURegAddr::OAMDMA:
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register OAMDMA" << std::endl;
 			break;
+			
 		default:
 			std::cerr << "ERROR: Not a writeable PPU register! (this should never occur)" << std::endl;
 			break;
