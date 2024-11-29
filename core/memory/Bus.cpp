@@ -135,15 +135,12 @@ void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register OAMDATA" << std::endl;
 			break;
 		case PPURegAddr::PPUSCROLL:
-			//m_PPU->registers.ppuscroll->Write(val); // TODO: UNFINISHED!
-			//m_PPU->registers_internal.w = !m_PPU->registers_internal.w;
-			std::cerr << "ERROR: Attempted to read from unimplemented PPU register PPUSCROLL" << std::endl;
+			m_PPU->registers.ppuscroll->Write(val);
 			break;
 		case PPURegAddr::PPUADDR:
 			m_PPU->registers.ppuaddr->Write(val);
 			break;
 		case PPURegAddr::PPUDATA:
-			//m_PPU->registers.ppudata->Write(val); // TODO: UNFINISHED!
 			m_PPU->WritePPUByte(val);
 			break;
 		case PPURegAddr::OAMDMA:
