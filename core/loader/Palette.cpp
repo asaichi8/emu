@@ -9,5 +9,5 @@ Palette::Palette()
 
 void Palette::LoadPalette(const std::string& filePath)
 {
-    auto rawFile = LoadFile(filePath);
+    auto rawFile = Loader::LoadFile(filePath);
 }

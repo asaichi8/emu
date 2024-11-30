@@ -4,7 +4,7 @@
 Emulator::Emulator() 
 {
 	// Map ROM into appropriate variables
-	auto romFullPath = m_ROM.GetFullFilePath(ROM_RELATIVE_PATH);
+	auto romFullPath = Loader::GetFullFilePath(ROM_RELATIVE_PATH);
 	if (!m_ROM.LoadROM(romFullPath))
 		throw std::runtime_error("Failed to load ROM!");
 

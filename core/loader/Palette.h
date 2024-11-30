@@ -15,7 +15,7 @@ struct RGB
 #pragma pack(pop)
 
 
-class Palette : public Loader
+class Palette
 {
     std::vector<RGB> curPalette;
 

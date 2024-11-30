@@ -44,7 +44,7 @@ enum Flags7 : BYTE
 };
 
 
-class ROM : public Loader
+class ROM
 {
 	#pragma pack(push, 1) // ensure no padding
 	struct iNES_Header
