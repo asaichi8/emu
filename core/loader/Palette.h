@@ -21,4 +21,6 @@ class Palette : public Loader
 
 public:
     Palette();
+
+    void LoadPalette(const std::string& filePath);
 };
