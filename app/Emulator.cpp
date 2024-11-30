@@ -8,6 +8,12 @@ Emulator::Emulator()
 	if (!m_ROM.LoadROM(romFullPath))
 		throw std::runtime_error("Failed to load ROM!");
 
+	/*Palette palette;
+	auto paletteFullPath = Loader::GetFullFilePath(PALETTE_RELATIVE_PATH);
+	if (!palette.LoadPalette(paletteFullPath))
+		throw std::runtime_error("Failed to load colour palette!");*/
+
+
 	// Create devices
 	m_Bus   = std::make_shared<Bus>(&m_ROM);
 	m_CPU   = std::make_unique<CPU>(m_Bus);

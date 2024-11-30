@@ -10,10 +10,12 @@
 #include "../core/ppu/PPU.h"
 #include "display/EmulatorDisplay.h"
 #include "../demos/Snake.h"
+//#include "../core/loader/Palette.h"
 
 #define SIZE 32  // Size of each internal pixel
 #define SCALE 20 // Amount to scale the internal pixels up by
 constexpr char ROM_RELATIVE_PATH[] = "../../bin/snake.nes"; 
+//constexpr char PALETTE_RELATIVE_PATH[] = "../../bin/ntscpalette.pal"; 
 
 
 /// @brief Responsible for the execution of all the emulator components.
