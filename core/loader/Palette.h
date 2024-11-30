@@ -2,7 +2,7 @@
 
 #include "Loader.h"
 
-#define PALETTE_SIZE 64
+#define COLOUR_PALETTE_SIZE 64
 
 
 #pragma pack(push, 1) // ensure no padding, so sizeof(RGB) == 3
@@ -22,5 +22,6 @@ class Palette
 public:
     Palette();
 
-    void LoadPalette(const std::string& filePath);
+    bool LoadPalette(const std::string& filePath);
+    const std::vector<RGB>& GetPalette() { return curPalette;}
 };
