@@ -45,3 +45,12 @@ std::vector<BYTE> Loader::LoadFile(const std::string& filePath)
 
 	return buffer;
 }
+
+std::string Loader::GetFullFilePath(const char* relativePath)
+{
+    std::string currentPath = __FILE__;
+    size_t lastSlashPos = currentPath.find_last_of('/');
+    std::string path = currentPath.substr(0, lastSlashPos + 1) + relativePath;
+    
+    return path;
+}

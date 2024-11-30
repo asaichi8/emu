@@ -15,6 +15,7 @@ class Loader
 public:
 	Loader();
 
-	static std::vector<BYTE> HexStrToBytes(const std::string& hexString);
-	static std::vector<BYTE> LoadFile(const std::string& filePath);
+	std::vector<BYTE> HexStrToBytes(const std::string& hexString);
+	std::vector<BYTE> LoadFile(const std::string& filePath);
+	std::string GetFullFilePath(const char* relativePath);
 };
