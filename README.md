@@ -7,7 +7,9 @@ Linux/MacOS
 ------------
 ### Dependencies
 apt: ```sudo apt install make g++ libsdl2-dev```
+
 pacman: ```sudo pacman -S make gcc sdl2```
+
 Homebrew: ```brew install sdl2```
 
 ### Usage
