@@ -36,11 +36,15 @@ ifeq ($(OS),Windows_NT)
     TARGET = $(patsubst /,\,$(CUR_DIR))\bin\emu.exe # windows prefers \ over /
     CLEAN_CMD = del /f "$(TARGET)"
 else
-    CXX = /usr/bin/g++
+		CXX = /usr/bin/g++
     LIBS = -lSDL2
-    INCLUDES += -I/usr/include/SDL2
     TARGET = $(CUR_DIR)/bin/emu
     CLEAN_CMD = rm -f $(TARGET)
+		ifeq ($(shell uname -s), Darwin) # macos	
+    	CXX = clang++
+    	INCLUDES += -I/usr/include/SDL2
+			LIBS += -I/usr/local/lib
+		endif
 endif
 
 all: $(TARGET)
