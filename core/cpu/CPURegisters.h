@@ -13,7 +13,7 @@ enum StatusRegisterFlags
 	DECIMAL_MODE,       // D - 1 when in BCD mode (unused in NES implementation)
 	BREAK_COMMAND,      // B - 1 when a software interrupt is executed
 	UNUSED,             // # - 1 always
-	OVERFLOW,           // V - 1 if arithmetic operation overflows
+	_OVERFLOW,           // V - 1 if arithmetic operation overflows
 	NEGATIVE            // N - 1 if result is negative (two's complement)
 };
 

@@ -8,7 +8,7 @@
 #define DWORD   uint32_t
 #define QWORD   uint64_t
 
-#define CHAR_MAX 0x7F
+#define _CHAR_MAX 0x7F
 #define BYTE_MAX UINT8_MAX
 #define WORD_MAX UINT16_MAX
 #define DWORD_MAX UINT32_MAX

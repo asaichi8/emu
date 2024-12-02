@@ -89,7 +89,7 @@ void EmulatorDisplay::StartImGuiFrame()
 		ImGui::TextColored(m_curReg.status_register.test(StatusRegisterFlags::DECIMAL_MODE) ? green : red, "D"); ImGui::SameLine();
 		ImGui::TextColored(m_curReg.status_register.test(StatusRegisterFlags::BREAK_COMMAND) ? green : red, "B"); ImGui::SameLine();
 		ImGui::TextColored(m_curReg.status_register.test(StatusRegisterFlags::UNUSED) ? green : red, "U"); ImGui::SameLine();
-		ImGui::TextColored(m_curReg.status_register.test(StatusRegisterFlags::OVERFLOW) ? green : red, "O"); ImGui::SameLine();
+		ImGui::TextColored(m_curReg.status_register.test(StatusRegisterFlags::_OVERFLOW) ? green : red, "O"); ImGui::SameLine();
 		ImGui::TextColored(m_curReg.status_register.test(StatusRegisterFlags::NEGATIVE) ? green : red, "N");
 		
 		ImGui::End();
