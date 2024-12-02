@@ -37,13 +37,15 @@ ifeq ($(OS),Windows_NT)
     CLEAN_CMD = del /f "$(TARGET)"
 else
     UNAME_S := $(shell uname -s)
-    CXX = /usr/bin/g++
     ifeq ($(UNAME_S), Darwin) # macos	
         CXX = clang++
         INCLUDES += -I/usr/local/include/SDL2
-        LIBS += -I/usr/local/lib
+        LIBS = -I/usr/local/lib -lSDL2
+    else
+        CXX = /usr/bin/g++
+        INCLUDES += -I/usr/include/SDL2
+        LIBS = -lSDL2
     endif
-    LIBS += -lSDL2
     TARGET = $(CUR_DIR)/bin/emu
     CLEAN_CMD = rm -f $(TARGET)
 endif
