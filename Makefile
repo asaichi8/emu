@@ -1,4 +1,4 @@
-CXXFLAGS = -g -D_REENTRANT
+CXXFLAGS = -g -D_REENTRANT -std=c++17
 
 CUR_DIR = $(abspath .)
 
@@ -36,15 +36,16 @@ ifeq ($(OS),Windows_NT)
     TARGET = $(patsubst /,\,$(CUR_DIR))\bin\emu.exe # windows prefers \ over /
     CLEAN_CMD = del /f "$(TARGET)"
 else
-		CXX = /usr/bin/g++
-    LIBS = -lSDL2
+    UNAME_S := $(shell uname -s)
+    CXX = /usr/bin/g++
+    ifeq ($(UNAME_S), Darwin) # macos	
+        CXX = clang++
+        INCLUDES += -I/usr/local/include/SDL2
+        LIBS += -I/usr/local/lib
+    endif
+    LIBS += -lSDL2
     TARGET = $(CUR_DIR)/bin/emu
     CLEAN_CMD = rm -f $(TARGET)
-		ifeq ($(shell uname -s), Darwin) # macos	
-    	CXX = clang++
-    	INCLUDES += -I/usr/include/SDL2
-			LIBS += -I/usr/local/lib
-		endif
 endif
 
 all: $(TARGET)
