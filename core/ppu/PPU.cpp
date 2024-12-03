@@ -9,6 +9,50 @@ PPU::PPU(std::vector<BYTE>* _pCHR_ROM, MirrorType* _pMirrorType) : m_pCHR_ROM(_p
     m_PaletteRAM.assign(PALETTE_RAM_TOTAL_SIZE, 0);
 }
 
+
+// https://www.nesdev.org/wiki/PPU_rendering
+bool PPU::Clock(DWORD nCycles)
+{
+    const size_t SCANLINE_END = 341;
+    const size_t VBLANK_START = 241;
+    const size_t VBLANK_END   = 260;
+
+    m_nPPUCycles += nCycles;
+    if (m_nPPUCycles < SCANLINE_END)
+        return false;
+    
+    m_nPPUCycles -= SCANLINE_END;
+    m_nScanlines++;
+
+    PPUSTATUS* ppuStatusRegister = dynamic_cast<PPUSTATUS*>(registers.ppustatus.get());
+    if (m_nScanlines == VBLANK_START)
+    {
+        ppuStatusRegister->SetVBLANK(1);
+        ppuStatusRegister->SetSprite0Hit(0);
+
+        PPUCTRL* ppuCtrlRegister = dynamic_cast<PPUCTRL*>(registers.ppuctrl.get());
+        if (ppuCtrlRegister->GetVBlankNMI())
+            m_bShouldNMIInterrupt = true;
+    }
+    else if (m_nScanlines > VBLANK_END)
+    {
+        // frame complete
+        ppuStatusRegister->SetSprite0Hit(0);
+        m_nScanlines = -1;
+
+        return true;
+    }
+
+    return false;
+}
+
+bool PPU::IsNMIInterruptQueued()
+{
+    bool isQueued = m_bShouldNMIInterrupt;
+    m_bShouldNMIInterrupt = false;
+    return isQueued;
+}
+
 BYTE PPU::ReadPPUByte()
 {
     BYTE data = 0x0;

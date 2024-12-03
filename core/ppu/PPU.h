@@ -35,6 +35,10 @@ class PPU
 
 	IPPURegister::InternalRegisters internal_registers;
 
+	DWORD m_nPPUCycles{};
+	int m_nScanlines{};
+	bool m_bShouldNMIInterrupt = false;
+
 	struct Registers {
 		std::unique_ptr<IPPURegister> ppuctrl 	;
 		std::unique_ptr<IPPURegister> ppumask 	;
@@ -70,6 +74,8 @@ public:
 
 	Registers registers; // TODO: this should probably be private, create (mostly) 1 liner functions instead
 
+	bool Clock(DWORD nCycles);
+	bool IsNMIInterruptQueued();
 	BYTE ReadPPUByte();
 	void WritePPUByte(BYTE val);
 };
