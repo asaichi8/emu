@@ -34,4 +34,6 @@ public:
 
         return preservedReg;
     }
+    void SetSprite0Hit(bool b) { ppu_status_register.set(SPRITE_0_HIT, b); }    
+    void SetVBLANK(bool b) { ppu_status_register.set(VBLANK, b); }    
 };
