@@ -78,4 +78,7 @@ public:
 	bool IsNMIInterruptQueued();
 	BYTE ReadPPUByte();
 	void WritePPUByte(BYTE val);
+
+	DWORD GetCycleCount() { return m_nPPUCycles; }
+	int GetScanlineCount() { return m_nScanlines; }
 };
