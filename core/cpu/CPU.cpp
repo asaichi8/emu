@@ -54,6 +54,10 @@ void CPU::Log()
 /// @brief Starts running the CPU (https://en.wikipedia.org/wiki/Instruction_cycle)
 void CPU::Run()
 {
+	if (m_Bus->IsNMIInterruptQueuedW())
+	{
+		NMI();
+	}
 	m_curOpcode = m_Bus->ReadByte(reg.program_counter);
 
 	//Log();
@@ -65,6 +69,8 @@ void CPU::Run()
 
 	Execute(instructions[m_curOpcode]);
 	m_nCycles += m_curCycles;
+
+	m_Bus->Clock(m_curCycles);
 }
 
 
