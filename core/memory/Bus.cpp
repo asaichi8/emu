@@ -34,11 +34,6 @@ void Bus::Clock(DWORD nCycles)
 	m_PPU->Clock(nCycles * 3);
 }
 
-bool Bus::IsNMIInterruptQueuedW()
-{
-    return m_PPU->IsNMIInterruptQueued();
-}
-
 // https://www.nesdev.org/wiki/CPU_memory_map
 BYTE Bus::ReadByte(WORD addr)
 {
@@ -187,3 +182,7 @@ WORD Bus::ReadPRGWord(WORD addr, bool shouldWrapPage)
 		
 	return (WORD(high) << 8) + low;
 }
+
+bool Bus::IsNMIInterruptQueuedW() { return m_PPU->IsNMIInterruptQueued(); }
+DWORD Bus::GetPPUCycleCount() { return m_PPU->GetCycleCount(); }
+int Bus::GetScanlineCount() { return m_PPU->GetScanlineCount(); }

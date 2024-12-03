@@ -39,9 +39,12 @@ public:
 
 	void Reset();
 	void Clock(DWORD nCycles);
-	bool IsNMIInterruptQueuedW();
 	BYTE ReadByte(WORD addr);
 	WORD ReadWord(WORD addr, bool shouldWrapPage = false);
 	void WriteByte(WORD addr, BYTE val);
 	void WriteWord(WORD addr, WORD val);
+
+	bool IsNMIInterruptQueuedW();
+	DWORD GetPPUCycleCount();
+	int GetScanlineCount();
 };
