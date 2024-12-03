@@ -15,6 +15,7 @@
 #define SIZE 32  // Size of each internal pixel
 #define SCALE 20 // Amount to scale the internal pixels up by
 constexpr char ROM_RELATIVE_PATH[] = "../../bin/snake.nes"; 
+//constexpr char ROM_RELATIVE_PATH[] = "../../bin/nestest2.nes"; 
 //constexpr char PALETTE_RELATIVE_PATH[] = "../../bin/ntscpalette.pal"; 
 
 

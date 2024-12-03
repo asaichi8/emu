@@ -47,6 +47,8 @@ void CPU::Log()
 	out << "Y:" << std::hex << std::setw(2) << std::setfill('0') << (int)reg.Y << ' ';
 	out << "P:" << std::hex << std::setw(2) << std::setfill('0') << reg.status_register.to_ulong() << ' ';
 	out << "SP:" << std::hex << std::setw(2) << std::setfill('0') << (int)reg.stack_pointer << ' ';
+	out << "PPU:" << std::dec << std::setw(3) << std::setfill(' ') << m_Bus->GetScanlineCount() << ',';
+	out << std::setw(3) << std::setfill(' ') << m_Bus->GetPPUCycleCount() << ' ';
 	out << "CYC:" << std::dec << (int)m_nCycles;
 	out << std::endl;
 }
@@ -54,16 +56,15 @@ void CPU::Log()
 /// @brief Starts running the CPU (https://en.wikipedia.org/wiki/Instruction_cycle)
 void CPU::Run()
 {
+	//Log();
+
+	//if (reg.program_counter == 0xC66E)
+	//    std::cout << std::endl; // breakpoint here
 	if (m_Bus->IsNMIInterruptQueuedW())
 	{
 		NMI();
 	}
 	m_curOpcode = m_Bus->ReadByte(reg.program_counter);
-
-	//Log();
-
-	//if (reg.program_counter == 0xC66E)
-	//    std::cout << std::endl; // breakpoint here
 
 	reg.program_counter++;
 
@@ -92,6 +93,7 @@ void CPU::Reset()
 	// https://6502.co.uk/lesson/reset
 	// "This reset sequence lasts for seven clock cycles and after this, the computer will be usable. "
 	m_nCycles = 7;
+	m_Bus->Clock(m_nCycles);
 
 	m_Bus->Reset();
 }
@@ -111,6 +113,7 @@ void CPU::IRQ()
 	PushStackByte((BYTE)(savedReg.to_ulong()));
 
 	reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
+	// TODO: cycles?
 
 	reg.program_counter = m_Bus->ReadWord(IRQ_VECTOR);
 }
@@ -126,6 +129,7 @@ void CPU::NMI()
 
 	reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
 
+	// TODO: cycles?
 	reg.program_counter = m_Bus->ReadWord(NMI_VECTOR);
 }
 
