@@ -30,7 +30,15 @@ size_t CPU::GetInstructionLenBytes(const Instruction& instruction)
 
 void CPU::Log()
 {
-	static std::ofstream out("mynestest.log");
+	const std::string logFile = "mynestest.log";
+	static std::ofstream out(logFile);
+	
+	static bool hasPrintedPath = false;
+	if (!hasPrintedPath)
+	{
+		std::cout << "Writing log file to: " << std::filesystem::absolute(logFile) << std::endl;
+		hasPrintedPath = true;
+	}
 
 	out << std::hex << std::uppercase << std::setw(4) << std::setfill('0') << reg.program_counter << "  ";
 	out << std::hex << std::setw(2) << std::setfill('0') << (int)m_curOpcode << ' ';
@@ -56,15 +64,15 @@ void CPU::Log()
 /// @brief Starts running the CPU (https://en.wikipedia.org/wiki/Instruction_cycle)
 void CPU::Run()
 {
-	//Log();
-
-	//if (reg.program_counter == 0xC66E)
-	//    std::cout << std::endl; // breakpoint here
-	if (m_Bus->IsNMIInterruptQueuedW())
-	{
-		NMI();
-	}
 	m_curOpcode = m_Bus->ReadByte(reg.program_counter);
+
+	if (m_Bus->IsNMIInterruptQueuedW())
+		NMI();
+
+	Log();
+
+	if (reg.program_counter == 0xC66E)
+	    std::cout << std::endl; // breakpoint here
 
 	reg.program_counter++;
 

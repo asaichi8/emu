@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <fstream>
 #include <memory>
+#include <filesystem>
 #include "CPURegisters.h"
 #include "../memory/Bus.h"
 #include "../../include/typedefs.h"
