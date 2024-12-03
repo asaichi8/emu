@@ -28,6 +28,17 @@ void Bus::Reset()
 	std::fill(m_CPURAM.begin(), m_CPURAM.end(), 0);
 }
 
+void Bus::Clock(DWORD nCycles)
+{
+	m_nCPUCycles += nCycles;
+	m_PPU->Clock(nCycles * 3);
+}
+
+bool Bus::IsNMIInterruptQueuedW()
+{
+    return m_PPU->IsNMIInterruptQueued();
+}
+
 // https://www.nesdev.org/wiki/CPU_memory_map
 BYTE Bus::ReadByte(WORD addr)
 {

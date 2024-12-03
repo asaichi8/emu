@@ -25,6 +25,7 @@ class Bus
 	std::vector<BYTE> m_CPURAM{};
 	ROM* m_ROM{};
 	std::unique_ptr<PPU> m_PPU{};
+	QWORD m_nCPUCycles{};
 
 	BYTE ReadPPURegister(PPURegAddr PPUreg);
 	void WritePPURegister(PPURegAddr PPUreg, BYTE val);
@@ -37,6 +38,8 @@ public:
 	static WORD MirrorAddress(WORD addr, WORD size, WORD startAddr = 0x0);
 
 	void Reset();
+	void Clock(DWORD nCycles);
+	bool IsNMIInterruptQueuedW();
 	BYTE ReadByte(WORD addr);
 	WORD ReadWord(WORD addr, bool shouldWrapPage = false);
 	void WriteByte(WORD addr, BYTE val);
