@@ -59,7 +59,7 @@ class PPU
 			oamaddr 	= std::make_unique<OAMADDR>	 (nullptr);
 			oamdata 	= std::make_unique<OAMDATA>	 (nullptr);
 			ppuscroll 	= std::make_unique<PPUSCROLL>(i);
-			ppuaddr 	= std::make_unique<PPUADDR>	 (nullptr);
+			ppuaddr 	= std::make_unique<PPUADDR>	 (i);
 			ppudata 	= std::make_unique<PPUDATA>	 (i);
 			oamdma 		= std::make_unique<OAMDMA>	 (nullptr);
 		}
