@@ -32,7 +32,7 @@ void CPU::Log()
 {
 	const std::string logFile = "mynestest.log";
 	static std::ofstream out(logFile);
-	
+
 	static bool hasPrintedPath = false;
 	if (!hasPrintedPath)
 	{
@@ -121,8 +121,8 @@ void CPU::IRQ()
 	PushStackByte((BYTE)(savedReg.to_ulong()));
 
 	reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
-	// TODO: cycles?
-
+	
+	m_nCycles += 7;
 	reg.program_counter = m_Bus->ReadWord(IRQ_VECTOR);
 }
 	
@@ -138,6 +138,7 @@ void CPU::NMI()
 	reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
 
 	// TODO: cycles?
+	m_nCycles += 8;
 	reg.program_counter = m_Bus->ReadWord(NMI_VECTOR);
 }
 
