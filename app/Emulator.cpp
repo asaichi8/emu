@@ -1,24 +1,27 @@
 #include "Emulator.h"
+// TODO: add logging
+// TODO: make a bunch of parameters const and stuff
+// TODO: avoid define, use static const member variables
+// TODO: make sure all member variables are m_, use regular naming scheme
+// TODO: make private functions in .cpp at bottom, public at top
+// TODO: make DrawTiles popup in ImGUI
 
-
-Emulator::Emulator() 
+Emulator::Emulator()
 {
 	// Map ROM into appropriate variables
-	auto romFullPath = Loader::GetFullFilePath(ROM_RELATIVE_PATH);
+	std::string romFullPath = Loader::GetFullFilePath(ROM_RELATIVE_PATH);
 	if (!m_ROM.LoadROM(romFullPath))
 		throw std::runtime_error("Failed to load ROM!");
 
-	/*Palette palette;
-	auto paletteFullPath = Loader::GetFullFilePath(PALETTE_RELATIVE_PATH);
-	if (!palette.LoadPalette(paletteFullPath))
-		throw std::runtime_error("Failed to load colour palette!");*/
-
+	m_pPalette = std::make_unique<Palette>();
+	std::string paletteFullPath = Loader::GetFullFilePath(PALETTE_RELATIVE_PATH);
+	if (!m_pPalette->LoadPalette(paletteFullPath))
+		throw std::runtime_error("Failed to load colour palette!");
 
 	// Create devices
-	m_Bus   = std::make_shared<Bus>(&m_ROM);
-	m_CPU   = std::make_unique<CPU>(m_Bus);
-	m_Snake = std::make_unique<Snake>(m_Bus);
-	m_GUI   = std::make_unique<EmulatorDisplay>("Emulator", SIZE, SIZE, SCALE);
+	m_Bus = std::make_shared<Bus>(&m_ROM);
+	m_CPU = std::make_unique<CPU>(m_Bus);
+	m_GUI = std::make_unique<EmulatorDisplay>("Emulator", DISPLAY_WIDTH, DISPLAY_HEIGHT, 1);
 
 	m_GUI->InitImGui();
 }
@@ -30,47 +33,64 @@ Emulator::~Emulator()
 
 
 /// @brief Runs the emulator.
-void Emulator::Run() 
+void Emulator::Run()
 {
 	SDL_Event event{};
-	BYTE screenBuffer[SCREEN_BUFFER_SIZE]{};
+	NESDisplay nesDisplay(m_Bus->GetPPU(), m_pPalette.get());
 
 	// Determine refresh rate of primary monitor
-	SDL_DisplayMode currentDisplay{};
-	int primaryDisplay = 0; // primary display
+	//SDL_DisplayMode currentDisplay{};
+	//int primaryDisplay = 0; // primary display
 	// Attempt to set FPS to the refresh rate of the focused monitor
 	//if (SDL_GetCurrentDisplayMode(primaryDisplay, &currentDisplay) == 0)
 	//	m_FPS = currentDisplay.refresh_rate;
-	
-	auto FPStime = std::chrono::milliseconds(1000) / 60; // time each frame should run
+	auto FPStime = std::chrono::milliseconds(1000) / 60;					  // time each frame should run
 	auto nextFrameTime = std::chrono::high_resolution_clock::now() + FPStime; // time the next frame will be drawn
 
-	while (true) // Main loop
+	bool running = true;
+	while (running) // Main loop
 	{
 		// Handle events (e.g. keyboard inputs)
-		while (SDL_PollEvent(&event)) 
+		while (SDL_PollEvent(&event))
 		{
 			ImGui_ImplSDL2_ProcessEvent(&event);
-			m_Snake->HandleEvent(event);
+			// TODO: replace with joypad
+			if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
+			{
+				running = false;
+				break;
+			}
 		}
 
-		m_Snake->Run(screenBuffer); // run snake class handler
-
-		if (m_GUI->GetShouldReadRegisters()) // if read registers was clicked...
+		if (m_GUI->GetShouldReadRegisters())				// if read registers was clicked...
 			m_GUI->UpdateRegisters(m_CPU->ReadRegisters()); // update GUI with a copy of the CPU's current registers
 
-		auto now = std::chrono::high_resolution_clock::now();
+		if (m_GUI->GetShouldCPURun())
+		{
+			m_CPU->Run();
+
+			// If we interrupted, it's probably safe to read the nametable so try it
+			// TODO: very bootleg fix later
+			if (m_Bus->GetPPU()->GetInterruptStatus())
+			{
+				nesDisplay.DrawNametable();
+				m_GUI->RenderFrame(nesDisplay.GetScreen(), DISPLAY_WIDTH);
+			}
+		}
+		else
+			m_GUI->RenderFrame(nesDisplay.GetScreen(), DISPLAY_WIDTH);
+
+		/*auto now = std::chrono::high_resolution_clock::now();
 		if (now >= nextFrameTime) // only render gui every FPS frames
 		{
-			m_GUI->RenderFrame(screenBuffer, SIZE);
+			m_GUI->RenderFrame(screenBuffer, DISPLAY_WIDTH);
 			nextFrameTime += FPStime; // calc the time the next frame should be drawn
 
 			if (now > nextFrameTime) // if somehow we became out of sync...
 				nextFrameTime = now + FPStime; // synchronise nextFrameTime
-		}
+		}*/
 
-		if (m_GUI->GetShouldCPURun()) 
-			m_CPU->Run();
+		// TODO: fix restart
 		if (m_GUI->GetShouldRestart())
 		{
 			m_CPU->Reset();
@@ -81,7 +101,7 @@ void Emulator::Run()
 			m_CPU->Run(); // execute the CPU for a single instruction
 			m_GUI->SetShouldStepThrough(false);
 		}
-		
-		std::this_thread::sleep_for(std::chrono::microseconds(50));
+
+		// std::this_thread::sleep_for(std::chrono::microseconds(50));
 	}
 }

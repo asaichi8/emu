@@ -1,31 +1,38 @@
 #pragma once
 
-#include <SDL2/SDL.h>
-#include <memory>
-#include "../core/memory/Bus.h"
+#include "../core/ppu/PPU.h"
+#include "../core/loader/Palette.h"
 
-#define UP_KEY      0x77
-#define DOWN_KEY    0x73
-#define LEFT_KEY    0x61
-#define RIGHT_KEY   0x64
 
-#define WIDTH 256
-#define HEIGHT 240
+#define DISPLAY_WIDTH 256
+#define DISPLAY_HEIGHT 240
 
 
 class NESDisplay
 {
-	std::shared_ptr<Bus> m_Bus{};
-	SDL_Event m_Event{};
-    size_t m_szScreen[WIDTH][HEIGHT];
+	#pragma pack(push, 1)
+	struct Tile
+	{
+		BYTE left[8];
+		BYTE right[8];
+	};
+	#pragma pop
 
-	SDL_Color GetColor(BYTE byte);
-	bool ReadScreen(BYTE* frame);
+	static const size_t SCREEN_BUFFER_SIZE = DISPLAY_WIDTH * DISPLAY_HEIGHT * sizeof(RGB); // 256 * 240 * 3
+
+	const PPU* m_pPPU;
+	Palette* m_pPalette;
+	BYTE m_szScreenBuffer[SCREEN_BUFFER_SIZE]{};
+
+	bool SetPixel(const RGB colour, const size_t x, const size_t y);
+	void DrawTile(const Tile& tile, const size_t tileScreenPosX, const size_t tileScreenPosY);
 
 public:
-	NESDisplay(std::shared_ptr<Bus> bus);
+	NESDisplay(const PPU* pPPU, Palette* pPalette);
 	~NESDisplay();
 
-	bool Run(BYTE* m_Screen);
-	void HandleEvent(const SDL_Event& e);
+	void DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank);
+	void DrawNametable();
+
+	BYTE* GetScreen() { return m_szScreenBuffer; }
 };

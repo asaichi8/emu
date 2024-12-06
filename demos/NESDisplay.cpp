@@ -1,7 +1,7 @@
 #include "NESDisplay.h"
+// TODO: add sprite rendering
 
-
-NESDisplay::NESDisplay(std::shared_ptr<Bus> bus) : m_Bus(bus)
+NESDisplay::NESDisplay(const PPU* pPPU, Palette* pPalette) : m_pPPU(pPPU), m_pPalette(pPalette)
 {
 
 }
@@ -12,87 +12,102 @@ NESDisplay::~NESDisplay()
 }
 
 
-// return should read screen or not
-bool NESDisplay::Run(BYTE* m_Screen)
+void NESDisplay::DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank)
 {
-	HandleEvent(m_Event);
+	const WORD tilesStartAddr = bank * 0x1000;
 
-	//m_Bus->WriteByte(RNG_POS, (BYTE)(rand() % 14) + 1);
-
-	return ReadScreen(m_Screen);
-}
-
-
-void NESDisplay::HandleEvent(const SDL_Event& e) 
-{
-	if (e.type == SDL_KEYDOWN) 
+	size_t tileScreenPosX = 0;
+	size_t tileScreenPosY = 0;
+	std::vector<Tile> tiles{};
+	for (int tileNo = 0; tileNo < DISPLAY_WIDTH; ++tileNo)
 	{
-		switch (e.key.keysym.sym) 
+		const WORD curTileOffset = tileNo * sizeof(Tile);
+		const WORD curTilePos = tilesStartAddr + curTileOffset;
+
+		if (tileNo && tileNo % 16 == 0)
 		{
-			case SDLK_w:
-				//m_Bus->WriteByte(DIR_POS, UP_KEY);
-				break;
-			case SDLK_s:
-				//m_Bus->WriteByte(DIR_POS, DOWN_KEY);
-				break;
-			case SDLK_a:
-				//m_Bus->WriteByte(DIR_POS, LEFT_KEY);
-				break;
-			case SDLK_d:
-				//m_Bus->WriteByte(DIR_POS, RIGHT_KEY);
-				break;
-			default:
-				break;
-		}
-	}
-	else if (e.type == SDL_QUIT) 
-		std::exit(0);
-}
-
-SDL_Color NESDisplay::GetColor(BYTE byte) 
-{
-	switch (byte) 
-	{
-		case 0: return SDL_Color{0, 0, 0, 255};       // BLACK
-		case 1: return SDL_Color{255, 255, 255, 255}; // WHITE
-		case 2:
-		case 9: return SDL_Color{128, 128, 128, 255}; // GREY
-		case 3:
-		case 10: return SDL_Color{255, 0, 0, 255};    // RED
-		case 4:
-		case 11: return SDL_Color{0, 255, 0, 255};    // GREEN
-		case 5:
-		case 12: return SDL_Color{0, 0, 255, 255};    // BLUE
-		case 6:
-		case 13: return SDL_Color{255, 0, 255, 255};  // MAGENTA
-		case 7:
-		case 14: return SDL_Color{255, 255, 0, 255};  // YELLOW
-		default: return SDL_Color{0, 255, 255, 255};  // CYAN
-	}
-}
-
-bool NESDisplay::ReadScreen(BYTE* szFrame)
-{
-    /*
-	bool shouldUpdate = false;
-	int frame_i = 0;
-
-	for (WORD addr = SCREEN_START; addr < SCREEN_END; ++addr) 
-	{
-		//SDL_Color color = GetColor(m_Bus->ReadByte(addr));
-
-		if (szFrame[frame_i] != color.r || szFrame[frame_i + 1] != color.g || szFrame[frame_i + 2] != color.b) 
-		{
-			szFrame[frame_i] = color.r;
-			szFrame[frame_i + 1] = color.g;
-			szFrame[frame_i + 2] = color.b;
-
-			shouldUpdate = true;
+			tileScreenPosY += 8; // new line
+			tileScreenPosX = 0;	 // reset x at end of line
 		}
 
-		frame_i += 3;
-	}
+		// map 16 bytes at curTilePos into curTile
+		const Tile *pCurTile = (const Tile *)(&(pCHR_ROM->at(curTilePos)));
+		tiles.push_back(*pCurTile); // push_back makes a copy, so no problem dereferencing a temporary pointer
 
-	return shouldUpdate;*/
-    return false;
+		DrawTile(*pCurTile, tileScreenPosX, tileScreenPosY);
+
+		tileScreenPosX += 8;
+	}
+}
+
+void NESDisplay::DrawNametable()
+{
+	const WORD bgBankAddr = dynamic_cast<PPUCTRL *>(m_pPPU->registers.ppuctrl.get())->GetBackgroundPTableAddr();
+
+	std::vector<Tile> tiles{};
+	// NES screen is 32 tiles long, 30 tiles high (32 * 8 = 256, 30 * 8 = 240)
+	for (int tileNo = 0; tileNo < 32 * 30; ++tileNo)
+	{
+		// bgBankAddr either 0 or 0x1000, use it to determine which bank we access
+		const std::vector<BYTE> nametable = m_pPPU->GetNametableRAM()[bgBankAddr ? 1 : 0];
+
+		if (tileNo >= nametable.size())
+		{
+			std::cerr << "Attempted to access tile outside of nametable!" << std::endl;
+			break;
+		}
+
+		const WORD selectedTilePos = nametable.at(tileNo);				// position of tile to be used
+		const WORD selectedTileOffset = selectedTilePos * sizeof(Tile); // address of tile to be used
+		const Tile *pCurTile = (const Tile *)(&(m_pPPU->GetCHR_ROM()->at(bgBankAddr + selectedTileOffset)));
+
+		const size_t screenPosX = tileNo % 32;
+		const size_t screenPosY = tileNo / 32;
+
+		DrawTile(*pCurTile, screenPosX * 8, screenPosY * 8);
+	}
+}
+
+
+bool NESDisplay::SetPixel(const RGB colour, const size_t x, const size_t y)
+{
+	const size_t pixelStartPos = (x * 3) + (y * 3 * DISPLAY_WIDTH);
+	if (pixelStartPos + sizeof(RGB) > SCREEN_BUFFER_SIZE)
+		return false;
+
+	m_szScreenBuffer[pixelStartPos] = colour.r;
+	m_szScreenBuffer[pixelStartPos + 1] = colour.g;
+	m_szScreenBuffer[pixelStartPos + 2] = colour.b;
+
+	return true;
+}
+
+void NESDisplay::DrawTile(const Tile &tile, const size_t tileScreenPosX, const size_t tileScreenPosY)
+{
+	for (int curByte = 0; curByte < 8; ++curByte)
+	{
+		std::bitset<8> left = tile.left[curByte];
+		std::bitset<8> right = tile.right[curByte];
+
+		for (int curBit = 0; curBit < 8; ++curBit) // left to right
+		{
+			std::bitset<4> pixelNibble = left[curBit] + right[curBit];
+
+			RGB rgb;
+			switch (pixelNibble.to_ulong())
+			{
+				case 0: rgb = m_pPalette->GetPalette().at(0x01); break;
+				case 1: rgb = m_pPalette->GetPalette().at(0x10); break;
+				case 2: rgb = m_pPalette->GetPalette().at(0x20); break;
+				case 3: rgb = m_pPalette->GetPalette().at(0x30); break;
+				default: std::cerr << "pixelNibble out of range - should never occur" << std::endl; break;
+			}
+
+			const size_t pixelPosX = (7 - curBit) + tileScreenPosX;
+			const size_t pixelPosY = curByte + tileScreenPosY;
+
+			if (!SetPixel(rgb, pixelPosX, pixelPosY))
+				std::cerr << "Failed to draw pixel! (pixel out of bounds)" << std::endl;
+		}
+	}
 }
