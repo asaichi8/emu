@@ -93,5 +93,9 @@
         "shared_mutex": "cpp",
         "cfenv": "cpp",
         "valarray": "cpp"
+    },
+    "editor.tokenColorCustomizations": {
+        "comments": "",
+        "textMateRules": []
     }
 }
