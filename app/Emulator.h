@@ -9,7 +9,7 @@
 #include "../core/cpu/CPU.h"
 #include "../core/ppu/PPU.h"
 #include "display/EmulatorDisplay.h"
-#include "../demos/NESDisplay.h"
+#include "display/NESDisplay.h"
 
 constexpr char ROM_RELATIVE_PATH[] = "../../bin/myrom.nes"; 
 constexpr char PALETTE_RELATIVE_PATH[] = "../../bin/ntscpalette.pal"; 
