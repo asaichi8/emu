@@ -27,6 +27,8 @@
 class PPU
 {
 	std::vector<BYTE> m_NametableRAM[2];
+	// dbg purposes only
+	//std::vector<bool> TEST_NameTableRAMIsRealZero[2]; // set to true if accompanying byte in m_NametableRAM was really set to zero or just assigned that
 	std::vector<BYTE> m_OAM{};
 	std::vector<BYTE> m_PaletteRAM{};
 
@@ -81,4 +83,7 @@ public:
 
 	DWORD GetCycleCount() { return m_nPPUCycles; }
 	int GetScanlineCount() { return m_nScanlines; }
+	bool GetInterruptStatus() { return m_bShouldNMIInterrupt; } //TODO: remove this
+	const std::vector<BYTE>* GetNametableRAM() const { return m_NametableRAM; }
+	const std::vector<BYTE>* GetCHR_ROM() const { return m_pCHR_ROM; }
 };

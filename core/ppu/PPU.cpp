@@ -5,6 +5,8 @@ PPU::PPU(std::vector<BYTE>* _pCHR_ROM, MirrorType* _pMirrorType) : m_pCHR_ROM(_p
 {
     for (auto& pTable : m_NametableRAM)
         pTable.assign(NAMETABLE_SIZE, 0);
+    // for (auto& pTable : TEST_NameTableRAMIsRealZero)
+    //     pTable.assign(NAMETABLE_SIZE, 0);
     m_OAM.assign(BYTE_MAX + 1, 0); // https://www.nesdev.org/wiki/PPU_memory_map#OAM
     m_PaletteRAM.assign(PALETTE_RAM_TOTAL_SIZE, 0);
 }
@@ -72,6 +74,8 @@ BYTE PPU::ReadPPUByte()
         data = ppuDataRegister->ReadBuffer();
         auto indexes = GetNametableRAMIndx(addr);
         ppuDataRegister->WriteBuffer(m_NametableRAM[indexes.first][indexes.second]);
+        // if (m_NametableRAM[indexes.first][indexes.second] == 0x0 && TEST_NameTableRAMIsRealZero[indexes.first][indexes.second] == false)
+        //     std::cerr << "Attempting to read from bad memory!!" << std::endl; //brk here
     }
     else // palette ram 0x3F00 - 0x3FFF
     {
@@ -94,6 +98,10 @@ void PPU::WritePPUByte(BYTE val)
     {
         auto indexes = GetNametableRAMIndx(addr);
         m_NametableRAM[indexes.first][indexes.second] = val;
+        // if (val == 0x0)
+        //     TEST_NameTableRAMIsRealZero[indexes.first][indexes.second] = true;
+        // else
+        //     TEST_NameTableRAMIsRealZero[indexes.first][indexes.second] = false;
     }
     else // palette ram 0x3F00 - 0x3FFF
     {
