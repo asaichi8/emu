@@ -69,10 +69,10 @@ void CPU::Run()
 	if (m_Bus->IsNMIInterruptQueuedW())
 		NMI();
 
-	Log();
+	//Log();
 
-	if (reg.program_counter == 0xC66E)
-	    std::cout << std::endl; // breakpoint here
+	//if (reg.program_counter == 0xC66E)
+	//    std::cout << std::endl; // breakpoint here
 
 	reg.program_counter++;
 
