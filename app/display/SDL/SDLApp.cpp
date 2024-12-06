@@ -58,7 +58,7 @@ void SDLApp::SetupRenderer(int scale)
 /// @param h Height of the texture
 void SDLApp::SetupTexture(int w, int h)
 {
-	m_Texture = SDL_CreateTexture(m_Renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STATIC, w, h);
+	m_Texture = SDL_CreateTexture(m_Renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, w, h);
 
 	if (!m_Texture) 
 		throw std::runtime_error(std::string("Failed to init texture: ") + SDL_GetError());
