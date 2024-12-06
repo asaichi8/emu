@@ -81,9 +81,9 @@ public:
 	BYTE ReadPPUByte();
 	void WritePPUByte(BYTE val);
 
-	DWORD GetCycleCount() { return m_nPPUCycles; }
-	int GetScanlineCount() { return m_nScanlines; }
-	bool GetInterruptStatus() { return m_bShouldNMIInterrupt; } //TODO: remove this
+	DWORD GetCycleCount() const { return m_nPPUCycles; }
+	int GetScanlineCount() const { return m_nScanlines; }
+	bool GetInterruptStatus() const { return m_bShouldNMIInterrupt; } //TODO: remove thisprobably
 	const std::vector<BYTE>* GetNametableRAM() const { return m_NametableRAM; }
 	const std::vector<BYTE>* GetCHR_ROM() const { return m_pCHR_ROM; }
 };
