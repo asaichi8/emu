@@ -22,6 +22,7 @@ class PPU;
 
 class Bus
 {
+	std::unique_ptr<PPU> m_PPU{};
 	std::vector<BYTE> m_CPURAM{};
 	ROM* m_ROM{};
 	QWORD m_nCPUCycles{};
@@ -33,7 +34,6 @@ class Bus
 
 public:
 	Bus(ROM* rom);
-	std::unique_ptr<PPU> m_PPU{}; // TODO: make this private
 
 	static WORD MirrorAddress(WORD addr, WORD size, WORD startAddr = 0x0);
 
@@ -45,6 +45,5 @@ public:
 	void WriteWord(WORD addr, WORD val);
 
 	bool IsNMIInterruptQueuedW();
-	DWORD GetPPUCycleCount();
-	int GetScanlineCount();
+	const PPU* GetPPU() const { return m_PPU.get(); }
 };
