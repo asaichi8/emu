@@ -24,7 +24,6 @@ class Bus
 {
 	std::vector<BYTE> m_CPURAM{};
 	ROM* m_ROM{};
-	std::unique_ptr<PPU> m_PPU{};
 	QWORD m_nCPUCycles{};
 
 	BYTE ReadPPURegister(PPURegAddr PPUreg);
@@ -34,6 +33,7 @@ class Bus
 
 public:
 	Bus(ROM* rom);
+	std::unique_ptr<PPU> m_PPU{}; // TODO: make this private
 
 	static WORD MirrorAddress(WORD addr, WORD size, WORD startAddr = 0x0);
 
