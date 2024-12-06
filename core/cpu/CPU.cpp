@@ -55,8 +55,8 @@ void CPU::Log()
 	out << "Y:" << std::hex << std::setw(2) << std::setfill('0') << (int)reg.Y << ' ';
 	out << "P:" << std::hex << std::setw(2) << std::setfill('0') << reg.status_register.to_ulong() << ' ';
 	out << "SP:" << std::hex << std::setw(2) << std::setfill('0') << (int)reg.stack_pointer << ' ';
-	out << "PPU:" << std::dec << std::setw(3) << std::setfill(' ') << m_Bus->GetScanlineCount() << ',';
-	out << std::setw(3) << std::setfill(' ') << m_Bus->GetPPUCycleCount() << ' ';
+	out << "PPU:" << std::dec << std::setw(3) << std::setfill(' ') << m_Bus->GetPPU()->GetScanlineCount() << ',';
+	out << std::setw(3) << std::setfill(' ') << m_Bus->GetPPU()->GetCycleCount() << ' ';
 	out << "CYC:" << std::dec << (int)m_nCycles;
 	out << std::endl;
 }

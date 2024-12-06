@@ -83,7 +83,7 @@ void Bus::WriteByte(WORD addr, BYTE val)
 	else if (addr == (WORD)PPURegAddr::OAMDMA) // 0x4014
 		WritePPURegister(PPURegAddr::OAMDMA, val);
 	else
-		std::cerr << "Attempted to write byte " << std::dec << val << "at address 0x" << std::hex << addr << std::dec << " outside of CPU/PPU (not implemented)" << std::endl;
+		std::cerr << "Attempted to write byte " << std::dec << val << " at address 0x" << std::hex << addr << std::dec << " outside of CPU/PPU (not implemented)" << std::endl;
 }
 
 void Bus::WriteWord(WORD addr, WORD val)
@@ -183,6 +183,5 @@ WORD Bus::ReadPRGWord(WORD addr, bool shouldWrapPage)
 	return (WORD(high) << 8) + low;
 }
 
+// we need a wrapper for this function because it isn't read only, and therefore cannot be const & called via GetPPU()
 bool Bus::IsNMIInterruptQueuedW() { return m_PPU->IsNMIInterruptQueued(); }
-DWORD Bus::GetPPUCycleCount() { return m_PPU->GetCycleCount(); }
-int Bus::GetScanlineCount() { return m_PPU->GetScanlineCount(); }
