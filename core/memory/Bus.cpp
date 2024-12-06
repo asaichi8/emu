@@ -83,7 +83,7 @@ void Bus::WriteByte(WORD addr, BYTE val)
 	else if (addr == (WORD)PPURegAddr::OAMDMA) // 0x4014
 		WritePPURegister(PPURegAddr::OAMDMA, val);
 	else
-		std::cerr << "Attempted to write byte outside of CPU/PPU (not implemented)" << std::endl;
+		std::cerr << "Attempted to write byte " << std::dec << val << "at address 0x" << std::hex << addr << std::dec << " outside of CPU/PPU (not implemented)" << std::endl;
 }
 
 void Bus::WriteWord(WORD addr, WORD val)
