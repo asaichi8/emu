@@ -87,6 +87,7 @@ public:
 	const std::vector<BYTE>* GetNametableRAM() const { return m_NametableRAM; }
 	const std::vector<BYTE>* GetCHR_ROM() const { return m_pCHR_ROM; }
 	const std::vector<BYTE>& GetPaletteRAM() const { return m_PaletteRAM; }
+	std::vector<BYTE>* GetOAM() { return &m_OAM; }
 
 	void PPUCtrlWriteW(BYTE val);
 };
