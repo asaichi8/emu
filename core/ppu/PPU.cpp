@@ -20,6 +20,7 @@ bool PPU::Clock(DWORD nCycles)
     const size_t VBLANK_END   = 260;
 
     m_nPPUCycles += nCycles;
+
     if (m_nPPUCycles < SCANLINE_END)
         return false;
     
@@ -31,16 +32,18 @@ bool PPU::Clock(DWORD nCycles)
     {
         ppuStatusRegister->SetVBLANK(1);
         ppuStatusRegister->SetSprite0Hit(0);
-
+    
         PPUCTRL* ppuCtrlRegister = dynamic_cast<PPUCTRL*>(registers.ppuctrl.get());
         if (ppuCtrlRegister->GetVBlankNMI())
             m_bShouldNMIInterrupt = true;
     }
-    else if (m_nScanlines > VBLANK_END)
+    else if (m_nScanlines > (VBLANK_END + 1))
     {
         // frame complete
+        ppuStatusRegister->SetVBLANK(0);
         ppuStatusRegister->SetSprite0Hit(0);
-        m_nScanlines = -1;
+        m_nScanlines = 0;
+        m_bShouldNMIInterrupt = false;
 
         return true;
     }
