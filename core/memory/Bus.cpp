@@ -47,7 +47,8 @@ BYTE Bus::ReadByte(WORD addr)
 	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
 		return ReadPRGByte(addr);
 	
-	return m_CPURAM[addr];
+	//return m_CPURAM[addr];
+	return 0;
 }
 
 // TODO: what if addr = INTERNAL_RAM_SIZE, or PRG_RAM_END?
