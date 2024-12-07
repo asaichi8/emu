@@ -126,10 +126,7 @@ BYTE Bus::ReadPPURegister(PPURegAddr PPUreg)
 		case PPURegAddr::PPUSTATUS:
 			return (BYTE)(m_PPU->registers.ppustatus->Read().to_ulong());
 		case PPURegAddr::OAMDATA:
-			// TODO: implement me!
-			//return (BYTE)(m_PPU->registers.oamdata->Read().to_ulong());
-			std::cerr << "Attempted to read from unimplemented PPU register OAMDATA" << std::endl;
-			return 0;
+			return m_PPU->GetOAM()->at(m_PPU->registers.oamaddr->Read().to_ulong());
 		case PPURegAddr::PPUDATA:
 			return m_PPU->ReadPPUByte();
 
@@ -152,12 +149,10 @@ void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 			m_PPU->registers.ppumask->Write(val);
 			break;
 		case PPURegAddr::OAMADDR:
-			// TODO: implement me
-			//std::cerr << "ERROR: Attempted to write to unimplemented PPU register OAMADDR" << std::endl;
+			m_PPU->registers.oamaddr->Write(val);
 			break;
 		case PPURegAddr::OAMDATA:
-			// TODO: implement me
-			// std::cerr << "ERROR: Attempted to write to unimplemented PPU register OAMDATA" << std::endl;
+			m_PPU->GetOAM()->at(m_PPU->registers.oamaddr->Read().to_ulong()) = val;
 			break;
 		case PPURegAddr::PPUSCROLL:
 			m_PPU->registers.ppuscroll->Write(val);
