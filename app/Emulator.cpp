@@ -1,5 +1,4 @@
 #include "Emulator.h"
-// TODO: fix makefile and use obj files
 // TODO: ADD COLOUR, ADD SPRITES, ADD CONTROLLER SUPPORT
 // TODO: make DrawTiles popup in ImGUI
 
