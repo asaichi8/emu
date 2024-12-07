@@ -86,6 +86,7 @@ public:
 	bool GetInterruptStatus() const { return m_bShouldNMIInterrupt; } //TODO: remove thisprobably
 	const std::vector<BYTE>* GetNametableRAM() const { return m_NametableRAM; }
 	const std::vector<BYTE>* GetCHR_ROM() const { return m_pCHR_ROM; }
+	const std::vector<BYTE>& GetPaletteRAM() const { return m_PaletteRAM; }
 
 	void PPUCtrlWriteW(BYTE val);
 };
