@@ -25,7 +25,8 @@ class NESDisplay
 	BYTE m_szScreenBuffer[SCREEN_BUFFER_SIZE]{};
 
 	bool SetPixel(const RGB colour, const size_t x, const size_t y);
-	void DrawTile(const Tile& tile, const size_t tileScreenPosX, const size_t tileScreenPosY);
+	void DrawTile(const Tile& tile, const size_t tileScreenPosX, const size_t tileScreenPosY, const std::vector<BYTE>& tilePalette);
+	std::vector<BYTE> GetBgTilePalette(const std::vector<BYTE>& nametable, const size_t tileNoX, const size_t tileNoY);
 
 public:
 	NESDisplay(const PPU* pPPU, Palette* pPalette);
