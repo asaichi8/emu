@@ -5,7 +5,7 @@
 
 class PPUSTATUS : public IPPURegister
 {
-    std::bitset<8> ppu_status_register;
+    std::bitset<8> ppu_status_register{};
 
 public:
     PPUSTATUS(InternalRegisters* _internal_registers) : IPPURegister((WORD)PPURegAddr::PPUSTATUS, _internal_registers) {}

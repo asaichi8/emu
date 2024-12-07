@@ -5,7 +5,7 @@
 
 class PPUCTRL : public IPPURegister
 {
-    std::bitset<8> ppu_ctrl_register;
+    std::bitset<8> ppu_ctrl_register{};
 
 public:
     PPUCTRL(InternalRegisters* _internal_registers) : IPPURegister((WORD)PPURegAddr::PPUCTRL, _internal_registers) {}

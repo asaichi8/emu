@@ -5,7 +5,7 @@
 
 class PPUMASK : public IPPURegister
 {
-    std::bitset<8> ppu_mask_register;
+    std::bitset<8> ppu_mask_register{};
 
 public:
     PPUMASK(InternalRegisters* _internal_registers) : IPPURegister((WORD)PPURegAddr::PPUMASK, _internal_registers) {}
