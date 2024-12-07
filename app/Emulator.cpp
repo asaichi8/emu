@@ -1,10 +1,12 @@
 #include "Emulator.h"
-// TODO: add logging
+// TODO: add logging, remove std::cerrs/add verbose option
 // TODO: make a bunch of parameters const and stuff
 // TODO: avoid define, use static const member variables
 // TODO: make sure all member variables are m_, use regular naming scheme
 // TODO: make private functions in .cpp at bottom, public at top
 // TODO: make DrawTiles popup in ImGUI
+// TODO: add palette loader/rom loader (on drag, cmdline)
+// TODO: fix makefile and use obj files
 
 Emulator::Emulator()
 {
@@ -71,10 +73,15 @@ void Emulator::Run()
 
 			// If we interrupted, it's probably safe to read the nametable so try it
 			// TODO: very bootleg fix later
+			// static bool hasInterrupted = false;
+			// if (!m_Bus->GetPPU()->GetInterruptStatus()) 
+			// 	hasInterrupted = false;
+
 			if (m_Bus->GetPPU()->GetInterruptStatus())
 			{
 				nesDisplay.DrawNametable();
 				m_GUI->RenderFrame(nesDisplay.GetScreen(), DISPLAY_WIDTH);
+				// hasInterrupted = true;
 			}
 		}
 		else
