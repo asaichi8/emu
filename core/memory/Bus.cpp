@@ -61,8 +61,13 @@ void Bus::WriteByte(WORD addr, BYTE val)
 		WritePPURegister(PPURegAddr::OAMDMA, val);
 	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
 		std::cerr << "Attempted to write to cartridge ROM at address 0x" << std::hex << addr << std::dec << " (this should never occur)" << std::endl;
+	else if (addr == 0x4016 || addr == 0x4017) // TODO: get rid of magic number
+	{
+		// TODO: implement me
+		// std::cerr << "Attempted to write to unimplemented controller address" << std::endl;
+	}
 	else
-		std::cerr << "Attempted to write byte " << std::dec << val << " at address 0x" << std::hex << addr << std::dec << " outside of CPU/PPU (not implemented)" << std::endl;
+		std::cerr << "Attempted to write byte 0x" << std::hex << (int)val << " at address 0x" << std::hex << addr << std::dec << " outside of CPU/PPU (not implemented)" << std::endl;
 }
 
 // TODO: what if addr = INTERNAL_RAM_SIZE, or PRG_RAM_END?
@@ -121,8 +126,9 @@ BYTE Bus::ReadPPURegister(PPURegAddr PPUreg)
 		case PPURegAddr::PPUSTATUS:
 			return (BYTE)(m_PPU->registers.ppustatus->Read().to_ulong());
 		case PPURegAddr::OAMDATA:
+			// TODO: implement me!
 			//return (BYTE)(m_PPU->registers.oamdata->Read().to_ulong());
-			std::cerr << "ERROR: Attempted to read from unimplemented PPU register OAMDATA" << std::endl;
+			std::cerr << "Attempted to read from unimplemented PPU register OAMDATA" << std::endl;
 			return 0;
 		case PPURegAddr::PPUDATA:
 			return m_PPU->ReadPPUByte();
@@ -146,10 +152,12 @@ void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 			m_PPU->registers.ppumask->Write(val);
 			break;
 		case PPURegAddr::OAMADDR:
-			std::cerr << "ERROR: Attempted to read from unimplemented PPU register OAMADDR" << std::endl;
+			// TODO: implement me
+			//std::cerr << "ERROR: Attempted to write to unimplemented PPU register OAMADDR" << std::endl;
 			break;
 		case PPURegAddr::OAMDATA:
-			std::cerr << "ERROR: Attempted to read from unimplemented PPU register OAMDATA" << std::endl;
+			// TODO: implement me
+			// std::cerr << "ERROR: Attempted to write to unimplemented PPU register OAMDATA" << std::endl;
 			break;
 		case PPURegAddr::PPUSCROLL:
 			m_PPU->registers.ppuscroll->Write(val);
@@ -161,7 +169,8 @@ void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 			m_PPU->WritePPUByte(val);
 			break;
 		case PPURegAddr::OAMDMA:
-			std::cerr << "ERROR: Attempted to read from unimplemented PPU register OAMDMA" << std::endl;
+			// TODO: implement me
+			// std::cerr << "ERROR: Attempted to write to unimplemented PPU register OAMDMA" << std::endl;
 			break;
 
 		case PPURegAddr::PPUSTATUS:
