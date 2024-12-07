@@ -4,6 +4,7 @@
 // TODO: make DrawTiles popup in ImGUI
 
 // TODO: add palette loader/rom loader (on drag, cmdline)
+// TODO: add define for enabling/disabling debug rom
 
 // TODO: add logging, remove std::cerrs/add verbose option
 // TODO: make a bunch of parameters const and stuff
