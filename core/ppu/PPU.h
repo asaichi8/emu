@@ -87,7 +87,8 @@ public:
 	const std::vector<BYTE>* GetNametableRAM() const { return m_NametableRAM; }
 	const std::vector<BYTE>* GetCHR_ROM() const { return m_pCHR_ROM; }
 	const std::vector<BYTE>& GetPaletteRAM() const { return m_PaletteRAM; }
-	std::vector<BYTE>* GetOAM() { return &m_OAM; }
-
+	const std::vector<BYTE>& GetOAM() const { return m_OAM; }
+	
+	void WriteOAM(BYTE addr, BYTE val) { m_OAM.at(addr) = val; }
 	void PPUCtrlWriteW(BYTE val);
 };

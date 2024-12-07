@@ -124,7 +124,7 @@ BYTE Bus::ReadPPURegister(PPURegAddr PPUreg)
 	switch (PPUreg)
 	{
 		case PPURegAddr::PPUSTATUS: return (BYTE)(m_PPU->registers.ppustatus->Read().to_ulong());
-		case PPURegAddr::OAMDATA: 	return m_PPU->GetOAM()->at(m_PPU->registers.oamaddr->Read().to_ulong());
+		case PPURegAddr::OAMDATA: 	return m_PPU->GetOAM().at(m_PPU->registers.oamaddr->Read().to_ulong());
 		case PPURegAddr::PPUDATA: 	return m_PPU->ReadPPUByte();
 		default:
 			std::cerr << "ERROR: Not a readable PPU register!" << std::endl;
@@ -141,7 +141,7 @@ void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 		case PPURegAddr::PPUCTRL: 	m_PPU->PPUCtrlWriteW(val); 													break;
 		case PPURegAddr::PPUMASK: 	m_PPU->registers.ppumask->Write(val); 										break;
 		case PPURegAddr::OAMADDR: 	m_PPU->registers.oamaddr->Write(val); 										break;
-		case PPURegAddr::OAMDATA: 	m_PPU->GetOAM()->at(m_PPU->registers.oamaddr->Read().to_ulong()) = val; 	break;
+		case PPURegAddr::OAMDATA: 	m_PPU->WriteOAM(m_PPU->registers.oamaddr->Read().to_ulong(), val);		 	break;
 		case PPURegAddr::PPUSCROLL: m_PPU->registers.ppuscroll->Write(val);										break;
 		case PPURegAddr::PPUADDR: 	m_PPU->registers.ppuaddr->Write(val);										break;
 		case PPURegAddr::PPUDATA: 	m_PPU->WritePPUByte(val); 													break;
