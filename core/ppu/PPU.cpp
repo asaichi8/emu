@@ -97,6 +97,8 @@ BYTE PPU::ReadPPUByte()
     else if (addr < PPU_ADDRESS_SPACE_END) // palette ram 0x3F00 - 0x3FFF
     {
         addr = MirrorPaletteRAMAddress(addr);
+        if (addr >= PALETTE_RAM_BEGIN + PALETTE_RAM_TOTAL_SIZE)
+            std::cerr << "ERROR: failed to mirror palette ram address" << std::endl;
         data = m_PaletteRAM.at(addr - PALETTE_RAM_BEGIN);
     }
     else 
@@ -125,6 +127,8 @@ void PPU::WritePPUByte(BYTE val)
     else // palette ram 0x3F00 - 0x3FFF
     {
         addr = MirrorPaletteRAMAddress(addr);
+        if (addr >= PALETTE_RAM_BEGIN + PALETTE_RAM_TOTAL_SIZE)
+            std::cerr << "ERROR: failed to mirror palette ram address" << std::endl;
         m_PaletteRAM.at(addr - PALETTE_RAM_BEGIN) = val;
     }
 }

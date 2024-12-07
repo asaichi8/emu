@@ -65,8 +65,8 @@ void NESDisplay::DrawNametable()
 		const size_t screenPosX = tileNo % 32;
 		const size_t screenPosY = tileNo / 32;
 
-		std::vector<BYTE> tilePalette = GetBgTilePalette(nametable, screenPosX, screenPosY);
-		DrawTile(*pCurTile, screenPosX * 8, screenPosY * 8, tilePalette);
+		std::vector<BYTE> tilePaletteIndexes = GetBgTilePalette( m_pPPU->GetNametableRAM()[0], screenPosX, screenPosY); // TODO: change to dynamic nametable
+		DrawTile(*pCurTile, screenPosX * 8, screenPosY * 8, tilePaletteIndexes);
 	}
 }
 
@@ -84,7 +84,7 @@ bool NESDisplay::SetPixel(const RGB colour, const size_t x, const size_t y)
 	return true;
 }
 
-void NESDisplay::DrawTile(const Tile &tile, const size_t tileScreenPosX, const size_t tileScreenPosY, const std::vector<BYTE>& tilePalette)
+void NESDisplay::DrawTile(const Tile &tile, const size_t tileScreenPosX, const size_t tileScreenPosY, const std::vector<BYTE>& tilePaletteIndexes)
 {
 	for (int curByte = 0; curByte < 8; ++curByte)
 	{
@@ -95,16 +95,17 @@ void NESDisplay::DrawTile(const Tile &tile, const size_t tileScreenPosX, const s
 		{
 			std::bitset<4> pixelNibble = left[curBit] + right[curBit];
 
-			RGB rgb = m_pPalette->GetPalette().at(tilePalette.at(pixelNibble.to_ulong()));;
-			// switch (pixelNibble.to_ulong())
-			// {
-			// 	case 0: rgb = m_pPalette->GetPalette().at(m_pPPU->GetPaletteRAM().at(0)); break;
-			// 	case 1: 
-			// 	case 2: 
-			// 	case 3: rgb = m_pPalette->GetPalette().at(tilePalette.at(pixelNibble.to_ulong())); break;
-			// 	default: std::cerr << "pixelNibble out of range - should never occur" << std::endl; break;
-			// }
-
+			// RGB rgb = m_pPalette->GetPalette().at(tilePaletteIndexes.at(pixelNibble.to_ulong()));
+			RGB rgb;
+			switch (pixelNibble.to_ulong())
+			{
+				case 0: rgb = m_pPalette->GetPalette().at(m_pPPU->GetPaletteRAM().at(0)); break;
+				case 1: rgb = m_pPalette->GetPalette().at(tilePaletteIndexes.at(1)); break;
+				case 2: rgb = m_pPalette->GetPalette().at(tilePaletteIndexes.at(2)); break;
+				case 3: rgb = m_pPalette->GetPalette().at(tilePaletteIndexes.at(3)); break;
+				default: std::cerr << "pixelNibble out of range - should never occur" << std::endl; break;
+			}
+			
 			const size_t pixelPosX = (7 - curBit) + tileScreenPosX;
 			const size_t pixelPosY = curByte + tileScreenPosY;
 
@@ -169,11 +170,11 @@ std::vector<BYTE> NESDisplay::GetBgTilePalette(const std::vector<BYTE>& nametabl
 	static const WORD ATTRIBUTE_TABLE_BEGIN = 0x3C0;
 
 	// for example, tileNoX is 12 and tileNoY is 10, therefore offset is 19
-	size_t attrTblOffset = tileNoX / 4 + tileNoY / 4 * 8; // attribute table is an 8x8 grid
+	size_t attrTblOffset = (tileNoX / 4) + ((tileNoY / 4) * 8); // attribute table is an 8x8 grid
 	BYTE paletteByte = nametable.at(ATTRIBUTE_TABLE_BEGIN + attrTblOffset);
 
-	std::bitset<1> blockX = (tileNoX % 4) / 2;
-	std::bitset<1> blockY = (tileNoY % 4) / 2;
+	std::bitset<2> blockX = (tileNoX % 4) / 2;
+	std::bitset<2> blockY = (tileNoY % 4) / 2;
 	std::bitset<2> blockTilePos = ((blockY << 1) | blockX).to_ulong();
 
 	// if position is 0, then grab the first lowest dibit

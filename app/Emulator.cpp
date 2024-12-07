@@ -55,17 +55,6 @@ void Emulator::Run()
 	bool running = true;
 	while (running) // Main loop
 	{
-		// Handle events (e.g. keyboard inputs)
-		while (SDL_PollEvent(&event))
-		{
-			ImGui_ImplSDL2_ProcessEvent(&event);
-			// TODO: replace with joypad
-			if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
-			{
-				running = false;
-				break;
-			}
-		}
 
 		if (m_GUI->GetShouldReadRegisters())				// if read registers was clicked...
 			m_GUI->UpdateRegisters(m_CPU->ReadRegisters()); // update GUI with a copy of the CPU's current registers
@@ -112,6 +101,17 @@ void Emulator::Run()
 			m_GUI->SetShouldStepThrough(false);
 		}
 
+		// Handle events (e.g. keyboard inputs)
+		while (SDL_PollEvent(&event))
+		{
+			ImGui_ImplSDL2_ProcessEvent(&event);
+			// TODO: replace with joypad
+			if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
+			{
+				running = false;
+				break;
+			}
+		}
 		// std::this_thread::sleep_for(std::chrono::microseconds(50));
 	}
 }
