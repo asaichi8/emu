@@ -50,6 +50,17 @@ bool PPU::Clock(DWORD nCycles)
 
     return false;
 }
+void PPU::PPUCtrlWriteW(BYTE val)
+{
+    PPUSTATUS* ppuStatusRegister = dynamic_cast<PPUSTATUS*>(registers.ppustatus.get());
+    PPUCTRL* ppuCtrlRegister = dynamic_cast<PPUCTRL*>(registers.ppuctrl.get());
+    
+    auto vblankBefore = ppuCtrlRegister->GetVBlankNMI();
+    registers.ppuctrl->Write(val);
+    
+    if (ppuStatusRegister->GetVBLANK() && ppuCtrlRegister->GetVBlankNMI() && !vblankBefore)
+        m_bShouldNMIInterrupt = true;
+}
 
 bool PPU::IsNMIInterruptQueued()
 {
