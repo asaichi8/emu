@@ -1,12 +1,15 @@
 #include "Emulator.h"
+// TODO: fix makefile and use obj files
+// TODO: ADD COLOUR, ADD SPRITES, ADD CONTROLLER SUPPORT
+// TODO: make DrawTiles popup in ImGUI
+
+// TODO: add palette loader/rom loader (on drag, cmdline)
+
 // TODO: add logging, remove std::cerrs/add verbose option
 // TODO: make a bunch of parameters const and stuff
 // TODO: avoid define, use static const member variables
 // TODO: make sure all member variables are m_, use regular naming scheme
 // TODO: make private functions in .cpp at bottom, public at top
-// TODO: make DrawTiles popup in ImGUI
-// TODO: add palette loader/rom loader (on drag, cmdline)
-// TODO: fix makefile and use obj files
 
 Emulator::Emulator()
 {
