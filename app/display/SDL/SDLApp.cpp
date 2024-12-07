@@ -45,7 +45,7 @@ void SDLApp::SetupWindow(const std::string& windowName, int w, int h, int scale)
 /// @param scale Scale to scale renderer by
 void SDLApp::SetupRenderer(int scale)
 {
-	m_Renderer = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_ACCELERATED);
+	m_Renderer = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_SOFTWARE); // SDL_RENDERER_ACCELERATED
 	
 	if (!m_Renderer) 
 		throw std::runtime_error(std::string("Failed to init renderer: ") + SDL_GetError());
