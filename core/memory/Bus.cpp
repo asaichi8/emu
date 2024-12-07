@@ -130,7 +130,7 @@ void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 	switch (PPUreg)
 	{
 		case PPURegAddr::PPUCTRL:
-			m_PPU->registers.ppuctrl->Write(val);
+			m_PPU->PPUCtrlWriteW(val);
 			break;
 		case PPURegAddr::PPUMASK:
 			m_PPU->registers.ppumask->Write(val);
