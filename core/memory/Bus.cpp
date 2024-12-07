@@ -123,13 +123,9 @@ BYTE Bus::ReadPPURegister(PPURegAddr PPUreg)
 	// TODO: handle unhandled readable registers
 	switch (PPUreg)
 	{
-		case PPURegAddr::PPUSTATUS:
-			return (BYTE)(m_PPU->registers.ppustatus->Read().to_ulong());
-		case PPURegAddr::OAMDATA:
-			return m_PPU->GetOAM()->at(m_PPU->registers.oamaddr->Read().to_ulong());
-		case PPURegAddr::PPUDATA:
-			return m_PPU->ReadPPUByte();
-
+		case PPURegAddr::PPUSTATUS: return (BYTE)(m_PPU->registers.ppustatus->Read().to_ulong());
+		case PPURegAddr::OAMDATA: 	return m_PPU->GetOAM()->at(m_PPU->registers.oamaddr->Read().to_ulong());
+		case PPURegAddr::PPUDATA: 	return m_PPU->ReadPPUByte();
 		default:
 			std::cerr << "ERROR: Not a readable PPU register!" << std::endl;
 			return 0;
@@ -142,35 +138,17 @@ void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 	// TODO: handle unhandled writeable registers
 	switch (PPUreg)
 	{
-		case PPURegAddr::PPUCTRL:
-			m_PPU->PPUCtrlWriteW(val);
-			break;
-		case PPURegAddr::PPUMASK:
-			m_PPU->registers.ppumask->Write(val);
-			break;
-		case PPURegAddr::OAMADDR:
-			m_PPU->registers.oamaddr->Write(val);
-			break;
-		case PPURegAddr::OAMDATA:
-			m_PPU->GetOAM()->at(m_PPU->registers.oamaddr->Read().to_ulong()) = val;
-			break;
-		case PPURegAddr::PPUSCROLL:
-			m_PPU->registers.ppuscroll->Write(val);
-			break;
-		case PPURegAddr::PPUADDR:
-			m_PPU->registers.ppuaddr->Write(val);
-			break;
-		case PPURegAddr::PPUDATA:
-			m_PPU->WritePPUByte(val);
-			break;
-		case PPURegAddr::OAMDMA:
-			// TODO: implement me
-			// std::cerr << "ERROR: Attempted to write to unimplemented PPU register OAMDMA" << std::endl;
-			break;
-
-		case PPURegAddr::PPUSTATUS:
-			std::cerr << "ERROR: tried to write to PPU status, this should never occur" << std::endl;
-			break;
+		case PPURegAddr::PPUCTRL: 	m_PPU->PPUCtrlWriteW(val); 													break;
+		case PPURegAddr::PPUMASK: 	m_PPU->registers.ppumask->Write(val); 										break;
+		case PPURegAddr::OAMADDR: 	m_PPU->registers.oamaddr->Write(val); 										break;
+		case PPURegAddr::OAMDATA: 	m_PPU->GetOAM()->at(m_PPU->registers.oamaddr->Read().to_ulong()) = val; 	break;
+		case PPURegAddr::PPUSCROLL: m_PPU->registers.ppuscroll->Write(val);										break;
+		case PPURegAddr::PPUADDR: 	m_PPU->registers.ppuaddr->Write(val);										break;
+		case PPURegAddr::PPUDATA: 	m_PPU->WritePPUByte(val); 													break;
+		// TODO: implement me
+		// std::cerr << "ERROR: Attempted to write to unimplemented PPU register OAMDMA" << std::endl;
+		case PPURegAddr::OAMDMA: 																				break;
+			
 		default:
 			std::cerr << "ERROR: Not a writeable PPU register!" << std::endl;
 			break;
