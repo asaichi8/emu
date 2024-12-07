@@ -50,6 +50,7 @@ bool PPU::Clock(DWORD nCycles)
 
     return false;
 }
+
 void PPU::PPUCtrlWriteW(BYTE val)
 {
     PPUSTATUS* ppuStatusRegister = dynamic_cast<PPUSTATUS*>(registers.ppustatus.get());
@@ -83,6 +84,8 @@ BYTE PPU::ReadPPUByte()
     }
     else if (addr < NAMETABLES_MIRRORED_END) // nametable 0x2000 - 0x3EFF
     { // TODO:
+        if (addr >= 0x3000)
+            std::cerr << "shouldnt be used" << std::endl;
         PPUDATA* ppuDataRegister = dynamic_cast<PPUDATA*>(registers.ppudata.get());
 
         data = ppuDataRegister->ReadBuffer();
@@ -91,11 +94,13 @@ BYTE PPU::ReadPPUByte()
         // if (m_NametableRAM[indexes.first][indexes.second] == 0x0 && TEST_NameTableRAMIsRealZero[indexes.first][indexes.second] == false)
         //     std::cerr << "Attempting to read from bad memory!!" << std::endl; //brk here
     }
-    else // palette ram 0x3F00 - 0x3FFF
+    else if (addr < PPU_ADDRESS_SPACE_END) // palette ram 0x3F00 - 0x3FFF
     {
         addr = MirrorPaletteRAMAddress(addr);
         data = m_PaletteRAM.at(addr - PALETTE_RAM_BEGIN);
     }
+    else 
+        std::cerr << "ERROR: Invalid PPU read (this should never occur)" << std::endl;
 
     return data;
 }
@@ -130,6 +135,8 @@ WORD PPU::GetMirroredPPUADDRAddress(bool shouldIncrement)
     // get address & mirror
     PPUADDR* ppuAddrRegister = dynamic_cast<PPUADDR*>(registers.ppuaddr.get());
     WORD addr = ppuAddrRegister->GetAddress();
+    if (addr >= 0x4000)
+        std::cerr << "should never occur" << std::endl;
     addr = Bus::MirrorAddress(addr, PPU_ADDRESS_SPACE_END); // mirror 0x0 - 0x3FFF
 
     // increment address after reading
