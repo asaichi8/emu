@@ -40,8 +40,8 @@ public:
 	void Reset();
 	void Clock(DWORD nCycles);
 	BYTE ReadByte(WORD addr);
-	WORD ReadWord(WORD addr, bool shouldWrapPage = false);
 	void WriteByte(WORD addr, BYTE val);
+	WORD ReadWord(WORD addr, bool shouldWrapPage = false);
 	void WriteWord(WORD addr, WORD val);
 
 	bool IsNMIInterruptQueuedW();

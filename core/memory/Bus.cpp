@@ -51,16 +51,37 @@ BYTE Bus::ReadByte(WORD addr)
 	return 0;
 }
 
+void Bus::WriteByte(WORD addr, BYTE val)
+{
+	if (addr < MIRRORED_INTERNAL_RAM_END)
+		m_CPURAM[MirrorAddress(addr, INTERNAL_RAM_SIZE)] = val;
+	else if (addr < MIRRORED_PPU_REGISTER_END)
+		WritePPURegister((PPURegAddr)(MirrorAddress(addr, PPU_REGISTER_SIZE, MIRRORED_INTERNAL_RAM_END)), val);
+	else if (addr == (WORD)PPURegAddr::OAMDMA) // 0x4014
+		WritePPURegister(PPURegAddr::OAMDMA, val);
+	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
+		std::cerr << "Attempted to write to cartridge ROM at address 0x" << std::hex << addr << std::dec << " (this should never occur)" << std::endl;
+	else
+		std::cerr << "Attempted to write byte " << std::dec << val << " at address 0x" << std::hex << addr << std::dec << " outside of CPU/PPU (not implemented)" << std::endl;
+}
+
 // TODO: what if addr = INTERNAL_RAM_SIZE, or PRG_RAM_END?
 WORD Bus::ReadWord(WORD addr, bool shouldWrapPage)
 {
+	if (addr == INTERNAL_RAM_SIZE || addr == PRG_RAM_END)
+		std::cerr << "out of bounds" << std::endl;
+
 	if (addr < MIRRORED_INTERNAL_RAM_END)
 		addr = MirrorAddress(addr, INTERNAL_RAM_SIZE);
 	else if (addr < MIRRORED_PPU_REGISTER_END)
 	{
-		std::cerr << "Attempted to read word from PPU (not implemented)" << std::endl;
-		return 0;
+		std::cout << "err" << std::endl;
+		// TODO: it is implemented
+		//std::cerr << "Attempted to read word from PPU (not implemented)" << std::endl;
+		//return 0;
 	}
+	else if (addr < PRG_RAM_START)
+		return 0;
 	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
 		return ReadPRGWord(addr, shouldWrapPage);
 
@@ -73,18 +94,6 @@ WORD Bus::ReadWord(WORD addr, bool shouldWrapPage)
 		high = m_CPURAM[addr + 1];
 
 	return (WORD(high) << 8) + low;
-}
-
-void Bus::WriteByte(WORD addr, BYTE val)
-{
-	if (addr < MIRRORED_INTERNAL_RAM_END)
-		m_CPURAM[MirrorAddress(addr, INTERNAL_RAM_SIZE)] = val;
-	else if (addr < MIRRORED_PPU_REGISTER_END)
-		WritePPURegister((PPURegAddr)(MirrorAddress(addr, PPU_REGISTER_SIZE, MIRRORED_INTERNAL_RAM_END)), val);
-	else if (addr == (WORD)PPURegAddr::OAMDMA) // 0x4014
-		WritePPURegister(PPURegAddr::OAMDMA, val);
-	else
-		std::cerr << "Attempted to write byte " << std::dec << val << " at address 0x" << std::hex << addr << std::dec << " outside of CPU/PPU (not implemented)" << std::endl;
 }
 
 void Bus::WriteWord(WORD addr, WORD val)
@@ -112,13 +121,14 @@ BYTE Bus::ReadPPURegister(PPURegAddr PPUreg)
 		case PPURegAddr::PPUSTATUS:
 			return (BYTE)(m_PPU->registers.ppustatus->Read().to_ulong());
 		case PPURegAddr::OAMDATA:
+			//return (BYTE)(m_PPU->registers.oamdata->Read().to_ulong());
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register OAMDATA" << std::endl;
 			return 0;
 		case PPURegAddr::PPUDATA:
 			return m_PPU->ReadPPUByte();
 
 		default:
-			std::cerr << "ERROR: Not a readable PPU register! (this should never occur)" << std::endl;
+			std::cerr << "ERROR: Not a readable PPU register!" << std::endl;
 			return 0;
 	}
 }
@@ -154,8 +164,11 @@ void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 			std::cerr << "ERROR: Attempted to read from unimplemented PPU register OAMDMA" << std::endl;
 			break;
 
+		case PPURegAddr::PPUSTATUS:
+			std::cerr << "ERROR: tried to write to PPU status, this should never occur" << std::endl;
+			break;
 		default:
-			std::cerr << "ERROR: Not a writeable PPU register! (this should never occur)" << std::endl;
+			std::cerr << "ERROR: Not a writeable PPU register!" << std::endl;
 			break;
 	}
 }
@@ -163,6 +176,12 @@ void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 // addr must be between 0x8000 - 0xFFFF
 BYTE Bus::ReadPRGByte(WORD addr)
 {
+	if (addr < PRG_RAM_START)
+	{
+		std::cerr << "ERROR: reading byte below PRG_RAM_START! (this should never occur)" << std::endl;
+		return 0;
+	}
+	
 	// mirror address if it's outside the PRG ROM size range
 	if (m_ROM->PRG_ROM.size() == (16 * KB) && addr >= (PRG_RAM_START + 16 * KB))
 		addr = MirrorAddress(addr, m_ROM->PRG_ROM.size(), PRG_RAM_START);
@@ -171,7 +190,6 @@ BYTE Bus::ReadPRGByte(WORD addr)
 	return m_ROM->PRG_ROM[addr];
 }
 
-// TODO: probably delete this that doesn't look right
 WORD Bus::ReadPRGWord(WORD addr, bool shouldWrapPage)
 {    
 	BYTE low = ReadPRGByte(addr);
