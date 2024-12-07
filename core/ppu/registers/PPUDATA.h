@@ -11,14 +11,6 @@ public:
     PPUDATA(InternalRegisters* _internal_registers) : IPPURegister((WORD)PPURegAddr::PPUDATA, _internal_registers) {}
     ~PPUDATA() override {}
     
-    /*
     void Write(std::bitset<8> val) override { readBuffer = val.to_ulong(); }
-    std::bitset<8> Read() override
-    {
-        return readBuffer;
-    }
-    */
-
-   void WriteBuffer(BYTE val) { readBuffer = val; }
-   BYTE ReadBuffer() { return readBuffer; }
+    std::bitset<8> Read() override { return readBuffer; }
 };

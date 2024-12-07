@@ -79,8 +79,8 @@ BYTE PPU::ReadPPUByte()
     {
         PPUDATA* ppuDataRegister = dynamic_cast<PPUDATA*>(registers.ppudata.get());
 
-        data = ppuDataRegister->ReadBuffer();
-        ppuDataRegister->WriteBuffer(m_pCHR_ROM->at(addr));
+        data = ppuDataRegister->Read().to_ulong();
+        ppuDataRegister->Write(m_pCHR_ROM->at(addr));
     }
     else if (addr < NAMETABLES_MIRRORED_END) // nametable 0x2000 - 0x3EFF
     { // TODO:
@@ -88,9 +88,9 @@ BYTE PPU::ReadPPUByte()
             std::cerr << "shouldnt be used" << std::endl;
         PPUDATA* ppuDataRegister = dynamic_cast<PPUDATA*>(registers.ppudata.get());
 
-        data = ppuDataRegister->ReadBuffer();
+        data = ppuDataRegister->Read().to_ulong();
         auto indexes = GetNametableRAMIndx(addr);
-        ppuDataRegister->WriteBuffer(m_NametableRAM[indexes.first][indexes.second]);
+        ppuDataRegister->Write(m_NametableRAM[indexes.first][indexes.second]);
         // if (m_NametableRAM[indexes.first][indexes.second] == 0x0 && TEST_NameTableRAMIsRealZero[indexes.first][indexes.second] == false)
         //     std::cerr << "Attempting to read from bad memory!!" << std::endl; //brk here
     }
