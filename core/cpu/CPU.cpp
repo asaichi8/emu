@@ -99,7 +99,7 @@ void CPU::Reset()
 
 	// https://6502.co.uk/lesson/reset
 	// "This reset sequence lasts for seven clock cycles and after this, the computer will be usable. "
-	m_nCycles = 7;
+	m_curCycles += 7;
 	m_Bus->Clock(m_nCycles);
 
 	m_Bus->Reset();
@@ -121,8 +121,8 @@ void CPU::IRQ()
 
 	reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
 	
-	m_nCycles += 7;
-	reg.program_counter = m_Bus->ReadWord(IRQ_VECTOR);
+	m_curCycles += 7;
+	reg.program_counter = m_Bus->ReadWord(IRQ_VECTOR); //(m_Bus->ReadByte(IRQ_VECTOR + 1) << 8) | m_Bus->ReadByte(IRQ_VECTOR); 
 }
 	
 void CPU::NMI()
@@ -137,8 +137,8 @@ void CPU::NMI()
 	reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
 
 	// TODO: cycles?
-	m_nCycles += 8;
-	reg.program_counter = m_Bus->ReadWord(NMI_VECTOR);
+	m_curCycles += 7;
+	reg.program_counter = m_Bus->ReadWord(NMI_VECTOR); // (m_Bus->ReadByte(NMI_VECTOR + 1) << 8) | m_Bus->ReadByte(NMI_VECTOR);
 }
 
 
