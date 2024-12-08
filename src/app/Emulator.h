@@ -4,6 +4,7 @@
 #include <chrono>
 #include <thread>
 #include <stdexcept>
+#include <unordered_map>
 #include "../core/loader/ROM.h"
 #include "../core/memory/Bus.h"
 #include "../core/cpu/CPU.h"
@@ -25,6 +26,17 @@ class Emulator
 	std::shared_ptr<Bus> m_Bus{};
 	std::unique_ptr<CPU> m_CPU{};
 	std::unique_ptr<EmulatorDisplay> m_GUI{};
+
+	const static inline std::unordered_map<SDL_KeyCode, Joypad::Button> m_buttonMap = {
+		{SDLK_w, Joypad::Button::UP},
+		{SDLK_s, Joypad::Button::DOWN},
+		{SDLK_a, Joypad::Button::LEFT},
+		{SDLK_d, Joypad::Button::RIGHT},
+		{SDLK_j, Joypad::Button::A},
+		{SDLK_k, Joypad::Button::B},
+		{SDLK_x, Joypad::Button::START},
+		{SDLK_z, Joypad::Button::SELECT}
+	};
 
 public:
 	Emulator();

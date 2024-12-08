@@ -5,6 +5,7 @@
 // TODO: add palette loader/rom loader (on drag, cmdline)
 // TODO: add define for enabling/disabling debug rom
 
+// TODO: use unordered_map for enums
 // TODO: add logging, remove std::cerrs/add verbose option
 // TODO: make a bunch of parameters const and stuff
 // TODO: avoid define, use static const member variables
@@ -105,11 +106,20 @@ void Emulator::Run()
 		while (SDL_PollEvent(&event))
 		{
 			ImGui_ImplSDL2_ProcessEvent(&event);
-			// TODO: replace with joypad
 			if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
 			{
 				running = false;
 				break;
+			}
+
+			auto iterator = m_buttonMap.find((SDL_KeyCode)event.key.keysym.sym);
+			if (iterator != m_buttonMap.end())
+			{
+				// set key if it's down, unset if it's not
+				if (event.type == SDL_KEYDOWN)
+					m_Bus->joypad1.Update(iterator->second, true); 
+				else if (event.type == SDL_KEYUP)
+					m_Bus->joypad1.Update(iterator->second, false);
 			}
 		}
 		// std::this_thread::sleep_for(std::chrono::microseconds(50));
