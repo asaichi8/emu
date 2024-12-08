@@ -13,4 +13,6 @@ public:
 
     void Write(std::bitset<8> val) override { oamAddr = val.to_ulong(); }
     std::bitset<8> Read() override { return oamAddr; }
+
+    void Increment() { oamAddr == BYTE_MAX ? oamAddr = 0 : oamAddr++; }
 };
