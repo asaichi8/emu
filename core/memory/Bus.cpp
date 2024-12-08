@@ -145,9 +145,20 @@ void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 		case PPURegAddr::PPUSCROLL: m_PPU->registers.ppuscroll->Write(val);										break;
 		case PPURegAddr::PPUADDR: 	m_PPU->registers.ppuaddr->Write(val);										break;
 		case PPURegAddr::PPUDATA: 	m_PPU->WritePPUByte(val); 													break;
-		// TODO: implement me
-		// std::cerr << "ERROR: Attempted to write to unimplemented PPU register OAMDMA" << std::endl;
-		case PPURegAddr::OAMDMA: 																				break;
+		case PPURegAddr::OAMDMA: // TODO: package this into a function
+		{
+			std::vector<BYTE> buf(PAGE, 0);
+			WORD pageNum = val << 8;
+			for (int i = 0; i < PAGE; ++i)
+				buf.at(i) = ReadByte(pageNum + i);
+
+			for (const auto& data : buf)
+			{
+				m_PPU->WriteOAM(m_PPU->registers.oamaddr->Read().to_ulong(), data);
+				dynamic_cast<OAMADDR*>(m_PPU->registers.oamaddr.get())->Increment();
+			}
+			break;
+		}
 			
 		default:
 			std::cerr << "ERROR: Not a writeable PPU register!" << std::endl;

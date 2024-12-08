@@ -1,6 +1,7 @@
 bin/emu
 bin/emu.exe
 bin/myrom.nes
+bin/2myrom.nes
 app/mynestest.log
 core/cpu/mynestest.log
 include/SDL2

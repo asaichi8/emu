@@ -12,12 +12,18 @@ NESDisplay::~NESDisplay()
 }
 
 
+void NESDisplay::DrawScreen()
+{
+	DrawNametable();
+	DrawSprites();
+}
+
 void NESDisplay::DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank)
 {
 	const WORD tilesStartAddr = bank * 0x1000;
 
-	size_t tileScreenPosX = 0;
-	size_t tileScreenPosY = 0;
+	size_t tilePosX = 0;
+	size_t tilePosY = 0;
 	std::vector<Tile> tiles{};
 	for (int tileNo = 0; tileNo < DISPLAY_WIDTH; ++tileNo)
 	{
@@ -26,8 +32,8 @@ void NESDisplay::DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank)
 
 		if (tileNo && tileNo % 16 == 0)
 		{
-			tileScreenPosY += 8; // new line
-			tileScreenPosX = 0;	 // reset x at end of line
+			tilePosY += 8; // new line
+			tilePosX = 0;	 // reset x at end of line
 		}
 
 		// map 16 bytes at curTilePos into curTile
@@ -35,47 +41,18 @@ void NESDisplay::DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank)
 		tiles.push_back(*pCurTile); // push_back makes a copy, so no problem dereferencing a temporary pointer
 
 		// TODO: add palette (std::vector<BYTE> tilePalette = GetBgTilePalette(nametable, screenPosX, screenPosY);)
-		//DrawTile(*pCurTile, tileScreenPosX, tileScreenPosY);
+		//DrawTile(*pCurTile, tilePosX, tilePosY);
 
-		tileScreenPosX += 8;
-	}
-}
-
-void NESDisplay::DrawNametable()
-{
-	const WORD bgBankAddr = dynamic_cast<PPUCTRL *>(m_pPPU->registers.ppuctrl.get())->GetBackgroundPTableAddr();
-
-	std::vector<Tile> tiles{};
-	// NES screen is 32 tiles long, 30 tiles high (32 * 8 = 256, 30 * 8 = 240)
-	for (int tileNo = 0; tileNo < 32 * 30; ++tileNo)
-	{
-		// bgBankAddr either 0 or 0x1000, use it to determine which bank we access
-		const std::vector<BYTE> nametable = m_pPPU->GetNametableRAM()[bgBankAddr ? 1 : 0];
-
-		if (tileNo >= nametable.size())
-		{
-			std::cerr << "Attempted to access tile outside of nametable!" << std::endl;
-			break;
-		}
-
-		const WORD selectedTilePos = nametable.at(tileNo);				// position of tile to be used
-		const WORD selectedTileOffset = selectedTilePos * sizeof(Tile); // address of tile to be used
-		const Tile *pCurTile = (const Tile *)(&(m_pPPU->GetCHR_ROM()->at(bgBankAddr + selectedTileOffset)));
-
-		const size_t screenPosX = tileNo % 32;
-		const size_t screenPosY = tileNo / 32;
-
-		std::vector<BYTE> tilePaletteIndexes = GetBgTilePalette( m_pPPU->GetNametableRAM()[0], screenPosX, screenPosY); // TODO: change to dynamic nametable
-		DrawTile(*pCurTile, screenPosX * 8, screenPosY * 8, tilePaletteIndexes);
+		tilePosX += 8;
 	}
 }
 
 
 bool NESDisplay::SetPixel(const RGB colour, const size_t x, const size_t y)
 {
-	const size_t pixelStartPos = (x * 3) + (y * 3 * DISPLAY_WIDTH);
+	const size_t pixelStartPos = (x * sizeof(RGB)) + (y * sizeof(RGB) * DISPLAY_WIDTH);
 	if (pixelStartPos + sizeof(RGB) > SCREEN_BUFFER_SIZE)
-		return false;
+		return false; // not fatal
 
 	m_szScreenBuffer[pixelStartPos] = colour.r;
 	m_szScreenBuffer[pixelStartPos + 1] = colour.g;
@@ -84,7 +61,8 @@ bool NESDisplay::SetPixel(const RGB colour, const size_t x, const size_t y)
 	return true;
 }
 
-void NESDisplay::DrawTile(const Tile &tile, const size_t tileScreenPosX, const size_t tileScreenPosY, const std::vector<BYTE>& tilePaletteIndexes)
+// where tilePosX = 0-32, tilePosY = 0-30
+void NESDisplay::DrawTile(const Tile &tile, size_t tilePosX, size_t tilePosY, const std::vector<BYTE>& tilePaletteIndexes, bool isSprite, bool flipY, bool flipX)
 {
 	for (int curByte = 0; curByte < 8; ++curByte)
 	{
@@ -94,23 +72,15 @@ void NESDisplay::DrawTile(const Tile &tile, const size_t tileScreenPosX, const s
 		for (int curBit = 0; curBit < 8; ++curBit) // left to right
 		{
 			std::bitset<4> pixelNibble = left[curBit] + right[curBit];
+			if (isSprite && pixelNibble.none()) // if pixelNibble is 0 and it's a sprite, this pixel is transparent so we can skip it
+				continue;
 
-			// RGB rgb = m_pPalette->GetPalette().at(tilePaletteIndexes.at(pixelNibble.to_ulong()));
-			RGB rgb;
-			switch (pixelNibble.to_ulong())
-			{
-				case 0: rgb = m_pPalette->GetPalette().at(m_pPPU->GetPaletteRAM().at(0)); break;
-				case 1: rgb = m_pPalette->GetPalette().at(tilePaletteIndexes.at(1)); break;
-				case 2: rgb = m_pPalette->GetPalette().at(tilePaletteIndexes.at(2)); break;
-				case 3: rgb = m_pPalette->GetPalette().at(tilePaletteIndexes.at(3)); break;
-				default: std::cerr << "pixelNibble out of range - should never occur" << std::endl; break;
-			}
+			RGB rgb = m_pPalette->GetPalette().at(tilePaletteIndexes.at(pixelNibble.to_ulong()));
+
+			size_t pixelOffsetX = flipX ? curBit : 7 - curBit; // tiles are flipped on the x axis by default
+			size_t pixelOffsetY = flipY ? 7 - curByte : curByte;
 			
-			const size_t pixelPosX = (7 - curBit) + tileScreenPosX;
-			const size_t pixelPosY = curByte + tileScreenPosY;
-
-			if (!SetPixel(rgb, pixelPosX, pixelPosY))
-				std::cerr << "Failed to draw pixel! (pixel out of bounds)" << std::endl;
+			SetPixel(rgb, tilePosX + pixelOffsetX, tilePosY + pixelOffsetY);
 		}
 	}
 }
@@ -190,4 +160,69 @@ std::vector<BYTE> NESDisplay::GetBgTilePalette(const std::vector<BYTE>& nametabl
 		paletteColours.push_back(m_pPPU->GetPaletteRAM().at(paletteStart + i));
 	
 	return paletteColours;
+}
+
+std::vector<BYTE> NESDisplay::GetSpriteTilePalette(const std::bitset<2>& paletteIndex)
+{
+	std::vector<BYTE> paletteColours{0}; // initialise with one member, which won't be used anyway
+	static const WORD SPRITE_TABLE_OFFSET = 0x10;
+
+	for (int i = 1; i < 4; ++i)
+		paletteColours.push_back(m_pPPU->GetPaletteRAM().at(SPRITE_TABLE_OFFSET + (paletteIndex.to_ulong() * 4) + i));
+
+	return paletteColours;
+}
+
+void NESDisplay::DrawNametable()
+{
+	const WORD bgBankAddr = dynamic_cast<PPUCTRL *>(m_pPPU->registers.ppuctrl.get())->GetBackgroundPTableAddr();
+
+	std::vector<Tile> tiles{};
+	// NES screen is 32 tiles long, 30 tiles high (32 * 8 = 256, 30 * 8 = 240)
+	for (int tileNo = 0; tileNo < 32 * 30; ++tileNo)
+	{
+		// bgBankAddr either 0 or 0x1000, use it to determine which bank we access
+		const std::vector<BYTE> nametable = m_pPPU->GetNametableRAM()[bgBankAddr ? 1 : 0];
+
+		if (tileNo >= nametable.size())
+		{
+			std::cerr << "Attempted to access tile outside of nametable!" << std::endl;
+			break;
+		}
+
+		const WORD selectedTilePos = nametable.at(tileNo);				// position of tile to be used
+		const WORD selectedTileOffset = selectedTilePos * sizeof(Tile); // address of tile to be used
+		const Tile *pCurTile = (const Tile *)(&(m_pPPU->GetCHR_ROM()->at(bgBankAddr + selectedTileOffset)));
+
+		const size_t screenPosX = tileNo % 32;
+		const size_t screenPosY = tileNo / 32;
+
+		std::vector<BYTE> tilePaletteIndexes = GetBgTilePalette( m_pPPU->GetNametableRAM()[0], screenPosX, screenPosY); // TODO: change to dynamic nametable
+		DrawTile(*pCurTile, screenPosX * 8, screenPosY * 8, tilePaletteIndexes);
+	}
+}
+
+void NESDisplay::DrawSprites()
+{
+	const WORD bgBankAddr = dynamic_cast<PPUCTRL *>(m_pPPU->registers.ppuctrl.get())->GetSpritePTableAddr();
+
+	for (int i = m_pPPU->GetOAM().size() - 4; i >= 0; i -= 4)
+	{
+		// https://www.nesdev.org/wiki/PPU_OAM
+		// TODO: probably pack this into a struct, then replace "4" magic numbers with evaluation of sizeof(struct) / sizeof(BYTE)
+		BYTE tileY = m_pPPU->GetOAM()[i];
+		BYTE tileIndex = m_pPPU->GetOAM()[i + 1];
+		OAMProperties tileProperties = (OAMProperties)m_pPPU->GetOAM()[i + 2];
+		BYTE tileX = m_pPPU->GetOAM()[i + 3];
+
+		std::bitset<2> paletteIndex = (tileProperties & (OAMProperties::PALETTE_HIGH | OAMProperties::PALETTE_LOW));
+		bool shouldFlipVertical = (tileProperties & OAMProperties::FLIP_VERTICALLY);
+		bool shouldFlipHorizontal = (tileProperties & OAMProperties::FLIP_HORIZONTALLY);
+
+		const WORD selectedTileOffset = tileIndex * sizeof(Tile); // address of tile to be used
+		const Tile *pCurTile = (const Tile *)(&(m_pPPU->GetCHR_ROM()->at(bgBankAddr + selectedTileOffset)));
+
+		std::vector<BYTE> paletteColours = GetSpriteTilePalette(paletteIndex);
+		DrawTile(*pCurTile, tileX, tileY, paletteColours, true, shouldFlipVertical, shouldFlipHorizontal);
+	}
 }

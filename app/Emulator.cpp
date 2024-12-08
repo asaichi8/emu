@@ -71,7 +71,7 @@ void Emulator::Run()
 
 			if (m_Bus->GetPPU()->GetInterruptStatus())
 			{
-				nesDisplay.DrawNametable();
+				nesDisplay.DrawScreen();
 				m_GUI->RenderFrame(nesDisplay.GetScreen(), DISPLAY_WIDTH);
 				// hasInterrupted = true;
 			}
