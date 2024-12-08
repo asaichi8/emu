@@ -6,6 +6,7 @@
 #include "../loader/ROM.h"
 #include "../../include/typedefs.h"
 #include "../ppu/registers/IPPURegister.h"
+#include "../core/controller/Joypad.h"
 
 // https://www.nesdev.org/wiki/CPU_memory_map
 #define INTERNAL_RAM_SIZE 0x800
@@ -34,6 +35,8 @@ class Bus
 
 public:
 	Bus(ROM* rom);
+
+	Joypad joypad1;
 
 	static WORD MirrorAddress(WORD addr, WORD size, WORD startAddr = 0x0);
 

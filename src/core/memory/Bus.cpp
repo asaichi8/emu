@@ -44,6 +44,13 @@ BYTE Bus::ReadByte(WORD addr)
 		return m_CPURAM[MirrorAddress(addr, INTERNAL_RAM_SIZE)]; // clamp to 0x000 - 0x7FF
 	else if (addr < MIRRORED_PPU_REGISTER_END)
 		return ReadPPURegister((PPURegAddr)(MirrorAddress(addr, PPU_REGISTER_SIZE, MIRRORED_INTERNAL_RAM_END))); // clamp to 0x2000 - 0x2007
+	else if (addr == 0x4016) // TODO: get rid of magic number
+		return joypad1.CPURead().to_ulong();
+	else if (addr == 0x4017)
+	{
+		// TODO: implement me
+		// std::cerr << "Attempted to write to unimplemented controller address" << std::endl;
+	}
 	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
 		return ReadPRGByte(addr);
 	
@@ -61,11 +68,14 @@ void Bus::WriteByte(WORD addr, BYTE val)
 		WritePPURegister(PPURegAddr::OAMDMA, val);
 	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
 		std::cerr << "Attempted to write to cartridge ROM at address 0x" << std::hex << addr << std::dec << " (this should never occur)" << std::endl;
-	else if (addr == 0x4016 || addr == 0x4017) // TODO: get rid of magic number
+	else if (addr == 0x4016) // TODO: get rid of magic number
+		joypad1.CPUWrite(val);
+	else if (addr == 0x4017)
 	{
 		// TODO: implement me
 		// std::cerr << "Attempted to write to unimplemented controller address" << std::endl;
 	}
+	else if (addr >= 0x4000 && addr < 0x4020) {} // TODO: RESERVED for APU stuff
 	else
 		std::cerr << "Attempted to write byte 0x" << std::hex << (int)val << " at address 0x" << std::hex << addr << std::dec << " outside of CPU/PPU (not implemented)" << std::endl;
 }
