@@ -43,7 +43,7 @@ ifeq ($(OS),Windows_NT)
 	LIBS = -L$(CUR_DIR)/include/SDL2/lib -lmingw32 -lSDL2main -lSDL2
 	CXXFLAGS += -DWIN32
 	TARGET = $(patsubst /,\,$(CUR_DIR))\bin\emu.exe # windows prefers \ over /
-	CLEAN_CMD = del /f "$(TARGET)" $(OBJ_DIR)\*.o
+	CLEAN_CMD = del /f "$(TARGET)"; rmdir /s /q $(OBJ_DIR)
 else
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S), Darwin) # macos	
@@ -56,7 +56,7 @@ else
 		LIBS = -lSDL2
 	endif
 	TARGET = $(CUR_DIR)/bin/emu
-	CLEAN_CMD = rm -f $(TARGET) $(OBJ_DIR)/*.o
+	CLEAN_CMD = rm -f $(TARGET); rm -rf $(OBJ_DIR)
 endif
 
 all: $(TARGET)
