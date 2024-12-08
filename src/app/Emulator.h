@@ -11,8 +11,8 @@
 #include "display/EmulatorDisplay.h"
 #include "display/NESDisplay.h"
 
-constexpr char ROM_RELATIVE_PATH[] = "../../bin/myrom.nes"; 
-constexpr char PALETTE_RELATIVE_PATH[] = "../../bin/ntscpalette.pal"; 
+constexpr char ROM_RELATIVE_PATH[] = "../../../bin/myrom.nes"; 
+constexpr char PALETTE_RELATIVE_PATH[] = "../../../bin/ntscpalette.pal"; 
 
 
 /// @brief Responsible for the execution of all the emulator components.
