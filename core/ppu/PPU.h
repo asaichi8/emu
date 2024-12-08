@@ -83,7 +83,7 @@ public:
  
 	DWORD GetCycleCount() const { return m_nPPUCycles; }
 	int GetScanlineCount() const { return m_nScanlines; }
-	bool GetInterruptStatus() const { return m_bShouldNMIInterrupt; } //TODO: remove thisprobably
+	bool GetInterruptStatus() const { return m_bShouldNMIInterrupt; }
 	const std::vector<BYTE>* GetNametableRAM() const { return m_NametableRAM; }
 	const std::vector<BYTE>* GetCHR_ROM() const { return m_pCHR_ROM; }
 	const std::vector<BYTE>& GetPaletteRAM() const { return m_PaletteRAM; }
