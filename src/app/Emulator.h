@@ -12,8 +12,8 @@
 #include "display/EmulatorDisplay.h"
 #include "display/NESDisplay.h"
 
-constexpr char ROM_RELATIVE_PATH[] = "../../../bin/myrom.nes"; 
-constexpr char PALETTE_RELATIVE_PATH[] = "../../../bin/ntscpalette.pal"; 
+//constexpr char ROM_RELATIVE_PATH[] = "../bin/donkeykong.nes"; 
+constexpr char PALETTE_RELATIVE_PATH[] = "../bin/ntscpalette.pal";  // TODO: add this to args or preload binary or something
 
 
 /// @brief Responsible for the execution of all the emulator components.
@@ -39,7 +39,7 @@ class Emulator
 	};
 
 public:
-	Emulator();
+	Emulator(const std::string& romPath);
 	~Emulator();
 
 	void Run();

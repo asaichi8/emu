@@ -12,10 +12,10 @@
 // TODO: make sure all member variables are m_, use regular naming scheme
 // TODO: make private functions in .cpp at bottom, public at top
 
-Emulator::Emulator()
+Emulator::Emulator(const std::string& romPath)
 {
 	// Map ROM into appropriate variables
-	std::string romFullPath = Loader::GetFullFilePath(ROM_RELATIVE_PATH);
+	std::string romFullPath = Loader::GetFullFilePath(romPath.c_str());
 	if (!m_ROM.LoadROM(romFullPath))
 		throw std::runtime_error("Failed to load ROM!");
 
@@ -50,8 +50,8 @@ void Emulator::Run()
 	// Attempt to set FPS to the refresh rate of the focused monitor
 	//if (SDL_GetCurrentDisplayMode(primaryDisplay, &currentDisplay) == 0)
 	//	m_FPS = currentDisplay.refresh_rate;
-	auto FPStime = std::chrono::milliseconds(1000) / 60;					  // time each frame should run
-	auto nextFrameTime = std::chrono::high_resolution_clock::now() + FPStime; // time the next frame will be drawn
+	//auto FPStime = std::chrono::milliseconds(1000) / 60;					  // time each frame should run
+	//auto nextFrameTime = std::chrono::high_resolution_clock::now() + FPStime; // time the next frame will be drawn
 
 	bool running = true;
 	while (running) // Main loop

@@ -92,7 +92,9 @@
         "ranges": "cpp",
         "shared_mutex": "cpp",
         "cfenv": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "csignal": "cpp",
+        "typeindex": "cpp"
     },
     "editor.tokenColorCustomizations": {
         "comments": "",
