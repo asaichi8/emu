@@ -1,6 +1,6 @@
 Untitled NES Emulator
 ========================================================
-
+// TODO: update this as we're using CMake now
 NES emulator
 
 Linux/MacOS
