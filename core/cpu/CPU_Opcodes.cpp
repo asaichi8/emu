@@ -190,7 +190,7 @@ void CPU::SBC(WORD addr)
 	BYTE result = negated16 & 0x00FF; // convert to 8-bit
 
 	//  registers
-	reg.status_register.set(StatusRegisterFlags::CARRY, negated16 < (BYTE_MAX + 1));
+	reg.status_register.set(StatusRegisterFlags::CARRY, negated16 < PAGE);
 	reg.CheckZero(result);
 	reg.CheckNegative(result);
 
