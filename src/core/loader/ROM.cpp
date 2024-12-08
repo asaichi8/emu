@@ -17,6 +17,10 @@ bool ROM::LoadROM(const std::string& filePath)
 	// load file
 	auto rawFile = Loader::LoadFile(filePath);
 
+	// check we actually loaded something
+	if (rawFile.empty())
+		return false;
+
 	// check size
 	if (!CheckHeaderFits(rawFile))
 		return false;
