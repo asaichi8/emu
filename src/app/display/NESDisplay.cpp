@@ -196,14 +196,14 @@ void NESDisplay::DrawNametable()
 		const size_t screenPosX = tileNo % 32;
 		const size_t screenPosY = tileNo / 32;
 
-		std::vector<BYTE> tilePaletteIndexes = GetBgTilePalette( m_pPPU->GetNametableRAM()[0], screenPosX, screenPosY); // TODO: change to dynamic nametable
+		std::vector<BYTE> tilePaletteIndexes = GetBgTilePalette( m_pPPU->GetNametableRAM()[bgBankAddr ? 1 : 0], screenPosX, screenPosY);
 		DrawTile(*pCurTile, screenPosX * 8, screenPosY * 8, tilePaletteIndexes);
 	}
 }
 
 void NESDisplay::DrawSprites()
 {
-	const WORD bgBankAddr = dynamic_cast<PPUCTRL *>(m_pPPU->registers.ppuctrl.get())->GetSpritePTableAddr();
+	const WORD spriteBankAddr = dynamic_cast<PPUCTRL *>(m_pPPU->registers.ppuctrl.get())->GetSpritePTableAddr();
 
 	for (int i = m_pPPU->GetOAM().size() - 4; i >= 0; i -= 4)
 	{
@@ -219,7 +219,7 @@ void NESDisplay::DrawSprites()
 		bool shouldFlipHorizontal = (tileProperties & OAMProperties::FLIP_HORIZONTALLY);
 
 		const WORD selectedTileOffset = tileIndex * sizeof(Tile); // address of tile to be used
-		const Tile *pCurTile = (const Tile *)(&(m_pPPU->GetCHR_ROM()->at(bgBankAddr + selectedTileOffset)));
+		const Tile *pCurTile = (const Tile *)(&(m_pPPU->GetCHR_ROM()->at(spriteBankAddr + selectedTileOffset)));
 
 		std::vector<BYTE> paletteColours = GetSpriteTilePalette(paletteIndex);
 		DrawTile(*pCurTile, tileX, tileY, paletteColours, true, shouldFlipVertical, shouldFlipHorizontal);
