@@ -17,11 +17,11 @@ struct RGB
 
 class Palette
 {
-    std::vector<RGB> curPalette;
+    std::vector<RGB> m_curPalette;
 
 public:
     Palette();
 
     bool LoadPalette(const std::string& filePath);
-    const std::vector<RGB>& GetPalette() { return curPalette;}
+    const std::vector<RGB>& GetPalette() { return m_curPalette;}
 };

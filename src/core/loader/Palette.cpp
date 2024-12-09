@@ -3,7 +3,7 @@
 
 Palette::Palette()
 {
-    curPalette.assign(COLOUR_PALETTE_SIZE, {0, 0, 0});
+    m_curPalette.assign(COLOUR_PALETTE_SIZE, {0, 0, 0});
 }
 
 
@@ -23,7 +23,7 @@ bool Palette::LoadPalette(const std::string& filePath)
     }
 
     const RGB* paletteData = (const RGB*)(rawFile.data());
-    curPalette.assign(paletteData, paletteData + COLOUR_PALETTE_SIZE);
-
+    m_curPalette.assign(paletteData, paletteData + COLOUR_PALETTE_SIZE);
+    
     return true;
 }
