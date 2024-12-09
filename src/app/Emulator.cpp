@@ -27,7 +27,7 @@ Emulator::Emulator(const std::string& romPath)
 	// Create devices
 	m_Bus = std::make_shared<Bus>(&m_ROM);
 	m_CPU = std::make_unique<CPU>(m_Bus);
-	m_GUI = std::make_unique<EmulatorDisplay>("Emulator", DISPLAY_WIDTH, DISPLAY_HEIGHT, 1);
+	m_GUI = std::make_unique<EmulatorDisplay>("Emulator", DISPLAY_WIDTH, DISPLAY_HEIGHT, 4);
 
 	m_GUI->InitImGui();
 }
