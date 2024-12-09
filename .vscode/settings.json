@@ -94,7 +94,8 @@
         "cfenv": "cpp",
         "valarray": "cpp",
         "csignal": "cpp",
-        "typeindex": "cpp"
+        "typeindex": "cpp",
+        "*.inc": "cpp"
     },
     "editor.tokenColorCustomizations": {
         "comments": "",

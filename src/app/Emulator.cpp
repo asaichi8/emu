@@ -37,7 +37,6 @@ Emulator::~Emulator()
 	m_GUI->ShutdownImGui();
 }
 
-
 /// @brief Runs the emulator.
 void Emulator::Run()
 {
@@ -50,30 +49,52 @@ void Emulator::Run()
 	// Attempt to set FPS to the refresh rate of the focused monitor
 	//if (SDL_GetCurrentDisplayMode(primaryDisplay, &currentDisplay) == 0)
 	//	m_FPS = currentDisplay.refresh_rate;
-	//auto FPStime = std::chrono::milliseconds(1000) / 60;					  // time each frame should run
+	// TODO: make sure the timers dont go out of sync
+	const auto FPStime = std::chrono::milliseconds(1000) / 60;					  // time each frame should run
 	//auto nextFrameTime = std::chrono::high_resolution_clock::now() + FPStime; // time the next frame will be drawn
+	const int BATCH_MULTIPLIER = 179; //number of cpu cycles to execute at a time
+	const double CPU_CLOCK_RATE = 1789773 / 2.5; // CPU clock rate divided by arbitrary number because this is wrong
+	const double CYCLE_TIME = 1e6 / CPU_CLOCK_RATE * BATCH_MULTIPLIER; // working with microseconds
 
+	// controller poll time = 1ms
 	bool running = true;
+	auto now = std::chrono::high_resolution_clock::now();
 	while (running) // Main loop
 	{
-
-		if (m_GUI->GetShouldReadRegisters())				// if read registers was clicked...
-			m_GUI->UpdateRegisters(m_CPU->ReadRegisters()); // update GUI with a copy of the CPU's current registers
+		static auto loopStart = std::chrono::high_resolution_clock::now();
+		static auto nextFrameTime = std::chrono::high_resolution_clock::now() + FPStime;
 
 		if (m_GUI->GetShouldCPURun())
 		{
-			m_CPU->Run();
+			now = std::chrono::high_resolution_clock::now();
+			double elapsed = std::chrono::duration<double, std::micro>(std::chrono::high_resolution_clock::now() - loopStart).count();
 
-			// If we interrupted, it's probably safe to read the nametable so try it
-			// TODO: very bootleg fix later
-			if (m_Bus->GetPPU()->GetInterruptStatus())
+			double batchamnt = elapsed / CYCLE_TIME;
+
+			for (int i = 0; i < std::round(batchamnt); ++i)
 			{
-				nesDisplay.DrawScreen();
+				for (int j = 0; j < BATCH_MULTIPLIER; ++j)
+				{
+					m_CPU->Run();
+
+					if (m_Bus->GetPPU()->GetInterruptStatus())
+						nesDisplay.DrawScreen();
+				}
+
+				loopStart += std::chrono::microseconds((int)(CYCLE_TIME));
+			}
+
+
+			// render at 60fps
+			now = std::chrono::high_resolution_clock::now();
+			if (now >= nextFrameTime)
+			{
+				nextFrameTime = now + FPStime;
 				m_GUI->RenderFrame(nesDisplay.GetScreen(), DISPLAY_WIDTH);
 			}
 		}
-		else
-			m_GUI->RenderFrame(nesDisplay.GetScreen(), DISPLAY_WIDTH);
+		// else
+		// 	m_GUI->RenderFrame(nesDisplay.GetScreen(), DISPLAY_WIDTH);
 
 		/*auto now = std::chrono::high_resolution_clock::now();
 		if (now >= nextFrameTime) // only render gui every FPS frames
@@ -84,6 +105,9 @@ void Emulator::Run()
 			if (now > nextFrameTime) // if somehow we became out of sync...
 				nextFrameTime = now + FPStime; // synchronise nextFrameTime
 		}*/
+
+		if (m_GUI->GetShouldReadRegisters())				// if read registers was clicked...
+			m_GUI->UpdateRegisters(m_CPU->ReadRegisters()); // update GUI with a copy of the CPU's current registers
 
 		// TODO: fix restart
 		if (m_GUI->GetShouldRestart())
@@ -97,24 +121,31 @@ void Emulator::Run()
 			m_GUI->SetShouldStepThrough(false);
 		}
 
+		static auto nextEventCheck = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(1);
+		now = std::chrono::high_resolution_clock::now();
 		// Handle events (e.g. keyboard inputs)
-		while (SDL_PollEvent(&event))
+		if (now >= nextEventCheck)
 		{
-			ImGui_ImplSDL2_ProcessEvent(&event);
-			if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
-			{
-				running = false;
-				break;
-			}
+			nextEventCheck = now + std::chrono::milliseconds(1);
 
-			auto iterator = m_buttonMap.find((SDL_KeyCode)event.key.keysym.sym);
-			if (iterator != m_buttonMap.end())
+			while (SDL_PollEvent(&event))
 			{
-				// set key if it's down, unset if it's not
-				if (event.type == SDL_KEYDOWN)
-					m_Bus->joypad1.Update(iterator->second, true); 
-				else if (event.type == SDL_KEYUP)
-					m_Bus->joypad1.Update(iterator->second, false);
+				ImGui_ImplSDL2_ProcessEvent(&event);
+				if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
+				{
+					running = false;
+					break;
+				}
+
+				auto iterator = m_buttonMap.find((SDL_KeyCode)event.key.keysym.sym);
+				if (iterator != m_buttonMap.end())
+				{
+					// set key if it's down, unset if it's not
+					if (event.type == SDL_KEYDOWN)
+						m_Bus->joypad1.Update(iterator->second, true); 
+					else if (event.type == SDL_KEYUP)
+						m_Bus->joypad1.Update(iterator->second, false);
+				}
 			}
 		}
 		// std::this_thread::sleep_for(std::chrono::microseconds(50));
