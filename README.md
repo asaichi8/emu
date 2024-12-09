@@ -1,26 +1,28 @@
 Untitled NES Emulator
 ========================================================
-// TODO: update this as we're using CMake now
+
 NES emulator
 
 Linux/MacOS
 ------------
 ### Dependencies
-apt: ```sudo apt install make g++ libsdl2-dev```
+apt: ```sudo apt install cmake ninja g++ libsdl2-dev```
 
-pacman: ```sudo pacman -S make gcc sdl2```
+pacman: ```sudo pacman -S cmake ninja gcc sdl2```
 
-Homebrew: ```brew install sdl2```
+Homebrew: ```brew install cmake ninja sdl2``` // TODO: check this
 
 ### Usage
 1. Install dependencies.
 2. Clone the repo: ```git clone https://github.com/asaichi8/emu/```
 3. Enter the directory: ```cd emu```
-4. Compile: ```make```
-5. Run: ```./bin/emu```
+4. Create a build directory: ```mkdir build && cd build```
+5. Set up cmake: ```cmake ..``` or ```cmake .. -G "Ninja"```
+5. Compile: ```make``` or ```ninja```
+6. Run: ```./emu <rom_path>```
 
 
-Windows
+Windows // TODO: update this using cmake
 ------------
 ### Dependencies
 1. MinGW: follow the instructions at: https://code.visualstudio.com/docs/cpp/config-mingw
