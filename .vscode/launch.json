@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "Ninja",
             "program": "${workspaceFolder}/build/emu",
-            "args": [],
+            "args": ["${workspaceFolder}/bin/myrom.nes"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
