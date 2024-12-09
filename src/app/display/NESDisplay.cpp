@@ -54,9 +54,8 @@ bool NESDisplay::SetPixel(const RGB colour, const size_t x, const size_t y)
 	if (pixelStartPos + sizeof(RGB) > SCREEN_BUFFER_SIZE)
 		return false; // not fatal
 
-	m_szScreenBuffer[pixelStartPos] = colour.r;
-	m_szScreenBuffer[pixelStartPos + 1] = colour.g;
-	m_szScreenBuffer[pixelStartPos + 2] = colour.b;
+	// directly map the RGB colour struct into memory
+	*(RGB*)(&m_szScreenBuffer[pixelStartPos]) = colour;
 
 	return true;
 }
@@ -131,11 +130,11 @@ std::vector<BYTE> NESDisplay::GetBgTilePalette(const std::vector<BYTE>& nametabl
 {
 	std::vector<BYTE> paletteColours{};
 
-	if (tileNoX > 32 || tileNoY > 30)
+	/*if (tileNoX > 32 || tileNoY > 30)
 	{
 		std::cerr << "ERROR: Attempted to get invalid tile's palette!" << std::endl;
 		return paletteColours; // function was misused
-	}
+	}*/
 
 	static const WORD ATTRIBUTE_TABLE_BEGIN = 0x3C0;
 
@@ -164,7 +163,7 @@ std::vector<BYTE> NESDisplay::GetBgTilePalette(const std::vector<BYTE>& nametabl
 
 std::vector<BYTE> NESDisplay::GetSpriteTilePalette(const std::bitset<2>& paletteIndex)
 {
-	std::vector<BYTE> paletteColours{0}; // initialise with one member, which won't be used anyway
+	std::vector<BYTE> paletteColours{m_pPPU->GetPaletteRAM().at(0)}; // initialise with one member, which won't be used anyway
 	static const WORD SPRITE_TABLE_OFFSET = 0x10;
 
 	for (int i = 1; i < 4; ++i)
