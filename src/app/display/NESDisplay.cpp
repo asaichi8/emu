@@ -236,6 +236,9 @@ void NESDisplay::DrawSprites()
 {
 	const WORD spriteBankAddr = dynamic_cast<PPUCTRL *>(m_pPPU->registers.ppuctrl.get())->GetSpritePTableAddr();
 
+	// https://www.nesdev.org/wiki/PPU_sprite_priority
+	// "Sprites with lower OAM indicies are drawn in front", therefore we loop through the OAM table from sprite 63 to sprite 0
+	//   to render lower sprites on top of higher sprites
 	for (int i = m_pPPU->GetOAM().size() - 4; i >= 0; i -= 4)
 	{
 		// https://www.nesdev.org/wiki/PPU_OAM
