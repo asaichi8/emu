@@ -66,10 +66,24 @@ void CPU::Run()
 {
 	m_curOpcode = m_Bus->ReadByte(reg.program_counter);
 
+	// Log
 	//Log();
 
 	//if (reg.program_counter == 0xC66E)
 	//    std::cout << std::endl; // breakpoint here
+
+	// Benchmark
+	// static size_t count = 0;
+	// count++;
+	// static auto nextSecond = std::chrono::high_resolution_clock::now() + std::chrono::seconds(1); // time the next frame will be drawn
+	// auto now = std::chrono::high_resolution_clock::now();
+	// if (now >= nextSecond)
+	// {
+	// 	std::cout << count << std::endl;
+	// 	nextSecond += std::chrono::seconds(1);
+	// 	count = 0;
+	// }
+
 
 	reg.program_counter++;
 	Execute(instructions[m_curOpcode]);
