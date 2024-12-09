@@ -66,15 +66,10 @@ void Emulator::Run()
 
 			// If we interrupted, it's probably safe to read the nametable so try it
 			// TODO: very bootleg fix later
-			// static bool hasInterrupted = false;
-			// if (!m_Bus->GetPPU()->GetInterruptStatus()) 
-			// 	hasInterrupted = false;
-
 			if (m_Bus->GetPPU()->GetInterruptStatus())
 			{
 				nesDisplay.DrawScreen();
 				m_GUI->RenderFrame(nesDisplay.GetScreen(), DISPLAY_WIDTH);
-				// hasInterrupted = true;
 			}
 		}
 		else

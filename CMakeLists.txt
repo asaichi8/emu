@@ -3,7 +3,7 @@ project(emuproj)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -D_REENTRANT")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -D_REENTRANT -O2 -march=native")
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/src/app
