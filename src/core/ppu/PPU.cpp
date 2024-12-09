@@ -113,7 +113,7 @@ void PPU::WritePPUByte(BYTE val)
 
     if (addr < PATTERN_TABLES_END) // pattern table 0x0 - 0x1FFF
     {
-        std::cerr << "ERROR: Can't write to CHR_ROM in PPU pattern table!" << std::endl;
+        std::cerr << "ERROR: Can't write to CHR_ROM in PPU pattern table! addr = " << std::hex << addr << std::endl;
     }
     else if (addr < NAMETABLES_MIRRORED_END) // nametable 0x2000 - 0x3EFF
     {
@@ -124,7 +124,7 @@ void PPU::WritePPUByte(BYTE val)
         // else
         //     TEST_NameTableRAMIsRealZero[indexes.first][indexes.second] = false;
     }
-    else // palette ram 0x3F00 - 0x3FFF
+    else if (addr < PALETTE_RAM_MIRRORED_END) // palette ram 0x3F00 - 0x3FFF
     {
         addr = MirrorPaletteRAMAddress(addr);
         if (addr >= PALETTE_RAM_BEGIN + PALETTE_RAM_TOTAL_SIZE)
