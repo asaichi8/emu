@@ -60,6 +60,37 @@ bool NESDisplay::SetPixel(const RGB colour, const size_t x, const size_t y)
 	return true;
 }
 
+// each pixel of a tile is coded using 16 bytes, because each pixel can be one of four colours.
+// each pixel is therefore denoted by a nibble (4 bits) which determine its colour.
+// each byte is a bitfield, where the first 8 bytes (left) contain 64 bits (the number of pixels in a tile)
+// 	 that control the low bit of each nibble, whereas the next 8 bytes (right) contain 64 bits that control
+//	 the high bit of each nibble.
+// for a sprite, a nibble of value 0 is transparent.
+// for example, to draw a smiley face using 16 bytes:
+
+//		left (first 8 bytes)			right (last 8 bytes)
+// byte  0: 0 0 0 0 0 0 0 0	    	byte  8: 0 0 0 0 0 0 0 0
+// byte  1: 0 0 0 0 0 0 0 0	    	byte  9: 0 0 0 0 0 0 0 0
+// byte  2: 0 1 0 0 0 0 1 0	    	byte 10: 0 0 0 0 0 0 0 0
+// byte  3: 0 0 0 0 0 0 0 0	    	byte 11: 0 0 0 0 0 0 0 0
+// byte  4: 0 0 0 0 0 0 0 0	    	byte 12: 0 0 0 0 0 0 0 0
+// byte  5: 0 1 0 0 0 0 1 0	    	byte 13: 0 0 0 0 0 0 0 0
+// byte  6: 0 0 1 1 1 1 0 0	    	byte 14: 0 0 1 1 1 1 0 0
+// byte  7: 0 0 0 0 0 0 0 0	    	byte 15: 0 0 0 0 0 0 0 0
+
+
+// 		result (combined left & right)
+// nibble 0: 00 00 00 00 00 00 00 00
+// nibble 1: 00 00 00 00 00 00 00 00
+// nibble 2: 00 01 00 00 00 00 01 00
+// nibble 3: 00 00 00 00 00 00 00 00
+// nibble 4: 00 00 00 00 00 00 00 00
+// nibble 5: 00 10 00 00 00 00 10 00
+// nibble 6: 00 00 11 11 11 11 00 00
+// nibble 7: 00 00 00 00 00 00 00 00
+
+// therefore, the eyes are of one colour (tilePaletteIndex 1 (0b01)), and the mouth is of another
+// colour (tilePaletteIndex 3 (0b11)). the corners of the mouth are of colour tilePaletteIndex 2 (0b10).
 // where tilePosX = 0-32, tilePosY = 0-30
 void NESDisplay::DrawTile(const Tile &tile, size_t tilePosX, size_t tilePosY, const std::vector<BYTE>& tilePaletteIndexes, bool isSprite, bool flipY, bool flipX)
 {
@@ -70,7 +101,7 @@ void NESDisplay::DrawTile(const Tile &tile, size_t tilePosX, size_t tilePosY, co
 
 		for (int curBit = 0; curBit < 8; ++curBit) // left to right
 		{
-			std::bitset<4> pixelNibble = left[curBit] + right[curBit];
+			std::bitset<4> pixelNibble = (right[curBit] << 1) | left[curBit];
 			if (isSprite && pixelNibble.none()) // if pixelNibble is 0 and it's a sprite, this pixel is transparent so we can skip it
 				continue;
 
