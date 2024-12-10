@@ -165,8 +165,10 @@ std::string Emulator::Run()
 						if (event.key.keysym.sym == SDLK_ESCAPE)
 							return {};
 
+						if (m_GUI->GetShouldShowErrorMsg()) 
+							break; // block input if error msg showing
 						auto iterator = m_buttonMap.find((SDL_KeyCode)event.key.keysym.sym);
-						if (iterator != m_buttonMap.end())
+						if (iterator != m_buttonMap.end() && m_GUI->GetShouldShowErrorMsg()) // block input if error msg showing
 							m_Bus->joypad1.Update(iterator->second, true); 
 
 						break;
@@ -174,6 +176,9 @@ std::string Emulator::Run()
 
 					case SDL_KEYUP:
 					{
+						if (m_GUI->GetShouldShowErrorMsg()) 
+							break;
+							
 						auto iterator = m_buttonMap.find((SDL_KeyCode)event.key.keysym.sym);
 						if (iterator != m_buttonMap.end())
 							m_Bus->joypad1.Update(iterator->second, false); 
@@ -184,6 +189,9 @@ std::string Emulator::Run()
 					// https://wiki.libsdl.org/SDL2/SDL_DropEvent
 					case SDL_DROPFILE:
 					{
+						if (m_GUI->GetShouldShowErrorMsg()) 
+							break;
+							
 						char* droppedFile = event.drop.file; // MUST BE FREED WITH SDL_free
 						std::string strDroppedFile = droppedFile;
 						SDL_free(droppedFile);
