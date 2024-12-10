@@ -154,6 +154,45 @@ std::string Emulator::Run()
 				}
 
 
+				switch (event.type)
+				{
+					case SDL_QUIT:
+						return {};
+					
+					case SDL_KEYDOWN:
+					{
+						if (event.key.keysym.sym == SDLK_ESCAPE)
+							return {};
+
+						auto iterator = m_buttonMap.find((SDL_KeyCode)event.key.keysym.sym);
+						if (iterator != m_buttonMap.end())
+							m_Bus->joypad1.Update(iterator->second, true); 
+
+						break;
+					}
+
+					case SDL_KEYUP:
+					{
+						auto iterator = m_buttonMap.find((SDL_KeyCode)event.key.keysym.sym);
+						if (iterator != m_buttonMap.end())
+							m_Bus->joypad1.Update(iterator->second, false); 
+						
+						break;
+					}
+
+					// https://wiki.libsdl.org/SDL2/SDL_DropEvent
+					case SDL_DROPFILE:
+					{
+						char* droppedFile = event.drop.file; // MUST BE FREED WITH SDL_free
+						m_curRomPath = droppedFile;
+						SDL_free(droppedFile);
+
+						return m_curRomPath;
+					}
+
+					default:
+						break;
+				}
 			}
 		}
 		// std::this_thread::sleep_for(std::chrono::microseconds(50));
