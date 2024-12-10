@@ -103,15 +103,29 @@ void EmulatorDisplay::StartImGuiFrame()
 
 	if (shouldShowErrorMsg)
 	{
-		ImGui::Begin(m_lastErrorTitle.c_str(), &shouldShowErrorMsg, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse);
-		ImGui::Text("%s", m_lastError.c_str());
-
-		 if (ImGui::Button("OK"))
+		ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+		
+		ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(1.f, .3f, .3f, .9f));
+		ImGui::OpenPopup(m_lastErrorTitle.c_str());
+		ImGui::SetNextWindowSize(ImVec2(200, 84));
+		if (ImGui::BeginPopupModal(m_lastErrorTitle.c_str(), nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize))
 		{
-			shouldShowErrorMsg = false;
-		}
+			ImGui::Text("%s", m_lastError.c_str());
 
-		ImGui::End();
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
+
+			ImGui::SetCursorPosX((ImGui::GetWindowSize().x - 175) / 2);
+			if (ImGui::Button("OK", ImVec2(175, 0)))
+			{
+				ImGui::CloseCurrentPopup();
+				shouldShowErrorMsg = false;
+			}
+
+			ImGui::EndPopup();
+		}
+		ImGui::PopStyleColor();
 	}
 
 	ImGui::Render();
