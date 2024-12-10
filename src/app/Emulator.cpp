@@ -16,8 +16,9 @@ Emulator::Emulator(const std::string& romPath, EmulatorDisplay& GUI) : m_GUI(&GU
 {
 	// Map ROM into appropriate variables
 	m_curRomPath = Loader::GetFullFilePath(romPath.c_str());
-	if (!m_ROM.LoadROM(m_curRomPath))
-		throw std::runtime_error("Failed to load ROM!");
+	std::string errMsg = m_ROM.LoadROM(m_curRomPath);
+	if (!errMsg.empty())
+		throw std::runtime_error("Failed to load ROM : " + errMsg);
 
 	m_pPalette = std::make_unique<Palette>();
 	std::string paletteFullPath = Loader::GetFullFilePath(PALETTE_RELATIVE_PATH);

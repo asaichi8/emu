@@ -65,6 +65,8 @@ class ROM
 	const size_t PRG_ROM_BANK_SIZE = 16 * KB;
 	const size_t CHR_ROM_BANK_SIZE = 8 * KB;
 
+	std::vector<BYTE> m_rawFile{};
+	iNES_Header m_inesHeader{};
 	size_t m_nPRG_ROM_size{};
 	size_t m_nCHR_ROM_size{};
 
@@ -82,5 +84,7 @@ public:
 	std::vector<BYTE> CHR_ROM{};
 	BYTE mapperType{};
 	MirrorType mirrorType{};
-	bool LoadROM(const std::string& filePath);
+	
+	std::string CheckROM(const std::string& filePath);
+	std::string LoadROM(const std::string& filePath);
 };

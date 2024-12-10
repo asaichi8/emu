@@ -9,45 +9,59 @@ ROM::ROM()
 
 // https://www.nesdev.org/wiki/INES
 
-/// @brief 
+/// @brief Checks if the file loaded is a valid .nes file.
 /// @param filePath 
-/// @return True if success, false if otherwise 
-bool ROM::LoadROM(const std::string& filePath)
+/// @return The error message. Succeeded if nothing was returned.
+std::string ROM::CheckROM(const std::string& filePath)
 {
 	// load file
-	auto rawFile = Loader::LoadFile(filePath);
+	m_rawFile = Loader::LoadFile(filePath);
 
 	// check we actually loaded something
-	if (rawFile.empty())
-		return false;
+	if (m_rawFile.empty())
+		return "Cannot load an empty file!";
 
 	// check size
-	if (!CheckHeaderFits(rawFile))
-		return false;
+	if (!CheckHeaderFits(m_rawFile))
+		return "File not large enough to read header!";
 
-	// map first 16 bytes to iNES_Header
-	const iNES_Header* header = (const iNES_Header*)(rawFile.data());
-	
-	// check that the file is an iNES file and file actually has space for data requested by header
-	if (!CheckHeaderIsINES(header) || !CheckFileSize(rawFile, header))
-		return false;
-
-	if (GetINESVersion(header) > 0) 
 	{
-		std::cerr << "Only iNES 1.0 is supported at this time!" << std::endl;
-		return false;
+		// map first 16 bytes to iNES_Header
+		const iNES_Header* header = (const iNES_Header*)(m_rawFile.data());
+		m_inesHeader = *header; // create a copy of the header to store as a member variable
 	}
 	
-	mapperType = GetMapperType(header);
-	mirrorType = GetMirrorType(header);
+	// check that the file is an iNES file and file actually has space for data requested by header
+	if (!CheckHeaderIsINES(&m_inesHeader))
+		return "Not an NES file!";
+	if (!CheckFileSize(m_rawFile, &m_inesHeader))
+		return "File not large enough to map data requested by header!";
+	if (GetINESVersion(&m_inesHeader) > 0) 
+		return "Only iNES 1.0 is supported at this time!";
 
-	size_t PRG_ROM_start = sizeof(iNES_Header) + ((header->flags6 & Flags6::HasTrainer) ? TRAINER_SIZE : 0);
-	size_t CHR_ROM_start = PRG_ROM_start + (header->PRG_ROM_banks * PRG_ROM_BANK_SIZE);
+	return {};
+}
 
-	auto PRG_begin = rawFile.begin() + PRG_ROM_start;
-	auto PRG_end   = rawFile.begin() + PRG_ROM_start + (header->PRG_ROM_banks * PRG_ROM_BANK_SIZE);
-	auto CHR_begin = rawFile.begin() + CHR_ROM_start;
-	auto CHR_end   = rawFile.begin() + CHR_ROM_start + (header->CHR_ROM_banks * CHR_ROM_BANK_SIZE);
+/// @brief Maps ROM into memory.
+/// @param filePath 
+/// @return The error message. Succeeded if nothing was returned.
+std::string ROM::LoadROM(const std::string& filePath)
+{
+	// CheckROM fills out m_rawFile & m_inesHeader
+	std::string errMsg = CheckROM(filePath);
+	if (!errMsg.empty())
+		return errMsg;
+
+	mapperType = GetMapperType(&m_inesHeader);
+	mirrorType = GetMirrorType(&m_inesHeader);
+
+	size_t PRG_ROM_start = sizeof(iNES_Header) + ((m_inesHeader.flags6 & Flags6::HasTrainer) ? TRAINER_SIZE : 0);
+	size_t CHR_ROM_start = PRG_ROM_start + (m_inesHeader.PRG_ROM_banks * PRG_ROM_BANK_SIZE);
+
+	auto PRG_begin = m_rawFile.begin() + PRG_ROM_start;
+	auto PRG_end   = m_rawFile.begin() + PRG_ROM_start + (m_inesHeader.PRG_ROM_banks * PRG_ROM_BANK_SIZE);
+	auto CHR_begin = m_rawFile.begin() + CHR_ROM_start;
+	auto CHR_end   = m_rawFile.begin() + CHR_ROM_start + (m_inesHeader.CHR_ROM_banks * CHR_ROM_BANK_SIZE);
 
 	PRG_ROM.assign(PRG_begin, PRG_end);
 	CHR_ROM.assign(CHR_begin, CHR_end); 
@@ -55,29 +69,18 @@ bool ROM::LoadROM(const std::string& filePath)
 	PRG_ROM = std::vector<BYTE>(PRG_begin, PRG_end);
 	CHR_ROM = std::vector<BYTE>(CHR_begin, CHR_end);
 
-	return true;
+	return {};
 }
+
 
 bool ROM::CheckHeaderFits(const std::vector<BYTE> rawFile)
 {
-	if (rawFile.size() <= sizeof(iNES_Header))
-	{
-		std::cerr << "File not large enough to read header!" << std::endl;
-		return false;
-	}
-	
-	return true;
+	return rawFile.size() > sizeof(iNES_Header);
 }
 
 bool ROM::CheckHeaderIsINES(const iNES_Header* header)
 {
-	if (memcmp(header->signature, NES_SIG, 4) != 0)
-	{
-		std::cerr << "Not an NES file!" << std::endl;
-		return false;
-	}
-	
-	return true;
+	return (memcmp(header->signature, NES_SIG, 4) == 0);
 }
 
 /// @brief 
@@ -94,13 +97,7 @@ bool ROM::CheckFileSize(const std::vector<BYTE>& rawFile, const iNES_Header* hea
 	totalExpectedSize += header->PRG_ROM_banks * PRG_ROM_BANK_SIZE;
 	totalExpectedSize += header->CHR_ROM_banks * CHR_ROM_BANK_SIZE;
 
-	if (!(rawFile.size() >= totalExpectedSize))
-	{
-		std::cerr << "File not large enough to map data requested by header!" << std::endl;
-		return false;
-	}
-
-	return true;
+	return (rawFile.size() >= totalExpectedSize);
 }
 
 BYTE ROM::GetINESVersion(const iNES_Header* header)
