@@ -136,7 +136,8 @@ std::string Emulator::Run()
 			while (SDL_PollEvent(&event))
 			{
 				ImGui_ImplSDL2_ProcessEvent(&event);
-				if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
+				if ((event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) ||
+					 event.type == SDL_QUIT)
 				{
 					return {};
 				}
@@ -151,6 +152,8 @@ std::string Emulator::Run()
 					else if (event.type == SDL_KEYUP)
 						m_Bus->joypad1.Update(iterator->second, false);
 				}
+
+
 			}
 		}
 		// std::this_thread::sleep_for(std::chrono::microseconds(50));
