@@ -137,6 +137,7 @@ void Emulator::Run()
 					break;
 				}
 
+				// TODO: fix socd
 				auto iterator = m_buttonMap.find((SDL_KeyCode)event.key.keysym.sym);
 				if (iterator != m_buttonMap.end())
 				{

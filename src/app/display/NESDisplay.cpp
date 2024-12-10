@@ -235,27 +235,22 @@ void NESDisplay::DrawNametable()
 void NESDisplay::DrawSprites()
 {
 	const WORD spriteBankAddr = dynamic_cast<PPUCTRL *>(m_pPPU->registers.ppuctrl.get())->GetSpritePTableAddr();
-
 	// https://www.nesdev.org/wiki/PPU_sprite_priority
 	// "Sprites with lower OAM indicies are drawn in front", therefore we loop through the OAM table from sprite 63 to sprite 0
 	//   to render lower sprites on top of higher sprites
-	for (int i = m_pPPU->GetOAM().size() - 4; i >= 0; i -= 4)
+	for (int i = m_pPPU->GetOAM().size() - sizeof(SpriteData); i >= 0; i -= sizeof(SpriteData))
 	{
 		// https://www.nesdev.org/wiki/PPU_OAM
-		// TODO: probably pack this into a struct, then replace "4" magic numbers with evaluation of sizeof(struct) / sizeof(BYTE)
-		BYTE tileY = m_pPPU->GetOAM()[i];
-		BYTE tileIndex = m_pPPU->GetOAM()[i + 1];
-		OAMProperties tileProperties = (OAMProperties)m_pPPU->GetOAM()[i + 2];
-		BYTE tileX = m_pPPU->GetOAM()[i + 3];
+		const SpriteData *pCurSprite = (const SpriteData *)(&(m_pPPU->GetOAM().at(i)));
 
-		std::bitset<2> paletteIndex = (tileProperties & (OAMProperties::PALETTE_HIGH | OAMProperties::PALETTE_LOW));
-		bool shouldFlipVertical = (tileProperties & OAMProperties::FLIP_VERTICALLY);
-		bool shouldFlipHorizontal = (tileProperties & OAMProperties::FLIP_HORIZONTALLY);
+		std::bitset<2> paletteIndex = (pCurSprite->tileProperties & (OAMProperties::PALETTE_HIGH | OAMProperties::PALETTE_LOW));
+		bool shouldFlipVertical = (pCurSprite->tileProperties & OAMProperties::FLIP_VERTICALLY);
+		bool shouldFlipHorizontal = (pCurSprite->tileProperties & OAMProperties::FLIP_HORIZONTALLY);
 
-		const WORD selectedTileOffset = tileIndex * sizeof(Tile); // address of tile to be used
+		const WORD selectedTileOffset = pCurSprite->tileIndex * sizeof(Tile); // address of tile to be used
 		const Tile *pCurTile = (const Tile *)(&(m_pPPU->GetCHR_ROM()->at(spriteBankAddr + selectedTileOffset)));
 
 		std::vector<BYTE> paletteColours = GetSpriteTilePalette(paletteIndex);
-		DrawTile(*pCurTile, tileX, tileY, paletteColours, true, shouldFlipVertical, shouldFlipHorizontal);
+		DrawTile(*pCurTile, pCurSprite->tileX, pCurSprite->tileY, paletteColours, true, shouldFlipVertical, shouldFlipHorizontal);
 	}
 }

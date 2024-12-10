@@ -22,10 +22,20 @@ class NESDisplay
 	};
 
 #pragma pack(push, 1)
+	struct SpriteData
+	{
+		BYTE tileY{};
+		BYTE tileIndex{};
+		OAMProperties tileProperties{};
+		BYTE tileX{};
+	};
+#pragma pop
+
+#pragma pack(push, 1)
 	struct Tile
 	{
-		BYTE left[8];
-		BYTE right[8];
+		BYTE left[8]{};
+		BYTE right[8]{};
 	};
 #pragma pop
 
