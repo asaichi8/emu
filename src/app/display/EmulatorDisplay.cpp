@@ -101,6 +101,19 @@ void EmulatorDisplay::StartImGuiFrame()
 			
 	}
 
+	if (shouldShowErrorMsg)
+	{
+		ImGui::Begin(m_lastErrorTitle.c_str(), &shouldShowErrorMsg, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse);
+		ImGui::Text("%s", m_lastError.c_str());
+
+		 if (ImGui::Button("OK"))
+		{
+			shouldShowErrorMsg = false;
+		}
+
+		ImGui::End();
+	}
+
 	ImGui::Render();
 }
 

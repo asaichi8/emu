@@ -191,7 +191,7 @@ std::string Emulator::Run()
 						std::string errMsg = m_ROM.CheckROM(strDroppedFile);
 						if (!errMsg.empty())
 						{
-							std::cerr << "Failed to load ROM : " << errMsg << std::endl;
+							m_GUI->SetShouldShowErrorMsg(true, errMsg, "Failed to load file");
 							break;
 						}
 

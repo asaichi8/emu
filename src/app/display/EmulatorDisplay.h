@@ -12,11 +12,14 @@
 class EmulatorDisplay : public SDLApp
 {
 	CPURegisters m_curReg{}; // A copy of the CPU's registers so they can be displayed.
+	std::string m_lastError = "Unknown error occured!";
+	std::string m_lastErrorTitle = "Error";
 
 	bool shouldCPURun = true;
 	bool shouldRestart = false;
 	bool shouldStepThrough = false;
 	bool shouldReadRegisters = false;
+	bool shouldShowErrorMsg = false;
 
 	void StartImGuiFrame();
 	void RenderImGuiFrame();
@@ -42,4 +45,12 @@ public:
 
 	bool GetShouldReadRegisters() { return shouldReadRegisters; }
 	void SetShouldReadRegisters(bool b) { shouldReadRegisters = b; }
+
+	bool GetShouldShowErrorMsg() { return shouldShowErrorMsg; }
+	void SetShouldShowErrorMsg(bool b, const std::string& errMsg = "Unknown error occured!", const std::string& errTitle = "Error")
+	{ 
+		shouldShowErrorMsg = b;
+		m_lastError = errMsg; 
+		m_lastErrorTitle = errTitle;
+	}
 };
