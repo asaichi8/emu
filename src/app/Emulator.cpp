@@ -12,7 +12,7 @@
 // TODO: make sure all member variables are m_, use regular naming scheme
 // TODO: make private functions in .cpp at bottom, public at top
 
-Emulator::Emulator(const std::string& romPath)
+Emulator::Emulator(const std::string& romPath, EmulatorDisplay& GUI) : m_GUI(&GUI)
 {
 	// Map ROM into appropriate variables
 	std::string romFullPath = Loader::GetFullFilePath(romPath.c_str());
@@ -27,19 +27,20 @@ Emulator::Emulator(const std::string& romPath)
 	// Create devices
 	m_Bus = std::make_shared<Bus>(&m_ROM);
 	m_CPU = std::make_unique<CPU>(m_Bus);
-	m_GUI = std::make_unique<EmulatorDisplay>("Emulator", DISPLAY_WIDTH, DISPLAY_HEIGHT, 4);
-
-	m_GUI->InitImGui();
 }
 
 Emulator::~Emulator()
 {
-	m_GUI->ShutdownImGui();
+	
 }
 
+
 /// @brief Runs the emulator.
-void Emulator::Run()
+/// @return Whether we expect to restart the emulator or not.
+bool Emulator::Run()
 {
+	bool shouldRestart = false;
+
 	SDL_Event event{};
 	NESDisplay nesDisplay(m_Bus->GetPPU(), m_pPalette.get());
 
@@ -112,8 +113,11 @@ void Emulator::Run()
 		// TODO: fix restart
 		if (m_GUI->GetShouldRestart())
 		{
-			m_CPU->Reset();
+			//m_CPU->Reset();
 			m_GUI->SetShouldRestart(false);
+			shouldRestart = true;
+			running = false;
+			break;
 		}
 		if (m_GUI->GetShouldStepThrough())
 		{
@@ -151,4 +155,6 @@ void Emulator::Run()
 		}
 		// std::this_thread::sleep_for(std::chrono::microseconds(50));
 	}
+
+	return shouldRestart;
 }

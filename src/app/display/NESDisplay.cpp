@@ -212,7 +212,7 @@ void NESDisplay::DrawNametable()
 	for (int tileNo = 0; tileNo < 32 * 30; ++tileNo)
 	{
 		// bgBankAddr either 0 or 0x1000, use it to determine which bank we access
-		const std::vector<BYTE> nametable = m_pPPU->GetNametableRAM()[0];
+		const std::vector<BYTE> nametable = m_pPPU->GetNametableRAM()[0]; // temporarily use nametable 0 only
 
 		if (tileNo >= nametable.size())
 		{

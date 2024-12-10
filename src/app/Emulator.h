@@ -25,7 +25,7 @@ class Emulator
 	std::unique_ptr<Palette> m_pPalette{};
 	std::shared_ptr<Bus> m_Bus{};
 	std::unique_ptr<CPU> m_CPU{};
-	std::unique_ptr<EmulatorDisplay> m_GUI{};
+	EmulatorDisplay* m_GUI{};
 
 	const static inline std::unordered_map<SDL_KeyCode, Joypad::Button> m_buttonMap = {
 		{SDLK_w, Joypad::Button::UP},
@@ -39,8 +39,8 @@ class Emulator
 	};
 
 public:
-	Emulator(const std::string& romPath);
+	Emulator(const std::string& romPath, EmulatorDisplay& GUI);
 	~Emulator();
 
-	void Run();
+	bool Run();
 };
