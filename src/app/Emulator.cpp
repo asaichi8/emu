@@ -185,10 +185,17 @@ std::string Emulator::Run()
 					case SDL_DROPFILE:
 					{
 						char* droppedFile = event.drop.file; // MUST BE FREED WITH SDL_free
-						m_curRomPath = droppedFile;
+						std::string strDroppedFile = droppedFile;
 						SDL_free(droppedFile);
 
-						return m_curRomPath;
+						std::string errMsg = m_ROM.CheckROM(strDroppedFile);
+						if (!errMsg.empty())
+						{
+							std::cerr << "Failed to load ROM : " << errMsg << std::endl;
+							break;
+						}
+
+						return strDroppedFile; // file drop succeeded
 					}
 
 					default:
