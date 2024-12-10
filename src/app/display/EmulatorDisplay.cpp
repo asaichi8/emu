@@ -4,7 +4,12 @@
 EmulatorDisplay::EmulatorDisplay(const std::string& winName, int w, int h, int scale) 
 	: SDLApp(winName, w, h, scale)
 {
-	
+	this->InitImGui();
+}
+
+EmulatorDisplay::~EmulatorDisplay()
+{
+	this->ShutdownImGui();
 }
 
 

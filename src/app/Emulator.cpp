@@ -15,8 +15,8 @@
 Emulator::Emulator(const std::string& romPath, EmulatorDisplay& GUI) : m_GUI(&GUI)
 {
 	// Map ROM into appropriate variables
-	std::string romFullPath = Loader::GetFullFilePath(romPath.c_str());
-	if (!m_ROM.LoadROM(romFullPath))
+	m_curRomPath = Loader::GetFullFilePath(romPath.c_str());
+	if (!m_ROM.LoadROM(m_curRomPath))
 		throw std::runtime_error("Failed to load ROM!");
 
 	m_pPalette = std::make_unique<Palette>();
@@ -36,8 +36,8 @@ Emulator::~Emulator()
 
 
 /// @brief Runs the emulator.
-/// @return Whether we expect to restart the emulator or not.
-bool Emulator::Run()
+/// @return The next ROM file to run. Returns nothing if we expect to exit.
+std::string Emulator::Run()
 {
 	bool shouldRestart = false;
 
@@ -65,11 +65,12 @@ bool Emulator::Run()
 		static auto loopStart = std::chrono::high_resolution_clock::now();
 		static auto nextFrameTime = std::chrono::high_resolution_clock::now() + FPStime;
 
+		// TODO: this lags when unpausing, probably because elapsed gets really high when paused
 		if (m_GUI->GetShouldCPURun())
 		{
 			now = std::chrono::high_resolution_clock::now();
 			double elapsed = std::chrono::duration<double, std::micro>(std::chrono::high_resolution_clock::now() - loopStart).count();
-
+			
 			double batchamnt = elapsed / CYCLE_TIME;
 
 			for (int i = 0; i < std::round(batchamnt); ++i)
@@ -94,8 +95,8 @@ bool Emulator::Run()
 				m_GUI->RenderFrame(nesDisplay.GetScreen(), DISPLAY_WIDTH);
 			}
 		}
-		// else
-		// 	m_GUI->RenderFrame(nesDisplay.GetScreen(), DISPLAY_WIDTH);
+		else
+			m_GUI->RenderFrame(nesDisplay.GetScreen(), DISPLAY_WIDTH);
 
 		/*auto now = std::chrono::high_resolution_clock::now();
 		if (now >= nextFrameTime) // only render gui every FPS frames
@@ -137,8 +138,7 @@ bool Emulator::Run()
 				ImGui_ImplSDL2_ProcessEvent(&event);
 				if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
 				{
-					running = false;
-					break;
+					return {};
 				}
 
 				// TODO: fix socd
@@ -156,5 +156,5 @@ bool Emulator::Run()
 		// std::this_thread::sleep_for(std::chrono::microseconds(50));
 	}
 
-	return shouldRestart;
+	return m_curRomPath;
 }

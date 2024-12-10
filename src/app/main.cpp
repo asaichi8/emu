@@ -14,17 +14,13 @@ int main(int argc, char* argv[])
 	{
 		// Initiate the GUI.
 		std::unique_ptr<EmulatorDisplay> GUI = std::make_unique<EmulatorDisplay>("Emulator", DISPLAY_WIDTH, DISPLAY_HEIGHT, 4);
-		GUI->InitImGui();
 
-		bool shouldRun = true;
-		while (shouldRun)
+		while (!romPath.empty())
 		{
 			// Start the emulator loop.
 			Emulator emulator(romPath, *GUI);
-			shouldRun = emulator.Run(); 
+			romPath = emulator.Run(); 
 		}
-
-		GUI->ShutdownImGui();
 	}
 	catch (const std::exception& e)
 	{

@@ -23,6 +23,7 @@ class EmulatorDisplay : public SDLApp
 
 public:
 	EmulatorDisplay(const std::string& winName, int w, int h, int scale);
+	~EmulatorDisplay();
 
 	void InitImGui();
 	void RenderFrame(BYTE* screenBuffer, int size);
