@@ -195,7 +195,7 @@ std::vector<BYTE> NESDisplay::GetBgTilePalette(const std::vector<BYTE>& nametabl
 std::vector<BYTE> NESDisplay::GetSpriteTilePalette(const std::bitset<2>& paletteIndex)
 {
 	std::vector<BYTE> paletteColours{m_pPPU->GetPaletteRAM().at(0)}; // initialise with one member, which won't be used anyway
-	static const WORD SPRITE_TABLE_OFFSET = 0x10;
+	static const WORD SPRITE_TABLE_OFFSET = 0x10; // sprite table is located at 0x3F10 - 0x3F20
 
 	for (int i = 1; i < 4; ++i)
 		paletteColours.push_back(m_pPPU->GetPaletteRAM().at(SPRITE_TABLE_OFFSET + (paletteIndex.to_ulong() * 4) + i));
@@ -212,7 +212,7 @@ void NESDisplay::DrawNametable()
 	for (int tileNo = 0; tileNo < 32 * 30; ++tileNo)
 	{
 		// bgBankAddr either 0 or 0x1000, use it to determine which bank we access
-		const std::vector<BYTE> nametable = m_pPPU->GetNametableRAM()[bgBankAddr ? 1 : 0];
+		const std::vector<BYTE> nametable = m_pPPU->GetNametableRAM()[0];
 
 		if (tileNo >= nametable.size())
 		{
@@ -227,7 +227,7 @@ void NESDisplay::DrawNametable()
 		const size_t screenPosX = tileNo % 32;
 		const size_t screenPosY = tileNo / 32;
 
-		std::vector<BYTE> tilePaletteIndexes = GetBgTilePalette( m_pPPU->GetNametableRAM()[bgBankAddr ? 1 : 0], screenPosX, screenPosY);
+		std::vector<BYTE> tilePaletteIndexes = GetBgTilePalette( m_pPPU->GetNametableRAM()[0], screenPosX, screenPosY);
 		DrawTile(*pCurTile, screenPosX * 8, screenPosY * 8, tilePaletteIndexes);
 	}
 }

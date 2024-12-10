@@ -83,9 +83,9 @@ BYTE PPU::ReadPPUByte()
         ppuDataRegister->Write(m_pCHR_ROM->at(addr));
     }
     else if (addr < NAMETABLES_MIRRORED_END) // nametable 0x2000 - 0x3EFF
-    { // TODO:
-        if (addr >= 0x3000)
-            std::cerr << "shouldnt be used" << std::endl;
+    {
+        // if (addr >= 0x3000)
+        //     std::cerr << "shouldnt be used" << std::endl;
         PPUDATA* ppuDataRegister = dynamic_cast<PPUDATA*>(registers.ppudata.get());
 
         data = ppuDataRegister->Read().to_ulong();
