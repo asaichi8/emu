@@ -78,8 +78,8 @@ BYTE PPU::ReadPPUByte()
     if (addr < PATTERN_TABLES_END) // pattern table 0x0 - 0x1FFF
     {
         PPUDATA* ppuDataRegister = dynamic_cast<PPUDATA*>(registers.ppudata.get());
-
         data = ppuDataRegister->Read().to_ulong();
+        
         ppuDataRegister->Write(m_pCHR_ROM->at(addr));
     }
     else if (addr < NAMETABLES_MIRRORED_END) // nametable 0x2000 - 0x3EFF
@@ -87,8 +87,8 @@ BYTE PPU::ReadPPUByte()
         // if (addr >= 0x3000)
         //     std::cerr << "shouldnt be used" << std::endl;
         PPUDATA* ppuDataRegister = dynamic_cast<PPUDATA*>(registers.ppudata.get());
-
         data = ppuDataRegister->Read().to_ulong();
+
         auto indexes = GetNametableRAMIndx(addr);
         ppuDataRegister->Write(m_NametableRAM[indexes.first][indexes.second]);
         // if (m_NametableRAM[indexes.first][indexes.second] == 0x0 && TEST_NameTableRAMIsRealZero[indexes.first][indexes.second] == false)
