@@ -79,7 +79,7 @@ FillPaletteTable:
   LDA #%00011110        ; toggle LEFT_BACKGROUND, LEFT_SPRITES, BACKGROUND, SPRITES
   STA $2001             ; write to ppu mask
 InfiniteLoop:
-  JMP InfiniteLoop
+  JMP InfiniteLoop      ; we've completed everything we need to do, so just loop infinitely
 
 NMI:
   RTI
