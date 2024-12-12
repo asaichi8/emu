@@ -143,16 +143,6 @@ std::string Emulator::Run()
 					return {};
 				}
 
-				// TODO: fix socd
-				auto iterator = m_buttonMap.find((SDL_KeyCode)event.key.keysym.sym);
-				if (iterator != m_buttonMap.end())
-				{
-					// set key if it's down, unset if it's not
-					if (event.type == SDL_KEYDOWN)
-						m_Bus->joypad1.Update(iterator->second, true); 
-					else if (event.type == SDL_KEYUP)
-						m_Bus->joypad1.Update(iterator->second, false);
-				}
 
 
 				switch (event.type)
@@ -167,8 +157,9 @@ std::string Emulator::Run()
 
 						if (m_GUI->GetShouldShowErrorMsg()) 
 							break; // block input if error msg showing
+
 						auto iterator = m_buttonMap.find((SDL_KeyCode)event.key.keysym.sym);
-						if (iterator != m_buttonMap.end() && m_GUI->GetShouldShowErrorMsg()) // block input if error msg showing
+						if (iterator != m_buttonMap.end() && !m_GUI->GetShouldShowErrorMsg()) // block input if error msg showing
 							m_Bus->joypad1.Update(iterator->second, true); 
 
 						break;
@@ -180,7 +171,7 @@ std::string Emulator::Run()
 							break;
 							
 						auto iterator = m_buttonMap.find((SDL_KeyCode)event.key.keysym.sym);
-						if (iterator != m_buttonMap.end())
+						if (iterator != m_buttonMap.end() && !m_GUI->GetShouldShowErrorMsg())
 							m_Bus->joypad1.Update(iterator->second, false); 
 						
 						break;
