@@ -148,7 +148,15 @@ void EmulatorDisplay::StartImGuiFrame()
 
 	if (shouldShowFileDialog)
 	{
-		// TODO: block imgui input & show it graphically somehow
+		ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+		
+		static const char* title = "Select a file";
+		ImGui::OpenPopup(title);
+		if (ImGui::BeginPopupModal(title, nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			ImGui::Text("Please choose a file.");
+			ImGui::EndPopup();
+		}
 	}
 
 	ImGui::Render();
