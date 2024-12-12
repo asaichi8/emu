@@ -3,7 +3,7 @@ project(emuproj)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -D_REENTRANT -march=native -Wno-pragma-pack")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -D_REENTRANT -march=native -Wno-pragma-pack -pthread")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 
 include_directories(
@@ -20,6 +20,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src/demos
     ${CMAKE_SOURCE_DIR}/src/include
     ${CMAKE_SOURCE_DIR}/src/include/imgui
+    ${CMAKE_SOURCE_DIR}/src/include/tinyfiledialogs
 )
 
 file(GLOB_RECURSE SOURCES
@@ -33,6 +34,7 @@ file(GLOB_RECURSE SOURCES
     ${CMAKE_SOURCE_DIR}/src/app/display/SDL/*.cpp
     ${CMAKE_SOURCE_DIR}/src/demos/*.cpp
     ${CMAKE_SOURCE_DIR}/src/imgui/*.cpp
+    ${CMAKE_SOURCE_DIR}/src/include/tinyfiledialogs/*.c
 )
 
 add_executable(emu ${SOURCES})

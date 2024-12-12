@@ -10,3 +10,5 @@ CMakeCache.txt
 Makefile
 build
 bin/emu
+asm/default.o
+asm/default.nes
