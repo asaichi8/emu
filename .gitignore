@@ -3,8 +3,10 @@ include/SDL2
 compile_commands.json
 .cache/
 bin/*.nes
+!bin/default.nes
 CMakeFiles
 *.cmake
 CMakeCache.txt
 Makefile
 build
+bin/emu
