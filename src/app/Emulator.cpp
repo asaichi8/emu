@@ -99,23 +99,12 @@ std::string Emulator::Run()
 		else
 			m_GUI->RenderFrame(nesDisplay.GetScreen(), DISPLAY_WIDTH);
 
-		/*auto now = std::chrono::high_resolution_clock::now();
-		if (now >= nextFrameTime) // only render gui every FPS frames
-		{
-			m_GUI->RenderFrame(screenBuffer, DISPLAY_WIDTH);
-			nextFrameTime += FPStime; // calc the time the next frame should be drawn
-
-			if (now > nextFrameTime) // if somehow we became out of sync...
-				nextFrameTime = now + FPStime; // synchronise nextFrameTime
-		}*/
 
 		if (m_GUI->GetShouldReadRegisters())				// if read registers was clicked...
 			m_GUI->UpdateRegisters(m_CPU->ReadRegisters()); // update GUI with a copy of the CPU's current registers
 
-		// TODO: fix restart
 		if (m_GUI->GetShouldRestart())
 		{
-			//m_CPU->Reset();
 			m_GUI->SetShouldRestart(false);
 			shouldRestart = true;
 			running = false;
@@ -125,6 +114,18 @@ std::string Emulator::Run()
 		{
 			m_CPU->Run(); // execute the CPU for a single instruction
 			m_GUI->SetShouldStepThrough(false);
+		}
+ 
+		if (m_GUI->GetSelectedFile() != "")
+		{
+			std::string strSelectedFile = m_GUI->GetSelectedFile();
+			m_GUI->SetSelectedFile("");
+
+			std::string errMsg = m_ROM.CheckROM(strSelectedFile);
+			if (!errMsg.empty())
+				m_GUI->SetShouldShowErrorMsg(true, errMsg, "Failed to load file");
+			else
+				return strSelectedFile; // file drop succeeded
 		}
 
 		static auto nextEventCheck = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(1);
@@ -143,8 +144,6 @@ std::string Emulator::Run()
 					return {};
 				}
 
-
-
 				switch (event.type)
 				{
 					case SDL_QUIT:
@@ -155,11 +154,11 @@ std::string Emulator::Run()
 						if (event.key.keysym.sym == SDLK_ESCAPE)
 							return {};
 
-						if (m_GUI->GetShouldShowErrorMsg()) 
+						if (m_GUI->GetShouldShowErrorMsg() && !m_GUI->GetShouldCPURun()) 
 							break; // block input if error msg showing
 
 						auto iterator = m_buttonMap.find((SDL_KeyCode)event.key.keysym.sym);
-						if (iterator != m_buttonMap.end() && !m_GUI->GetShouldShowErrorMsg()) // block input if error msg showing
+						if (iterator != m_buttonMap.end()) 
 							m_Bus->joypad1.Update(iterator->second, true); 
 
 						break;
@@ -167,11 +166,11 @@ std::string Emulator::Run()
 
 					case SDL_KEYUP:
 					{
-						if (m_GUI->GetShouldShowErrorMsg()) 
+						if (m_GUI->GetShouldShowErrorMsg() && !m_GUI->GetShouldCPURun()) 
 							break;
 							
 						auto iterator = m_buttonMap.find((SDL_KeyCode)event.key.keysym.sym);
-						if (iterator != m_buttonMap.end() && !m_GUI->GetShouldShowErrorMsg())
+						if (iterator != m_buttonMap.end())
 							m_Bus->joypad1.Update(iterator->second, false); 
 						
 						break;

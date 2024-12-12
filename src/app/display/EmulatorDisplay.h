@@ -1,11 +1,16 @@
 #pragma once
 
+#include "SDL/SDLApp.h"
+#include "../../include/tinyfiledialogs/tinyfiledialogs.h"
 #include "../../include/imgui/imgui.h"
 #include "../../include/imgui/imgui_impl_sdl2.h"
 #include "../../include/imgui/imgui_impl_sdlrenderer2.h"
-#include "SDL/SDLApp.h"
 #include "../../core/cpu/CPURegisters.h"
 #include "../../include/typedefs.h"
+#include <atomic>
+#include <thread>
+#include <mutex>
+#include <iostream>
 
 
 /// @brief Responsible for the GUI/video of the emulator.
@@ -14,19 +19,24 @@ class EmulatorDisplay : public SDLApp
 	CPURegisters m_curReg{}; // A copy of the CPU's registers so they can be displayed.
 	std::string m_lastError = "Unknown error occured!";
 	std::string m_lastErrorTitle = "Error";
+	std::string m_selectedFile{};
 
-	bool shouldCPURun = true;
+	std::atomic<bool> shouldCPURun = true;
 	bool shouldRestart = false;
 	bool shouldStepThrough = false;
 	bool shouldReadRegisters = false;
 	bool shouldShowErrorMsg = false;
+	std::atomic<bool> shouldShowFileDialog = false;
 
 	void StartImGuiFrame();
 	void RenderImGuiFrame();
+	void OpenFileDialog();
 
 public:
 	EmulatorDisplay(const std::string& winName, int w, int h, int scale);
 	~EmulatorDisplay();
+
+	std::mutex fileStrMutex{};
 
 	void InitImGui();
 	void RenderFrame(BYTE* screenBuffer, int size);
@@ -35,7 +45,7 @@ public:
 
 
 	// Getters/setters
-	bool GetShouldCPURun() { return shouldCPURun; }
+	bool GetShouldCPURun() const { return shouldCPURun.load(); }
 
 	bool GetShouldRestart() { return shouldRestart; }
 	void SetShouldRestart(bool b) { shouldRestart = b; }
@@ -53,4 +63,9 @@ public:
 		m_lastError = errMsg; 
 		m_lastErrorTitle = errTitle;
 	}
+
+	std::string GetSelectedFile() { std::lock_guard<std::mutex> lock(fileStrMutex); return m_selectedFile; };
+	void SetSelectedFile(const std::string& selectedFile) { std::lock_guard<std::mutex> lock(fileStrMutex); m_selectedFile = selectedFile; }
+
+	bool GetShouldShowFileDialog() const { return shouldShowFileDialog.load(); }
 };

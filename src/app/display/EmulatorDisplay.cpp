@@ -32,6 +32,23 @@ void EmulatorDisplay::InitImGui()
 	ImGui_ImplSDLRenderer2_Init(m_Renderer);
 }
 
+void EmulatorDisplay::OpenFileDialog()
+{
+	shouldShowFileDialog = true;
+	// pause CPU while we're opening a file - we still need to render though
+	bool preservedShouldCPURun = shouldCPURun;
+	shouldCPURun = false;
+
+	const char* filterPatterns[] = {"*.nes"};
+	const char* filePath = tinyfd_openFileDialog("Select a file", "", 1, filterPatterns, "NES files", 0);
+
+	if (filePath)
+		SetSelectedFile(filePath);
+	
+	shouldCPURun = preservedShouldCPURun;
+	shouldShowFileDialog = false;
+}
+
 /// @brief Called every frame that the GUI is rendered - consists of the actual UI
 void EmulatorDisplay::StartImGuiFrame() 
 {
@@ -45,30 +62,31 @@ void EmulatorDisplay::StartImGuiFrame()
 	{
 		if (ImGui::BeginMenu("File")) 
 		{
-			if (ImGui::MenuItem("Restart")) 
+			if (ImGui::MenuItem("Load file"))
 			{
-				shouldRestart = true;
+				std::thread t_FileDialog([this]() { OpenFileDialog(); });
+				t_FileDialog.detach();
 			}
+
+			ImGui::Separator();
+
+			if (ImGui::MenuItem("Restart")) 
+				shouldRestart = true;
+
 			ImGui::EndMenu();
 		}
 
 		if (ImGui::BeginMenu("Debug")) 
 		{
 			if (ImGui::MenuItem(shouldCPURun ? "Pause" : "Resume")) 
-			{
 				shouldCPURun = !shouldCPURun;
-			}
+				
 			if (ImGui::MenuItem(shouldReadRegisters ? "Hide registers" : "Display registers"))
-			{
 				shouldReadRegisters = !shouldReadRegisters;
-			}
-			if (!shouldCPURun)
-			{
-				if (ImGui::MenuItem("Step through")) 
-				{
-					shouldStepThrough = true;
-				}
-			}
+				
+			if (!shouldCPURun && ImGui::MenuItem("Step through")) 
+				shouldStepThrough = true;
+					
 			ImGui::EndMenu();
 		}
 
@@ -126,6 +144,11 @@ void EmulatorDisplay::StartImGuiFrame()
 			ImGui::EndPopup();
 		}
 		ImGui::PopStyleColor();
+	}
+
+	if (shouldShowFileDialog)
+	{
+		// TODO: block imgui input & show it graphically somehow
 	}
 
 	ImGui::Render();
