@@ -66,14 +66,13 @@ std::string Emulator::Run()
 		static auto loopStart = std::chrono::high_resolution_clock::now();
 		static auto nextFrameTime = std::chrono::high_resolution_clock::now() + FPStime;
 
-		// TODO: this lags when unpausing, probably because elapsed gets really high when paused
 		if (m_GUI->GetShouldCPURun())
 		{
 			now = std::chrono::high_resolution_clock::now();
 			double elapsed = std::chrono::duration<double, std::micro>(std::chrono::high_resolution_clock::now() - loopStart).count();
 			
 			double batchamnt = elapsed / CYCLE_TIME;
-
+			
 			for (int i = 0; i < std::round(batchamnt); ++i)
 			{
 				for (int j = 0; j < BATCH_MULTIPLIER; ++j)
@@ -97,7 +96,10 @@ std::string Emulator::Run()
 			}
 		}
 		else
+		{
 			m_GUI->RenderFrame(nesDisplay.GetScreen(), DISPLAY_WIDTH);
+			loopStart = std::chrono::high_resolution_clock::now();;
+		}
 
 
 		if (m_GUI->GetShouldReadRegisters())				// if read registers was clicked...
