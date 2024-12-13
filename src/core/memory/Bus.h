@@ -27,6 +27,7 @@ class Bus
 	std::vector<BYTE> m_CPURAM{};
 	ROM* m_ROM{};
 	QWORD m_nCPUCycles{};
+	Joypad m_Joypads[2];
 
 	BYTE ReadPPURegister(PPURegAddr PPUreg);
 	void WritePPURegister(PPURegAddr PPUreg, BYTE val);
@@ -36,7 +37,6 @@ class Bus
 public:
 	Bus(ROM* rom);
 
-	Joypad joypad1;
 
 	static WORD MirrorAddress(WORD addr, WORD size, WORD startAddr = 0x0);
 
@@ -46,6 +46,7 @@ public:
 	void WriteByte(WORD addr, BYTE val);
 	WORD ReadWord(WORD addr, bool shouldWrapPage = false);
 	void WriteWord(WORD addr, WORD val);
+	void UpdateJoypad(size_t joypad, Joypad::Button button, bool isDown);
 
 	bool IsNMIInterruptQueuedW();
 	const PPU* GetPPU() const { return m_PPU.get(); }

@@ -16,4 +16,5 @@ public:
     bool Connect(SDL_GameController*& controller, size_t port);
     void Disconnect(size_t port);
 	SDL_GameController*& Retrieve(size_t port) const;
+    SDL_JoystickID GetJoystickID(size_t port) { return SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(this->Retrieve(port))); }
 };

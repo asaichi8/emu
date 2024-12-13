@@ -188,7 +188,7 @@ std::string Emulator::Run()
 
 						auto iterator = m_keyButtonMap.find((SDL_KeyCode)event.key.keysym.sym);
 						if (iterator != m_keyButtonMap.end()) 
-							m_Bus->joypad1.Update(iterator->second, event.type == SDL_KEYDOWN ? true : false); 
+							m_Bus->UpdateJoypad(0, iterator->second, event.type == SDL_KEYDOWN ? true : false); 
 
 						break;
 					}
@@ -199,13 +199,18 @@ std::string Emulator::Run()
 						if (m_GUI->GetShouldShowErrorMsg() || !m_GUI->GetShouldCPURun()) 
 							break; // block input if error msg showing
 
-						auto instanceID = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(m_GUI->GetControllerHandler()->m_Ports.Retrieve(1)));
-						if (instanceID != event.cbutton.which) // check if controller in port 1 was selected
-							break;
+						Ports* ports = &m_GUI->GetControllerHandler()->m_Ports;
+						for (size_t portNo = 1; portNo < 3; ++portNo)
+						{
+							if (ports->GetJoystickID(portNo) != event.cbutton.which)
+								continue;
+							
+							auto iterator = m_controllerButtonMap.find((SDL_GameControllerButton)event.cbutton.button);
+							if (iterator != m_controllerButtonMap.end()) 
+								m_Bus->UpdateJoypad(portNo - 1, iterator->second, event.type == SDL_CONTROLLERBUTTONDOWN ? true : false); 
+						}
 
-						auto iterator = m_controllerButtonMap.find((SDL_GameControllerButton)event.cbutton.button);
-						if (iterator != m_controllerButtonMap.end()) 
-							m_Bus->joypad1.Update(iterator->second, event.type == SDL_CONTROLLERBUTTONDOWN ? true : false); 
+						break;
 					}
 
 					default:

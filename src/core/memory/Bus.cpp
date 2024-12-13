@@ -45,12 +45,9 @@ BYTE Bus::ReadByte(WORD addr)
 	else if (addr < MIRRORED_PPU_REGISTER_END)
 		return ReadPPURegister((PPURegAddr)(MirrorAddress(addr, PPU_REGISTER_SIZE, MIRRORED_INTERNAL_RAM_END))); // clamp to 0x2000 - 0x2007
 	else if (addr == 0x4016) // TODO: get rid of magic number
-		return joypad1.CPURead().to_ulong();
-	else if (addr == 0x4017)
-	{
-		// TODO: implement me
-		// std::cerr << "Attempted to write to unimplemented controller address" << std::endl;
-	}
+		return m_Joypads[0].CPURead().to_ulong();
+	else if (addr == 0x4017) // TODO: implement me
+		return m_Joypads[1].CPURead().to_ulong();
 	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
 		return ReadPRGByte(addr);
 	
@@ -69,12 +66,9 @@ void Bus::WriteByte(WORD addr, BYTE val)
 	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
 		std::cerr << "Attempted to write to cartridge ROM at address 0x" << std::hex << addr << std::dec << " (this should never occur)" << std::endl;
 	else if (addr == 0x4016) // TODO: get rid of magic number
-		joypad1.CPUWrite(val);
-	else if (addr == 0x4017)
-	{
-		// TODO: implement me
-		// std::cerr << "Attempted to write to unimplemented controller address" << std::endl;
-	}
+		m_Joypads[0].CPUWrite(val);
+	else if (addr == 0x4017) // TODO: implement me
+		m_Joypads[1].CPUWrite(val);
 	else if (addr >= 0x4000 && addr < 0x4020) {} // TODO: RESERVED for APU stuff
 	else
 		std::cerr << "Attempted to write byte 0x" << std::hex << (int)val << " at address 0x" << std::hex << addr << std::dec << " outside of CPU/PPU (not implemented)" << std::endl;
@@ -124,6 +118,14 @@ void Bus::WriteWord(WORD addr, WORD val)
 	m_CPURAM[addr] = BYTE(val & 0x00FF); // set low byte
 	// ensure addr is correctly wrapped around with % INTERNAL_RAM_SIZE
 	m_CPURAM[(addr + 1) % INTERNAL_RAM_SIZE] = BYTE((val >> 8) & 0xFF); // set high byte
+}
+
+void Bus::UpdateJoypad(size_t joypad, Joypad::Button button, bool isDown)
+{
+	if (joypad > 2)
+		throw std::out_of_range("Joypad number out of range");
+		
+	m_Joypads[joypad].Update(button, isDown);
 }
 
 
