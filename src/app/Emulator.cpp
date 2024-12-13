@@ -1,5 +1,5 @@
 #include "Emulator.h"
-// TODO: ADD COLOUR, ADD SPRITES, ADD CONTROLLER SUPPORT
+// TODO: add controller saving/remapping, add joypad2
 // TODO: make DrawTiles popup in ImGUI
 
 // TODO: add palette loader/rom loader (on drag, cmdline)
@@ -150,34 +150,8 @@ std::string Emulator::Run()
 				{
 					case SDL_QUIT:
 						return {};
-					
-					case SDL_KEYDOWN:
-					{
-						if (event.key.keysym.sym == SDLK_ESCAPE)
-							return {};
 
-						if (m_GUI->GetShouldShowErrorMsg() && !m_GUI->GetShouldCPURun()) 
-							break; // block input if error msg showing
-
-						auto iterator = m_buttonMap.find((SDL_KeyCode)event.key.keysym.sym);
-						if (iterator != m_buttonMap.end()) 
-							m_Bus->joypad1.Update(iterator->second, true); 
-
-						break;
-					}
-
-					case SDL_KEYUP:
-					{
-						if (m_GUI->GetShouldShowErrorMsg() && !m_GUI->GetShouldCPURun()) 
-							break;
-							
-						auto iterator = m_buttonMap.find((SDL_KeyCode)event.key.keysym.sym);
-						if (iterator != m_buttonMap.end())
-							m_Bus->joypad1.Update(iterator->second, false); 
-						
-						break;
-					}
-
+					// === FILE HANDLING ===
 					// https://wiki.libsdl.org/SDL2/SDL_DropEvent
 					case SDL_DROPFILE:
 					{
@@ -196,6 +170,42 @@ std::string Emulator::Run()
 						}
 
 						return strDroppedFile; // file drop succeeded
+					}
+
+					// === CONTROLLER CONNECTION HANDLING ===
+					case SDL_CONTROLLERDEVICEADDED:
+					case SDL_CONTROLLERDEVICEREMOVED:
+					case SDL_CONTROLLERDEVICEREMAPPED:
+						m_GUI->GetControllerHandler()->UpdateControllers();
+						break;
+
+					// === BUTTON HANDLING ===
+					case SDL_KEYDOWN:
+					case SDL_KEYUP:
+					{
+						if (m_GUI->GetShouldShowErrorMsg() || !m_GUI->GetShouldCPURun()) 
+							break; // block input if error msg showing
+
+						auto iterator = m_keyButtonMap.find((SDL_KeyCode)event.key.keysym.sym);
+						if (iterator != m_keyButtonMap.end()) 
+							m_Bus->joypad1.Update(iterator->second, event.type == SDL_KEYDOWN ? true : false); 
+
+						break;
+					}
+
+					case SDL_CONTROLLERBUTTONDOWN:
+					case SDL_CONTROLLERBUTTONUP:
+					{
+						if (m_GUI->GetShouldShowErrorMsg() || !m_GUI->GetShouldCPURun()) 
+							break; // block input if error msg showing
+
+						auto instanceID = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(m_GUI->GetControllerHandler()->m_Ports.Retrieve(1)));
+						if (instanceID != event.cbutton.which) // check if controller in port 1 was selected
+							break;
+
+						auto iterator = m_controllerButtonMap.find((SDL_GameControllerButton)event.cbutton.button);
+						if (iterator != m_controllerButtonMap.end()) 
+							m_Bus->joypad1.Update(iterator->second, event.type == SDL_CONTROLLERBUTTONDOWN ? true : false); 
 					}
 
 					default:
