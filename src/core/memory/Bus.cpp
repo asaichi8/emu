@@ -46,7 +46,7 @@ BYTE Bus::ReadByte(WORD addr)
 		return ReadPPURegister((PPURegAddr)(MirrorAddress(addr, PPU_REGISTER_SIZE, MIRRORED_INTERNAL_RAM_END))); // clamp to 0x2000 - 0x2007
 	else if (addr == 0x4016) // TODO: get rid of magic number
 		return m_Joypads[0].CPURead().to_ulong();
-	else if (addr == 0x4017) // TODO: implement me
+	else if (addr == 0x4017)
 		return m_Joypads[1].CPURead().to_ulong();
 	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
 		return ReadPRGByte(addr);
@@ -66,9 +66,10 @@ void Bus::WriteByte(WORD addr, BYTE val)
 	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
 		std::cerr << "Attempted to write to cartridge ROM at address 0x" << std::hex << addr << std::dec << " (this should never occur)" << std::endl;
 	else if (addr == 0x4016) // TODO: get rid of magic number
+	{
 		m_Joypads[0].CPUWrite(val);
-	else if (addr == 0x4017) // TODO: implement me
 		m_Joypads[1].CPUWrite(val);
+	}
 	else if (addr >= 0x4000 && addr < 0x4020) {} // TODO: RESERVED for APU stuff
 	else
 		std::cerr << "Attempted to write byte 0x" << std::hex << (int)val << " at address 0x" << std::hex << addr << std::dec << " outside of CPU/PPU (not implemented)" << std::endl;
@@ -122,7 +123,7 @@ void Bus::WriteWord(WORD addr, WORD val)
 
 void Bus::UpdateJoypad(size_t joypad, Joypad::Button button, bool isDown)
 {
-	if (joypad > 2)
+	if (joypad > 1)
 		throw std::out_of_range("Joypad number out of range");
 		
 	m_Joypads[joypad].Update(button, isDown);
