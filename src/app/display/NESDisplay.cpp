@@ -1,5 +1,5 @@
 #include "NESDisplay.h"
-// TODO: add sprite rendering
+// TODO: probably put x and y into a struct
 
 NESDisplay::NESDisplay(const PPU* pPPU, Palette* pPalette) : m_pPPU(pPPU), m_pPalette(pPalette)
 {
@@ -16,34 +16,39 @@ void NESDisplay::DrawScreen()
 {
 	DrawNametable();
 	DrawSprites();
+	//DrawTiles(m_pPPU->GetCHR_ROM(), 0);
 }
 
+// TODO: add start x,y
 void NESDisplay::DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank)
 {
+	const std::vector<BYTE>& nametable = m_pPPU->GetNametableRAM()[0]; // temporarily use nametable 0 only
 	const WORD tilesStartAddr = bank * 0x1000;
 
-	size_t tilePosX = 0;
-	size_t tilePosY = 0;
+	size_t pixelPosY = 0;
+	size_t pixelPosX = 0;
 	std::vector<Tile> tiles{};
-	for (int tileNo = 0; tileNo < DISPLAY_WIDTH; ++tileNo)
+	for (int tileNo = 0; tileNo < 16*16; ++tileNo)
 	{
 		const WORD curTileOffset = tileNo * sizeof(Tile);
 		const WORD curTilePos = tilesStartAddr + curTileOffset;
 
 		if (tileNo && tileNo % 16 == 0)
 		{
-			tilePosY += 8; // new line
-			tilePosX = 0;	 // reset x at end of line
+			pixelPosY += 8; // new line
+			pixelPosX = 0;	 // reset x at end of line
 		}
 
 		// map 16 bytes at curTilePos into curTile
 		const Tile *pCurTile = (const Tile *)(&(pCHR_ROM->at(curTilePos)));
 		tiles.push_back(*pCurTile); // push_back makes a copy, so no problem dereferencing a temporary pointer
 
-		// TODO: add palette (std::vector<BYTE> tilePalette = GetBgTilePalette(nametable, screenPosX, screenPosY);)
-		//DrawTile(*pCurTile, tilePosX, tilePosY);
+		const size_t tilePosX = tileNo % 32;
+		const size_t tilePosY = tileNo / 32;
 
-		tilePosX += 8;
+		DrawTile(*pCurTile, pixelPosX, pixelPosY, GetBgTilePalette(nametable, tilePosX, tilePosY));
+
+		pixelPosX += 8;
 	}
 }
 
@@ -212,7 +217,7 @@ void NESDisplay::DrawNametable()
 	for (int tileNo = 0; tileNo < 32 * 30; ++tileNo)
 	{
 		// bgBankAddr either 0 or 0x1000, use it to determine which bank we access
-		const std::vector<BYTE> nametable = m_pPPU->GetNametableRAM()[0]; // temporarily use nametable 0 only
+		const std::vector<BYTE>& nametable = m_pPPU->GetNametableRAM()[0]; // temporarily use nametable 0 only
 
 		if (tileNo >= nametable.size())
 		{
@@ -224,11 +229,11 @@ void NESDisplay::DrawNametable()
 		const WORD selectedTileOffset = selectedTilePos * sizeof(Tile); // address of tile to be used
 		const Tile *pCurTile = (const Tile *)(&(m_pPPU->GetCHR_ROM()->at(bgBankAddr + selectedTileOffset)));
 
-		const size_t screenPosX = tileNo % 32;
-		const size_t screenPosY = tileNo / 32;
+		const size_t tilePosX = tileNo % 32;
+		const size_t tilePosY = tileNo / 32;
 
-		std::vector<BYTE> tilePaletteIndexes = GetBgTilePalette( m_pPPU->GetNametableRAM()[0], screenPosX, screenPosY);
-		DrawTile(*pCurTile, screenPosX * 8, screenPosY * 8, tilePaletteIndexes);
+		std::vector<BYTE> tilePaletteIndexes = GetBgTilePalette( m_pPPU->GetNametableRAM()[0], tilePosX, tilePosY);
+		DrawTile(*pCurTile, tilePosX * 8, tilePosY * 8, tilePaletteIndexes);
 	}
 }
 
