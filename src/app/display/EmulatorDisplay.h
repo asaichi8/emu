@@ -7,6 +7,7 @@
 #include "../../include/imgui/imgui_impl_sdlrenderer2.h"
 #include "../../core/cpu/CPURegisters.h"
 #include "../../include/typedefs.h"
+#include "SDL/controllers/ControllerHandler.h"
 #include <atomic>
 #include <thread>
 #include <mutex>
@@ -16,6 +17,7 @@
 /// @brief Responsible for the GUI/video of the emulator.
 class EmulatorDisplay : public SDLApp
 {
+	ControllerHandler* m_pControllerHandler;
 	CPURegisters m_curReg{}; // A copy of the CPU's registers so they can be displayed.
 	std::string m_lastError = "Unknown error occured!";
 	std::string m_lastErrorTitle = "Error";
@@ -27,13 +29,15 @@ class EmulatorDisplay : public SDLApp
 	bool shouldReadRegisters = false;
 	bool shouldShowErrorMsg = false;
 	std::atomic<bool> shouldShowFileDialog = false;
+	bool shouldOpenControllerWin = false;
 
 	void StartImGuiFrame();
 	void RenderImGuiFrame();
 	void OpenFileDialog();
+	void CreateControllerCombo(size_t port);
 
 public:
-	EmulatorDisplay(const std::string& winName, int w, int h, int scale);
+	EmulatorDisplay(const std::string& winName, int w, int h, int scale, ControllerHandler* pCH);
 	~EmulatorDisplay();
 
 	std::mutex fileStrMutex{};
@@ -68,4 +72,5 @@ public:
 	void SetSelectedFile(const std::string& selectedFile) { std::lock_guard<std::mutex> lock(fileStrMutex); m_selectedFile = selectedFile; }
 
 	bool GetShouldShowFileDialog() const { return shouldShowFileDialog.load(); }
+	ControllerHandler* GetControllerHandler() { return m_pControllerHandler; }
 };

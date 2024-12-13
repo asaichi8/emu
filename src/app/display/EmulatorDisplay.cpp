@@ -1,8 +1,8 @@
 #include "EmulatorDisplay.h"
 
 
-EmulatorDisplay::EmulatorDisplay(const std::string& winName, int w, int h, int scale) 
-	: SDLApp(winName, w, h, scale)
+EmulatorDisplay::EmulatorDisplay(const std::string& winName, int w, int h, int scale, ControllerHandler* pCH) 
+	: SDLApp(winName, w, h, scale), m_pControllerHandler(pCH)
 {
 	this->InitImGui();
 }
@@ -90,7 +90,25 @@ void EmulatorDisplay::StartImGuiFrame()
 			ImGui::EndMenu();
 		}
 
+		if (ImGui::BeginMenu("Settings"))
+		{
+			if (ImGui::MenuItem("Controllers"))
+				shouldOpenControllerWin = true;
+			
+			ImGui::EndMenu();
+		}
+
 		ImGui::EndMainMenuBar();
+	}
+
+	if (shouldOpenControllerWin)
+	{
+		ImGui::Begin("Controller", &shouldOpenControllerWin, ImGuiWindowFlags_AlwaysAutoResize);
+
+		CreateControllerCombo(1);
+		CreateControllerCombo(2);
+
+		ImGui::End();
 	}
 
 	if (shouldReadRegisters)
@@ -116,7 +134,6 @@ void EmulatorDisplay::StartImGuiFrame()
 		ImGui::TextColored(m_curReg.status_register.test(StatusRegisterFlags::NEGATIVE) ? green : red, "N");
 		
 		ImGui::End();
-			
 	}
 
 	if (shouldShowErrorMsg)
@@ -160,6 +177,37 @@ void EmulatorDisplay::StartImGuiFrame()
 	}
 
 	ImGui::Render();
+}
+
+void EmulatorDisplay::CreateControllerCombo(size_t port)
+{
+	ImGui::Text("Port %d: ", port);
+	ImGui::SameLine();
+	auto curController = m_pControllerHandler->m_Ports.Retrieve(port);
+
+	std::string comboTitle = "##ControllerCombo" + std::to_string(port);
+	if (ImGui::BeginCombo(comboTitle.c_str(), SDL_GameControllerName(curController)))
+	{
+		// allow for a "None" option which deselects a port
+		bool isSelected = (curController == nullptr);
+		if (ImGui::Selectable("None", isSelected))
+			m_pControllerHandler->m_Ports.Disconnect(port);
+		
+		if (isSelected) ImGui::SetItemDefaultFocus();
+
+		// iterate & list Controllers
+		auto controllers = m_pControllerHandler->GetControllers();
+		for (int i = 0; i < controllers.size(); ++i)
+		{
+			isSelected = (controllers.at(i) == curController);
+			if (ImGui::Selectable(SDL_GameControllerName(controllers.at(i)), isSelected))
+				m_pControllerHandler->m_Ports.Connect(controllers.at(i), port);
+
+			if (isSelected) ImGui::SetItemDefaultFocus();
+		}
+
+		ImGui::EndCombo();
+	}
 }
 
 /// @brief Renders the ImGui frame within the SDL2 context
