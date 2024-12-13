@@ -11,6 +11,7 @@
 #include "../core/ppu/PPU.h"
 #include "display/EmulatorDisplay.h"
 #include "display/NESDisplay.h"
+#include "ControllerHandler.h"
 
 //constexpr char ROM_RELATIVE_PATH[] = "../bin/donkeykong.nes"; 
 constexpr char PALETTE_RELATIVE_PATH[] = "../bin/ntscpalette.pal";  // TODO: add this to args or preload binary or something
@@ -28,7 +29,7 @@ class Emulator
 	EmulatorDisplay* m_GUI{};
 	std::string m_curRomPath{};
 
-	const static inline std::unordered_map<SDL_KeyCode, Joypad::Button> m_buttonMap = {
+	const static inline std::unordered_map<SDL_KeyCode, Joypad::Button> m_keyButtonMap = {
 		{SDLK_w, Joypad::Button::UP},
 		{SDLK_s, Joypad::Button::DOWN},
 		{SDLK_a, Joypad::Button::LEFT},
@@ -37,6 +38,18 @@ class Emulator
 		{SDLK_k, Joypad::Button::B},
 		{SDLK_x, Joypad::Button::START},
 		{SDLK_z, Joypad::Button::SELECT}
+	};
+
+	// TODO: can probably combine this with the class above
+	const static inline std::unordered_map<SDL_GameControllerButton, Joypad::Button> m_controllerButtonMap = {
+		{SDL_CONTROLLER_BUTTON_DPAD_UP, Joypad::Button::UP},
+		{SDL_CONTROLLER_BUTTON_DPAD_DOWN, Joypad::Button::DOWN},
+		{SDL_CONTROLLER_BUTTON_DPAD_LEFT, Joypad::Button::LEFT},
+		{SDL_CONTROLLER_BUTTON_DPAD_RIGHT, Joypad::Button::RIGHT},
+		{SDL_CONTROLLER_BUTTON_A, Joypad::Button::A},
+		{SDL_CONTROLLER_BUTTON_B, Joypad::Button::B},
+		{SDL_CONTROLLER_BUTTON_START, Joypad::Button::START},
+		{SDL_CONTROLLER_BUTTON_BACK, Joypad::Button::SELECT}
 	};
 
 public:

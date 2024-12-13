@@ -10,6 +10,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src/app
     ${CMAKE_SOURCE_DIR}/src/app/display
     ${CMAKE_SOURCE_DIR}/src/app/display/SDL
+    ${CMAKE_SOURCE_DIR}/src/app/display/SDL/controllers
     ${CMAKE_SOURCE_DIR}/src/core/cpu
     ${CMAKE_SOURCE_DIR}/src/core/ppu
     ${CMAKE_SOURCE_DIR}/src/core/ppu/registers
@@ -32,6 +33,7 @@ file(GLOB_RECURSE SOURCES
     ${CMAKE_SOURCE_DIR}/src/app/*.cpp
     ${CMAKE_SOURCE_DIR}/src/app/display/*.cpp
     ${CMAKE_SOURCE_DIR}/src/app/display/SDL/*.cpp
+    ${CMAKE_SOURCE_DIR}/src/app/display/SDL/controllers/*.cpp
     ${CMAKE_SOURCE_DIR}/src/demos/*.cpp
     ${CMAKE_SOURCE_DIR}/src/imgui/*.cpp
     ${CMAKE_SOURCE_DIR}/src/include/tinyfiledialogs/*.c
