@@ -41,6 +41,8 @@ public:
             case 3:
                 return 0x2C00;
         }
+
+        return 0; // should never happen
     }
     BYTE GetVRAMAddrIncrement()    { return ppu_ctrl_register.test(VRAM_ADDR_INCREMENT) ? 32 : 1; }
     WORD GetSpritePTableAddr()     { return ppu_ctrl_register.test(SPRITE_PTABLE_ADDR) ? 0x1000 : 0x0000; }
