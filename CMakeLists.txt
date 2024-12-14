@@ -43,5 +43,8 @@ file(GLOB_RECURSE SOURCES
 add_executable(emu ${SOURCES})
 
 find_package(SDL2 REQUIRED)
+if (SDL2_VERSION VERSION_LESS "2.0.17")
+    message(FATAL_ERROR "SDL2 version 2.0.17 or higher is required.")
+endif()
 include_directories(${SDL2_INCLUDE_DIRS})
 target_link_libraries(emu ${SDL2_LIBRARIES})
