@@ -14,10 +14,11 @@ ControllerHandler::~ControllerHandler()
 	}
 }
 
+
 void ControllerHandler::UpdateControllers()
 {
     m_Controllers = RetrieveControllers();
-	LoadFromConfig();
+	LoadFromConfig(); // check if we plugged in a default controller
 }
 
 std::vector<SDL_GameController*> ControllerHandler::RetrieveControllers()
@@ -73,9 +74,12 @@ bool ControllerHandler::LoadFromConfig()
 	for (const auto& [key, val] : config->ini[STR_PORTS])
 	{
 		curPort++;
-        if (val.empty() || m_Ports.GetPortSize() < curPort)
-            continue;
+		if (m_Ports.GetPortSize() < curPort)
+			break; // too many keys!
 
+        if (val.empty())
+            continue;
+		
 		const std::string& savedVal = config->ini[STR_PORTS]["port" + std::to_string(curPort)];
 
 		for (auto& controller : m_Controllers)
@@ -93,7 +97,7 @@ bool ControllerHandler::LoadFromConfig()
 			if (std::string(szGuid) != savedVal)
 				continue;
 			
-			m_Ports.Connect(controller, curPort);
+			m_Ports.Connect(controller, curPort); // matched default controller, so connect
 			break;
 		}
 	}
