@@ -121,8 +121,11 @@ void EmulatorDisplay::StartImGuiFrame()
 	{
 		ImGui::Begin("Controller", &shouldOpenControllerWin, ImGuiWindowFlags_AlwaysAutoResize);
 
-		CreateControllerCombo(1);
-		CreateControllerCombo(2);
+		// create combo for each port
+		for (int i = 1; i <= m_pControllerHandler->m_Ports.GetPortSize(); ++i)
+		{
+			CreateControllerCombo(i);
+		}
 
 		ImGui::Spacing();
 		ImGui::Separator();
@@ -130,7 +133,25 @@ void EmulatorDisplay::StartImGuiFrame()
 
 		if (ImGui::Button("Save defaults", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
 		{
-			// TODO: implement me!
+			Config* config = &Config::GetInstance();
+
+			bool failedToRead = config->_file.read(config->ini);
+
+			char szGuid[33];
+			for (int i = 1; i <= m_pControllerHandler->m_Ports.GetPortSize(); ++i)
+			{
+				SDL_JoystickGetGUIDString(m_pControllerHandler->m_Ports.GetJoystickGUID(i), szGuid, sizeof(szGuid));
+				config->ini["ports"]["port" + std::to_string(i)] = szGuid;
+			}
+
+			bool writeSuccess{};
+			if (failedToRead)
+				writeSuccess = config->_file.generate(config->ini, true);
+			else
+				writeSuccess = config->_file.write(config->ini, true);
+
+			if (!writeSuccess)
+				std::cerr << "Failed to write to file" << std::endl;
 		}
 
 		ImGui::End();

@@ -35,3 +35,26 @@ SDL_GameController*& Ports::Retrieve(size_t port) const
 
     return m_ConnectedControllers[port - 1];
 }
+
+SDL_JoystickID Ports::GetJoystickID(size_t port) 
+{
+    if (Retrieve(port) == nullptr)
+        return -1;
+
+    return SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(this->Retrieve(port)));
+}
+SDL_JoystickGUID Ports::GetJoystickGUID(size_t port)
+{
+    if (Retrieve(port) == nullptr)
+        return {};
+    
+    SDL_GameController* controller = Retrieve(port);
+    if (!controller)
+        return {};
+
+    SDL_Joystick* joystick = SDL_GameControllerGetJoystick(controller);
+    if (!joystick)
+        return {};
+    
+    return SDL_JoystickGetGUID(joystick);
+}
