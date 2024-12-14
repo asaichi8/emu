@@ -28,28 +28,6 @@ void Ports::Disconnect(size_t port)
     m_ConnectedControllers[port - 1] = nullptr;
 }
 
-bool Ports::SaveToConfig()
-{
-    Config* config = &Config::GetInstance();
-
-    bool failedToRead = config->_file.read(config->ini);
-
-    char szGuid[33];
-    for (int i = 1; i <= m_noPorts; ++i)
-    {
-        SDL_JoystickGetGUIDString(GetJoystickGUID(i), szGuid, sizeof(szGuid));
-        config->ini["ports"]["port" + std::to_string(i)] = szGuid;
-    }
-
-    bool writeSuccess{};
-    if (failedToRead)
-        writeSuccess = config->_file.generate(config->ini, true);
-    else
-        writeSuccess = config->_file.write(config->ini, true);
-
-    return writeSuccess;
-}
-
 SDL_GameController*& Ports::Retrieve(size_t port) const
 { 
     if (port == 0 || port > m_noPorts) 

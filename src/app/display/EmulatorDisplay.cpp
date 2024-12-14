@@ -133,7 +133,7 @@ void EmulatorDisplay::StartImGuiFrame()
 
 		if (ImGui::Button("Save defaults", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
 		{
-			if (!m_pControllerHandler->m_Ports.SaveToConfig())
+			if (!m_pControllerHandler->SaveToConfig())
 				std::cerr << "Failed to save ports!" << std::endl;
 		}
 
