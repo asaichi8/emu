@@ -5,7 +5,6 @@
 #include <iostream>
 #include "../include/Config.h"
 
-// TODO: affect queue on filedrop
 class RecentFileQueue
 {
     static const size_t QUEUE_SIZE = 5;
