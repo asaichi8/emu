@@ -4,6 +4,7 @@ compile_commands.json
 .cache/
 bin/*.nes
 config.ini
+imgui.ini
 !bin/default.nes
 CMakeFiles
 *.cmake

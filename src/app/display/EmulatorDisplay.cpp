@@ -21,9 +21,9 @@ void EmulatorDisplay::InitImGui()
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.IniFilename = NULL;
-	io.LogFilename = NULL;
+	ImGuiIO& io = ImGui::GetIO(); //(void)io;
+	//io.IniFilename = NULL;
+	//io.LogFilename = NULL;
 
 	ImGui_ImplSDL2_InitForSDLRenderer(
 		m_Window,
