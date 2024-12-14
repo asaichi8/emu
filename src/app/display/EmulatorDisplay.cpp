@@ -124,6 +124,15 @@ void EmulatorDisplay::StartImGuiFrame()
 		CreateControllerCombo(1);
 		CreateControllerCombo(2);
 
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		if (ImGui::Button("Save defaults", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+		{
+			// TODO: implement me!
+		}
+
 		ImGui::End();
 	}
 
@@ -167,8 +176,7 @@ void EmulatorDisplay::StartImGuiFrame()
 			ImGui::Separator();
 			ImGui::Spacing();
 
-			ImGui::SetCursorPosX((ImGui::GetWindowSize().x - 175) / 2);
-			if (ImGui::Button("OK", ImVec2(175, 0)))
+			if (ImGui::Button("OK", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
 			{
 				ImGui::CloseCurrentPopup();
 				shouldShowErrorMsg = false;
