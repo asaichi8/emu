@@ -1,5 +1,9 @@
 #pragma once
 
+#include <atomic>
+#include <thread>
+#include <mutex>
+#include <iostream>
 #include "SDL/SDLApp.h"
 #include "../../include/tinyfiledialogs/tinyfiledialogs.h"
 #include "../../include/imgui/imgui.h"
@@ -8,10 +12,8 @@
 #include "../../core/cpu/CPURegisters.h"
 #include "../../include/typedefs.h"
 #include "SDL/controllers/ControllerHandler.h"
-#include <atomic>
-#include <thread>
-#include <mutex>
-#include <iostream>
+#include "../../include/Config.h"
+#include "RecentFileQueue.h"
 
 
 /// @brief Responsible for the GUI/video of the emulator.
@@ -41,6 +43,7 @@ public:
 	~EmulatorDisplay();
 
 	std::mutex fileStrMutex{};
+	RecentFileQueue m_recentFiles;
 
 	void InitImGui();
 	void RenderFrame(BYTE* screenBuffer, int size);
@@ -68,8 +71,8 @@ public:
 		m_lastErrorTitle = errTitle;
 	}
 
-	std::string GetSelectedFile() { std::lock_guard<std::mutex> lock(fileStrMutex); return m_selectedFile; };
-	void SetSelectedFile(const std::string& selectedFile) { std::lock_guard<std::mutex> lock(fileStrMutex); m_selectedFile = selectedFile; }
+	std::string GetSelectedFile();
+	void SetSelectedFile(const std::string& selectedFile);
 
 	bool GetShouldShowFileDialog() const { return shouldShowFileDialog.load(); }
 	ControllerHandler* GetControllerHandler() { return m_pControllerHandler; }

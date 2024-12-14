@@ -162,6 +162,9 @@ std::string Emulator::Run()
 						std::string strDroppedFile = droppedFile;
 						SDL_free(droppedFile);
 
+						if (strDroppedFile.empty()) // no need to check if valid before pushing to recent files, only if empty
+							m_GUI->m_recentFiles.Push(strDroppedFile);
+
 						std::string errMsg = m_ROM.CheckROM(strDroppedFile);
 						if (!errMsg.empty())
 						{

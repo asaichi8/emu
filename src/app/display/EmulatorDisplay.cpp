@@ -43,7 +43,10 @@ void EmulatorDisplay::OpenFileDialog()
 	const char* filePath = tinyfd_openFileDialog("Select a file", "", 1, filterPatterns, "NES files", 0);
 
 	if (filePath)
+	{
 		SetSelectedFile(filePath);
+		m_recentFiles.Push(filePath);
+	}
 	
 	shouldCPURun = preservedShouldCPURun;
 	shouldShowFileDialog = false;
@@ -66,6 +69,19 @@ void EmulatorDisplay::StartImGuiFrame()
 			{
 				std::thread t_FileDialog([this]() { OpenFileDialog(); });
 				t_FileDialog.detach();
+			}
+
+			if (!m_recentFiles.GetQueue().empty() && ImGui::BeginMenu("Load recent file"))
+			{
+				for (const auto& path : m_recentFiles.GetQueue())
+				{
+					if (ImGui::MenuItem(path.c_str()))
+					{
+						SetSelectedFile(path);
+						m_recentFiles.Push(path);
+					}
+				}
+				ImGui::EndMenu();
 			}
 
 			ImGui::Separator();
@@ -237,4 +253,18 @@ void EmulatorDisplay::RenderFrame(BYTE* screenBuffer, int size)
 	RenderImGuiFrame();
 
 	SDL_RenderPresent(GetRenderer());
+}
+
+
+
+std::string EmulatorDisplay::GetSelectedFile()
+{
+	std::lock_guard<std::mutex> lock(fileStrMutex);
+	return m_selectedFile;
+};
+
+void EmulatorDisplay::SetSelectedFile(const std::string& selectedFile)
+{
+	std::lock_guard<std::mutex> lock(fileStrMutex);
+	m_selectedFile = selectedFile;
 }
