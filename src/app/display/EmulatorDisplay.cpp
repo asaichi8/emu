@@ -199,7 +199,18 @@ void EmulatorDisplay::CreateControllerCombo(size_t port)
 {
 	ImGui::Text("Port %d: ", port);
 	ImGui::SameLine();
+
 	auto curController = m_pControllerHandler->m_Ports.Retrieve(port);
+
+	// check if current controller is still connected
+	// (we do this here because if it's disconnected, it can't write anything anyway)
+	auto controllers = m_pControllerHandler->GetControllers();
+	if (curController != nullptr && std::find(controllers.begin(), controllers.end(), curController) == controllers.end())
+	{
+		// not connected so disconnect
+		m_pControllerHandler->m_Ports.Disconnect(port);
+		curController = nullptr;
+	}
 
 	std::string comboTitle = "##ControllerCombo" + std::to_string(port);
 	if (ImGui::BeginCombo(comboTitle.c_str(), SDL_GameControllerName(curController)))
@@ -212,7 +223,6 @@ void EmulatorDisplay::CreateControllerCombo(size_t port)
 		if (isSelected) ImGui::SetItemDefaultFocus();
 
 		// iterate & list Controllers
-		auto controllers = m_pControllerHandler->GetControllers();
 		for (int i = 0; i < controllers.size(); ++i)
 		{
 			isSelected = (controllers.at(i) == curController);
