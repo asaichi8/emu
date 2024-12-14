@@ -21,6 +21,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src/demos
     ${CMAKE_SOURCE_DIR}/src/include
     ${CMAKE_SOURCE_DIR}/src/include/imgui
+    ${CMAKE_SOURCE_DIR}/src/include/ini
     ${CMAKE_SOURCE_DIR}/src/include/tinyfiledialogs
 )
 
