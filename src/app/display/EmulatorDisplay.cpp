@@ -133,25 +133,8 @@ void EmulatorDisplay::StartImGuiFrame()
 
 		if (ImGui::Button("Save defaults", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
 		{
-			Config* config = &Config::GetInstance();
-
-			bool failedToRead = config->_file.read(config->ini);
-
-			char szGuid[33];
-			for (int i = 1; i <= m_pControllerHandler->m_Ports.GetPortSize(); ++i)
-			{
-				SDL_JoystickGetGUIDString(m_pControllerHandler->m_Ports.GetJoystickGUID(i), szGuid, sizeof(szGuid));
-				config->ini["ports"]["port" + std::to_string(i)] = szGuid;
-			}
-
-			bool writeSuccess{};
-			if (failedToRead)
-				writeSuccess = config->_file.generate(config->ini, true);
-			else
-				writeSuccess = config->_file.write(config->ini, true);
-
-			if (!writeSuccess)
-				std::cerr << "Failed to write to file" << std::endl;
+			if (!m_pControllerHandler->m_Ports.SaveToConfig())
+				std::cerr << "Failed to save ports!" << std::endl;
 		}
 
 		ImGui::End();
