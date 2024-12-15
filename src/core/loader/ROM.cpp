@@ -39,8 +39,8 @@ std::string ROM::CheckROM(const std::string& filePath, bool shouldUse)
 		return "Not an NES file!";
 	if (!CheckFileSize(*pFile, header))
 		return "File not large enough to map data requested by header!";
-	if (GetINESVersion(header) > 0) 
-		return "Only iNES 1.0 is supported at this time!";
+	// if (GetINESVersion(header) > 0) 
+	// 	return "Only iNES 1.0 is supported at this time!";
 
 	return {};
 }
@@ -103,6 +103,8 @@ bool ROM::CheckFileSize(const std::vector<BYTE>& rawFile, const iNES_Header* hea
 	return (rawFile.size() >= totalExpectedSize);
 }
 
+// TODO: https://www.nesdev.org/wiki/INES#Variant_comparison
+// see "recommended detection procedure"
 BYTE ROM::GetINESVersion(const iNES_Header* header)
 {
 	return  (header->flags7 & Flags7::NES2FormatFlag1) || 
