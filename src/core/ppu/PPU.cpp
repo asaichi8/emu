@@ -24,10 +24,19 @@ bool PPU::Clock(DWORD nCycles)
     if (m_nPPUCycles < SCANLINE_END)
         return false;
     
+    // emulate sprite zero hits : https://forums.nesdev.org/viewtopic.php?t=10272
+    PPUSTATUS* ppuStatusRegister = dynamic_cast<PPUSTATUS*>(registers.ppustatus.get());
+    PPUMASK* ppuMaskRegister = dynamic_cast<PPUMASK*>(registers.ppumask.get());
+
+    const SpriteData* pZeroSprite = (const SpriteData *)(&(m_OAM.at(0)));
+    if (ppuMaskRegister->IsSpritesShowing()) // only hit if sprite is showing
+        if (pZeroSprite->tileX <= m_nPPUCycles && pZeroSprite->tileY == m_nScanlines) // check if ppu has rendered up to zeroth sprite
+            ppuStatusRegister->SetSprite0Hit(1);
+    
     m_nPPUCycles -= SCANLINE_END;
     m_nScanlines++;
 
-    PPUSTATUS* ppuStatusRegister = dynamic_cast<PPUSTATUS*>(registers.ppustatus.get());
+    // PPUSTATUS* ppuStatusRegister = dynamic_cast<PPUSTATUS*>(registers.ppustatus.get());
     if (m_nScanlines == VBLANK_START)
     {
         ppuStatusRegister->SetVBLANK(1);
