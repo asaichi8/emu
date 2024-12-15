@@ -111,10 +111,11 @@ void NESDisplay::DrawTile(const Tile &tile, const Point& tilePos, const std::vec
 
 			RGB rgb = m_pPalette->GetPalette().at(tilePaletteIndexes.at(pixelNibble.to_ulong()));
 
-			int32_t pixelOffsetX = flipX ? curBit : 7 - curBit; // tiles are flipped on the x axis by default
-			int32_t pixelOffsetY = flipY ? 7 - curByte : curByte;
+			Point pixelOffset{};
+			pixelOffset.x = flipX ? curBit : 7 - curBit; // tiles are flipped on the x axis by default
+			pixelOffset.y = flipY ? 7 - curByte : curByte;
 			
-			SetPixel(rgb, {tilePos.x + pixelOffsetX, tilePos.y + pixelOffsetY});
+			SetPixel(rgb, tilePos + pixelOffset);
 		}
 	}
 }
@@ -231,8 +232,8 @@ void NESDisplay::DrawNametable(const std::vector<BYTE>& nametable)
 
 		const Point tilePos = {tileNo % 32, tileNo / 32};
 
-		std::vector<BYTE> tilePaletteIndexes = GetBgTilePalette( nametable, {tilePos.x, tilePos.y});
-		DrawTile(*pCurTile, {tilePos.x * 8, tilePos.y * 8}, tilePaletteIndexes);
+		std::vector<BYTE> tilePaletteIndexes = GetBgTilePalette(nametable, tilePos);
+		DrawTile(*pCurTile, tilePos * 8, tilePaletteIndexes);
 	}
 }
 
