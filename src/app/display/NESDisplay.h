@@ -26,7 +26,7 @@ class NESDisplay
 	void DrawTile(const Tile &tile, size_t tilePosX, size_t tilePosY, const std::vector<BYTE> &tilePalette, bool isSprite = false, bool flipY = false, bool flipX = false);
 	std::vector<BYTE> GetBgTilePalette(const std::vector<BYTE> &nametable, const size_t tileNoX, const size_t tileNoY);
 	std::vector<BYTE> GetSpriteTilePalette(const std::bitset<2>& paletteIndex);
-	void DrawNametable();
+	void DrawNametable(const std::vector<BYTE>& nametable);
 	void DrawSprites();
 
 public:

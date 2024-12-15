@@ -13,8 +13,9 @@ NESDisplay::~NESDisplay()
 
 
 void NESDisplay::DrawScreen()
-{
-	DrawNametable();
+{	
+	const std::vector<BYTE>& nametable = m_pPPU->GetNametableRAM()[(dynamic_cast<PPUCTRL *>(m_pPPU->registers.ppuctrl.get())->GetNametableAddr() == 0x2800)];
+	DrawNametable(nametable);
 	DrawSprites();
 	//DrawTiles(m_pPPU->GetCHR_ROM(), 0);
 }
@@ -208,19 +209,18 @@ std::vector<BYTE> NESDisplay::GetSpriteTilePalette(const std::bitset<2>& palette
 	return paletteColours;
 }
 
-void NESDisplay::DrawNametable()
+void NESDisplay::DrawNametable(const std::vector<BYTE>& nametable)
 {
+	// bgBankAddr either 0 or 0x1000, use it to determine which bank we access
 	const WORD bgBankAddr = dynamic_cast<PPUCTRL *>(m_pPPU->registers.ppuctrl.get())->GetBackgroundPTableAddr();
-	// temporarily nametable fix
-	bool useNameTable1 = (dynamic_cast<PPUCTRL *>(m_pPPU->registers.ppuctrl.get())->GetNametableAddr() == 0x2800);
+
+	// std::cout << "bgbankaddr: 0x" << std::hex << std::setw(4) << std::setfill('0') << bgBankAddr << " nametableaddr: 0x" <<
+	// 	dynamic_cast<PPUCTRL *>(m_pPPU->registers.ppuctrl.get())->GetNametableAddr() << std::endl;
 
 	std::vector<Tile> tiles{};
 	// NES screen is 32 tiles long, 30 tiles high (32 * 8 = 256, 30 * 8 = 240)
 	for (int tileNo = 0; tileNo < 32 * 30; ++tileNo)
 	{
-		// bgBankAddr either 0 or 0x1000, use it to determine which bank we access
-		const std::vector<BYTE>& nametable = m_pPPU->GetNametableRAM()[useNameTable1]; 
-
 		if (tileNo >= nametable.size())
 		{
 			std::cerr << "Attempted to access tile outside of nametable!" << std::endl;
@@ -234,7 +234,7 @@ void NESDisplay::DrawNametable()
 		const size_t tilePosX = tileNo % 32;
 		const size_t tilePosY = tileNo / 32;
 
-		std::vector<BYTE> tilePaletteIndexes = GetBgTilePalette( m_pPPU->GetNametableRAM()[useNameTable1], tilePosX, tilePosY);
+		std::vector<BYTE> tilePaletteIndexes = GetBgTilePalette( nametable, tilePosX, tilePosY);
 		DrawTile(*pCurTile, tilePosX * 8, tilePosY * 8, tilePaletteIndexes);
 	}
 }
