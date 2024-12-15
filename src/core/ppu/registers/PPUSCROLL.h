@@ -21,4 +21,7 @@ public:
 
         internal_registers->w = !internal_registers->w; 
     }
+
+    BYTE GetX() { return x; }
+    BYTE GetY() { return y; }
 };
