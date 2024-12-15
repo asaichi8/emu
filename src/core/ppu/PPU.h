@@ -24,6 +24,29 @@
 #define PPU_ADDRESS_SPACE_END 0x4000
 
 
+// https://www.nesdev.org/wiki/PPU_OAM#Byte_2
+enum OAMProperties : BYTE
+{
+	PALETTE_LOW = 1 << 0, // https://www.nesdev.org/wiki/PPU_registers#Scrolling
+	PALETTE_HIGH = 1 << 1,
+	UNUSED1 = 1 << 2,
+	UNUSED2 = 1 << 3,
+	UNUSED3 = 1 << 4,
+	PRIORITY = 1 << 5, // 0 = in front of background, 1 = behind background
+	FLIP_HORIZONTALLY = 1 << 6,
+	FLIP_VERTICALLY = 1 << 7
+};
+
+#pragma pack(push, 1)
+struct SpriteData
+{
+	BYTE tileY{};
+	BYTE tileIndex{};
+	OAMProperties tileProperties{};
+	BYTE tileX{};
+};
+#pragma pack(pop)
+
 class PPU
 {
 	std::vector<BYTE> m_NametableRAM[2];
