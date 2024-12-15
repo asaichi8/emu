@@ -28,9 +28,9 @@ class NESDisplay
 	Palette *m_pPalette;
 	BYTE m_szScreenBuffer[SCREEN_BUFFER_SIZE]{};
 
-	bool SetPixel(const RGB colour, const size_t x, const size_t y);
-	void DrawTile(const Tile &tile, size_t tilePosX, size_t tilePosY, const std::vector<BYTE> &tilePalette, bool isSprite = false, bool flipY = false, bool flipX = false);
-	std::vector<BYTE> GetBgTilePalette(const std::vector<BYTE> &nametable, const size_t tileNoX, const size_t tileNoY);
+	bool SetPixel(const RGB colour, const Point& pixelPos);
+	void DrawTile(const Tile &tile, const Point& tilePos, const std::vector<BYTE> &tilePalette, bool isSprite = false, bool flipY = false, bool flipX = false);
+	std::vector<BYTE> GetBgTilePalette(const std::vector<BYTE> &nametable, const Point& tileNo);
 	std::vector<BYTE> GetSpriteTilePalette(const std::bitset<2>& paletteIndex);
 	void DrawNametable(const std::vector<BYTE>& nametable);
 	void DrawSprites();

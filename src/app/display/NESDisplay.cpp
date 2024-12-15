@@ -26,8 +26,7 @@ void NESDisplay::DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank)
 	const std::vector<BYTE>& nametable = m_pPPU->GetNametableRAM()[0]; // temporarily use nametable 0 only
 	const WORD tilesStartAddr = bank * 0x1000;
 
-	size_t pixelPosY = 0;
-	size_t pixelPosX = 0;
+	Point pixelPos{};
 	std::vector<Tile> tiles{};
 	for (int tileNo = 0; tileNo < 16*16; ++tileNo)
 	{
@@ -36,27 +35,26 @@ void NESDisplay::DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank)
 
 		if (tileNo && tileNo % 16 == 0)
 		{
-			pixelPosY += 8; // new line
-			pixelPosX = 0;	 // reset x at end of line
+			pixelPos.x += 8; // new line
+			pixelPos.y = 0;	 // reset x at end of line
 		}
 
 		// map 16 bytes at curTilePos into curTile
 		const Tile *pCurTile = (const Tile *)(&(pCHR_ROM->at(curTilePos)));
 		tiles.push_back(*pCurTile); // push_back makes a copy, so no problem dereferencing a temporary pointer
 
-		const size_t tilePosX = tileNo % 32;
-		const size_t tilePosY = tileNo / 32;
+		const Point tilePos = {tileNo % 32, tileNo / 32};
 
-		DrawTile(*pCurTile, pixelPosX, pixelPosY, GetBgTilePalette(nametable, tilePosX, tilePosY));
+		DrawTile(*pCurTile, pixelPos, GetBgTilePalette(nametable, tilePos));
 
-		pixelPosX += 8;
+		pixelPos.x += 8;
 	}
 }
 
 
-bool NESDisplay::SetPixel(const RGB colour, const size_t x, const size_t y)
+bool NESDisplay::SetPixel(const RGB colour, const Point& pixelPos)
 {
-	const size_t pixelStartPos = (x * sizeof(RGB)) + (y * sizeof(RGB) * DISPLAY_WIDTH);
+	const size_t pixelStartPos = (pixelPos.x * sizeof(RGB)) + (pixelPos.y * sizeof(RGB) * DISPLAY_WIDTH);
 	if (pixelStartPos + sizeof(RGB) > SCREEN_BUFFER_SIZE)
 		return false; // not fatal
 
@@ -98,7 +96,7 @@ bool NESDisplay::SetPixel(const RGB colour, const size_t x, const size_t y)
 // therefore, the eyes are of one colour (tilePaletteIndex 1 (0b01)), and the mouth is of another
 // colour (tilePaletteIndex 3 (0b11)). the corners of the mouth are of colour tilePaletteIndex 2 (0b10).
 // where tilePosX = 0-32, tilePosY = 0-30
-void NESDisplay::DrawTile(const Tile &tile, size_t tilePosX, size_t tilePosY, const std::vector<BYTE>& tilePaletteIndexes, bool isSprite, bool flipY, bool flipX)
+void NESDisplay::DrawTile(const Tile &tile, const Point& tilePos, const std::vector<BYTE>& tilePaletteIndexes, bool isSprite, bool flipY, bool flipX)
 {
 	for (int curByte = 0; curByte < 8; ++curByte)
 	{
@@ -113,10 +111,10 @@ void NESDisplay::DrawTile(const Tile &tile, size_t tilePosX, size_t tilePosY, co
 
 			RGB rgb = m_pPalette->GetPalette().at(tilePaletteIndexes.at(pixelNibble.to_ulong()));
 
-			size_t pixelOffsetX = flipX ? curBit : 7 - curBit; // tiles are flipped on the x axis by default
-			size_t pixelOffsetY = flipY ? 7 - curByte : curByte;
+			int32_t pixelOffsetX = flipX ? curBit : 7 - curBit; // tiles are flipped on the x axis by default
+			int32_t pixelOffsetY = flipY ? 7 - curByte : curByte;
 			
-			SetPixel(rgb, tilePosX + pixelOffsetX, tilePosY + pixelOffsetY);
+			SetPixel(rgb, {tilePos.x + pixelOffsetX, tilePos.y + pixelOffsetY});
 		}
 	}
 }
@@ -163,7 +161,7 @@ void NESDisplay::DrawTile(const Tile &tile, size_t tilePosX, size_t tilePosY, co
 //	for example, byte 19 in the attribute table which is our targetted attribute table member is 0b00011011
 //	 since our targetted tile in the nametable grid is the third tile in the grid (bottom left),
 //	 the third lowest dibit (0b01) is the assigned background palette
-std::vector<BYTE> NESDisplay::GetBgTilePalette(const std::vector<BYTE>& nametable, const size_t tileNoX, const size_t tileNoY)
+std::vector<BYTE> NESDisplay::GetBgTilePalette(const std::vector<BYTE>& nametable, const Point& tileNo)
 {
 	std::vector<BYTE> paletteColours{};
 
@@ -176,11 +174,11 @@ std::vector<BYTE> NESDisplay::GetBgTilePalette(const std::vector<BYTE>& nametabl
 	static const WORD ATTRIBUTE_TABLE_BEGIN = 0x3C0;
 
 	// for example, tileNoX is 12 and tileNoY is 10, therefore offset is 19
-	size_t attrTblOffset = (tileNoX / 4) + ((tileNoY / 4) * 8); // attribute table is an 8x8 grid
+	size_t attrTblOffset = (tileNo.x / 4) + ((tileNo.y / 4) * 8); // attribute table is an 8x8 grid
 	BYTE paletteByte = nametable.at(ATTRIBUTE_TABLE_BEGIN + attrTblOffset);
 
-	std::bitset<2> blockX = (tileNoX % 4) / 2;
-	std::bitset<2> blockY = (tileNoY % 4) / 2;
+	std::bitset<2> blockX = (tileNo.x % 4) / 2;
+	std::bitset<2> blockY = (tileNo.y % 4) / 2;
 	std::bitset<2> blockTilePos = ((blockY << 1) | blockX).to_ulong();
 
 	// if position is 0, then grab the first lowest dibit
@@ -231,11 +229,10 @@ void NESDisplay::DrawNametable(const std::vector<BYTE>& nametable)
 		const WORD selectedTileOffset = selectedTilePos * sizeof(Tile); // address of tile to be used
 		const Tile *pCurTile = (const Tile *)(&(m_pPPU->GetCHR_ROM()->at(bgBankAddr + selectedTileOffset)));
 
-		const size_t tilePosX = tileNo % 32;
-		const size_t tilePosY = tileNo / 32;
+		const Point tilePos = {tileNo % 32, tileNo / 32};
 
-		std::vector<BYTE> tilePaletteIndexes = GetBgTilePalette( nametable, tilePosX, tilePosY);
-		DrawTile(*pCurTile, tilePosX * 8, tilePosY * 8, tilePaletteIndexes);
+		std::vector<BYTE> tilePaletteIndexes = GetBgTilePalette( nametable, {tilePos.x, tilePos.y});
+		DrawTile(*pCurTile, {tilePos.x * 8, tilePos.y * 8}, tilePaletteIndexes);
 	}
 }
 
@@ -258,6 +255,6 @@ void NESDisplay::DrawSprites()
 		const Tile *pCurTile = (const Tile *)(&(m_pPPU->GetCHR_ROM()->at(spriteBankAddr + selectedTileOffset)));
 
 		std::vector<BYTE> paletteColours = GetSpriteTilePalette(paletteIndex);
-		DrawTile(*pCurTile, pCurSprite->tileX, pCurSprite->tileY, paletteColours, true, shouldFlipVertical, shouldFlipHorizontal);
+		DrawTile(*pCurTile, {pCurSprite->tileX, pCurSprite->tileY}, paletteColours, true, shouldFlipVertical, shouldFlipHorizontal);
 	}
 }
