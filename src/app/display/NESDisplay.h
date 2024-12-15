@@ -8,6 +8,12 @@
 
 class NESDisplay
 {
+	struct Point
+	{
+		int32_t x{};
+		int32_t y{};
+	};
+
 #pragma pack(push, 1)
 	struct Tile
 	{
