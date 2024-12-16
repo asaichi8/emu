@@ -13,21 +13,10 @@ class NESDisplay
 		int32_t x{};
 		int32_t y{};
 
-		Point operator+(const Point& r) const
-		{
-			return {this->x + r.x, this->y + r.y};
-		}
-
-		Point operator-(const Point& r) const
-		{
-			return {this->x - r.x, this->y - r.y};
-		}
-		Point operator-(int i) const { return {this->x - i, this->y - i}; }
-
-		Point operator*(int i) const
-		{
-			return {this->x * i, this->y * i};
-		}
+		Point operator+(const Point& r) const { return { this->x + r.x, this->y + r.y }; }
+		Point operator-(const Point& r) const { return { this->x - r.x, this->y - r.y }; }
+		Point operator-(int i) 			const { return { this->x - i, this->y - i }; }
+		Point operator*(int i) 			const { return { this->x * i, this->y * i }; }
 	};
 
 #pragma pack(push, 1)
