@@ -6,7 +6,7 @@
 class PPUADDR : public IPPURegister
 {
     // PPU address MUST be between 0 and 0x3FFF incl.
-    static const WORD PPU_ADDRESS_SPACE_END = 0x4000; // TODO: there's another variable that does the same thing
+    static const WORD PPU_ADDRESS_SPACE_END = 0x4000; // TODO: there's another variable that does the same thing so replace it
     WORD ppuAddr = 0;
 
 public:
