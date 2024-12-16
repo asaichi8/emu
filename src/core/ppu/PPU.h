@@ -52,9 +52,7 @@ struct SpriteData
 
 class PPU
 {
-	std::vector<BYTE> m_NametableRAM[2];
-	// dbg purposes only
-	//std::vector<bool> TEST_NameTableRAMIsRealZero[2]; // set to true if accompanying byte in m_NametableRAM was really set to zero or just assigned that
+	std::vector<BYTE> m_NametableRAM[2]; // aka VRAM
 	std::vector<BYTE> m_OAM{};
 	std::vector<BYTE> m_PaletteRAM{};
 

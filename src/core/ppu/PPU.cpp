@@ -117,12 +117,10 @@ BYTE PPU::ReadPPUByte()
 void PPU::WritePPUByte(BYTE val)
 {
     WORD addr = GetMirroredPPUADDRAddress(true);
-
-    if (addr < PATTERN_TABLES_END) // pattern table 0x0 - 0x1FFF
-    {
-        std::cerr << "ERROR: Can't write to CHR_ROM in PPU pattern table! addr = " << std::hex << addr << std::endl;
-    }
-    else if (addr < NAMETABLES_MIRRORED_END) // nametable 0x2000 - 0x3EFF
+    
+    // pattern table 0x0 - 0x1FFF and nametable 0x2000 - 3EFF
+    // writing to 0x0 - 0x1FFF indicates writing to CHR ROM using CHR RAM
+    if (addr < NAMETABLES_MIRRORED_END) 
     {
         auto index = GetNametableIndex(addr);
         addr = Bus::MirrorAddress(addr, NAMETABLES_TOTAL_SIZE); // mirror to 0x0000 - 0x0FFF
@@ -184,13 +182,12 @@ WORD PPU::MirrorPaletteRAMAddress(WORD addr)
 // https://www.nesdev.org/wiki/Mirroring#Nametable_Mirroring
 const size_t PPU::GetNametableIndex(WORD addr) const
 {
-    if (addr < NAMETABLES_BEGIN || addr >= NAMETABLES_MIRRORED_END)
+    if (addr >= NAMETABLES_MIRRORED_END) // addr < NAMETABLES_BEGIN || 
     {
         std::cerr << "WARNING: Attempted to nametable ram mirror \"Nametable RAM\" address 0x" << std::hex << addr << std::dec << std::endl;
         return {};
     }
 
-    addr -= NAMETABLES_TOTAL_SIZE * 2; // normalise address to 0x0 - 1EFF
     addr = Bus::MirrorAddress(addr, NAMETABLES_TOTAL_SIZE); // mirror to 0x0000 - 0x0FFF
     
     size_t indx = 0;
