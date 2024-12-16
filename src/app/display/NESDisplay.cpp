@@ -1,5 +1,5 @@
 #include "NESDisplay.h"
-// TODO: probably put x and y into a struct
+// TODO: clean this up. split DrawPixel into two functions for sprite and for nametable, maybe make sprite/nametable class
 
 NESDisplay::NESDisplay(const PPU* pPPU, Palette* pPalette) : m_pPPU(pPPU), m_pPalette(pPalette)
 {
