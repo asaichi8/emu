@@ -76,6 +76,7 @@ void Bus::WriteByte(WORD addr, BYTE val)
 }
 
 // TODO: what if addr = INTERNAL_RAM_SIZE, or PRG_RAM_END?
+// TODO: these read/write words work, but are only for CPU internal emulation usage, so refactor keeping this in mind
 WORD Bus::ReadWord(WORD addr, bool shouldWrapPage)
 {
 	if (addr == INTERNAL_RAM_SIZE || addr == PRG_RAM_END)
