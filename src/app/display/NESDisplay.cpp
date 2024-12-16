@@ -118,14 +118,14 @@ void NESDisplay::DrawTile(const Tile &tile, const Point& tilePos, const std::vec
 			pixelOffset.y = flipY ? 7 - curByte : curByte;
 			
 			Point pixelPos = tilePos + pixelOffset;
-			if (pixelPos.x < start.x || pixelPos.y < start.y || pixelPos.x > end.x || pixelPos.y > end.y)
+			if (pixelPos.x < start.x || pixelPos.y < start.y || pixelPos.x >= end.x || pixelPos.y >= end.y)
 				continue;
 
 			if ((pixelPos.x + shift.x) < 0) continue;
 			if ((pixelPos.y + shift.y) < 0) continue;
 			if ((pixelPos.x + shift.x) > DISPLAY_WIDTH) continue;
 			if ((pixelPos.y + shift.y) > DISPLAY_HEIGHT) continue;
-
+			
 			SetPixel(rgb, pixelPos + shift);
 		}
 	}
