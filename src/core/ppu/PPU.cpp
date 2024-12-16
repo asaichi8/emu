@@ -182,7 +182,7 @@ WORD PPU::MirrorPaletteRAMAddress(WORD addr)
 }
 
 // https://www.nesdev.org/wiki/Mirroring#Nametable_Mirroring
-size_t PPU::GetNametableIndex(WORD addr)
+const size_t PPU::GetNametableIndex(WORD addr) const
 {
     if (addr < NAMETABLES_BEGIN || addr >= NAMETABLES_MIRRORED_END)
     {
