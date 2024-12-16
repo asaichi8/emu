@@ -3,6 +3,8 @@ include/SDL2
 compile_commands.json
 .cache/
 bin/*.nes
+bin/tests/*.nes
+!bin/tests/nestest2.nes
 config.ini
 imgui.ini
 !bin/default.nes
