@@ -44,6 +44,9 @@ struct SpriteData
 	BYTE tileIndex{};
 	OAMProperties tileProperties{};
 	BYTE tileX{};
+	
+	// https://www.nesdev.org/wiki/PPU_OAM#Byte_2 : set unused bytes to 0
+	SpriteData() { tileProperties = (OAMProperties)(tileProperties & (BYTE)0b11100011); }
 };
 #pragma pack(pop)
 
