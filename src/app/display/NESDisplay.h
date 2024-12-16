@@ -22,6 +22,7 @@ class NESDisplay
 		{
 			return {this->x - r.x, this->y - r.y};
 		}
+		Point operator-(int i) const { return {this->x - i, this->y - i}; }
 
 		Point operator*(int i) const
 		{

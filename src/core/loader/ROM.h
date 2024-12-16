@@ -10,8 +10,8 @@
 // https://www.nesdev.org/wiki/Mirroring#Nametable_Mirroring
 enum MirrorType
 {
-	Vertical = 0,
-	Horizontal,
+	Vertical = 0, // nametables are horizontal, resulting in vertical mirroring (64x30 tilemap)
+	Horizontal,   // nametables are vertical, resulting in horizontal mirroring (32x60 tilemap)
 	FourScreen
 };
 

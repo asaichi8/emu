@@ -196,7 +196,7 @@ std::pair<size_t, size_t> PPU::GetNametableRAMIndx(WORD addr)
 
     addr -= NAMETABLES_TOTAL_SIZE * 2; // normalise address to 0x0 - 1EFF
     addr = Bus::MirrorAddress(addr, NAMETABLES_TOTAL_SIZE); // mirror to 0x0000 - 0x0FFF
-
+    
     size_t indx = 0;
     switch (*m_pMirrorType)
     {
