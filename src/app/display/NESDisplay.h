@@ -18,6 +18,11 @@ class NESDisplay
 			return {this->x + r.x, this->y + r.y};
 		}
 
+		Point operator-(const Point& r) const
+		{
+			return {this->x - r.x, this->y - r.y};
+		}
+
 		Point operator*(int i) const
 		{
 			return {this->x * i, this->y * i};
@@ -39,10 +44,12 @@ class NESDisplay
 	BYTE m_szScreenBuffer[SCREEN_BUFFER_SIZE]{};
 
 	bool SetPixel(const RGB colour, const Point& pixelPos);
-	void DrawTile(const Tile &tile, const Point& tilePos, const std::vector<BYTE> &tilePalette, bool isSprite = false, bool flipY = false, bool flipX = false);
+	void DrawTile(const Tile &tile, const Point& tilePos, const std::vector<BYTE> &tilePalette,
+				  const Point& start = {0, 0}, const Point& end = {DISPLAY_WIDTH, DISPLAY_HEIGHT}, const Point& shift = {0, 0},
+				  bool isSprite = false, bool flipY = false, bool flipX = false);
 	std::vector<BYTE> GetBgTilePalette(const std::vector<BYTE> &nametable, const Point& tileNo);
 	std::vector<BYTE> GetSpriteTilePalette(const std::bitset<2>& paletteIndex);
-	void DrawNametable(const std::vector<BYTE>& nametable);
+	void DrawNametable(const std::vector<BYTE>& nametable, const Point& start = {0, 0}, const Point& end = {DISPLAY_WIDTH, DISPLAY_HEIGHT}, const Point& shift = {0, 0});
 	void DrawSprites();
 
 public:
