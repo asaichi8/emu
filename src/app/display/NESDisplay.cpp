@@ -60,11 +60,18 @@ void NESDisplay::DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank)
 }
 
 
-bool NESDisplay::SetPixel(const RGB colour, const Point& pixelPos)
+bool NESDisplay::SetPixel(const RGB colour, const Point& pixelPos, RGB transparentColour, bool behindBg)
 {
 	const size_t pixelStartPos = (pixelPos.x * sizeof(RGB)) + (pixelPos.y * sizeof(RGB) * DISPLAY_WIDTH);
 	if (pixelStartPos + sizeof(RGB) > SCREEN_BUFFER_SIZE)
 		return false; // not fatal
+
+	if (behindBg && (
+			(*(RGB*)(&m_szScreenBuffer[pixelStartPos])).r != transparentColour.r ||
+			(*(RGB*)(&m_szScreenBuffer[pixelStartPos])).g != transparentColour.g ||
+			(*(RGB*)(&m_szScreenBuffer[pixelStartPos])).b != transparentColour.b
+		))
+		return false;
 
 	// directly map the RGB colour struct into memory
 	*(RGB*)(&m_szScreenBuffer[pixelStartPos]) = colour;
@@ -106,7 +113,7 @@ bool NESDisplay::SetPixel(const RGB colour, const Point& pixelPos)
 // where tilePosX = 0-32, tilePosY = 0-30
 void NESDisplay::DrawTile(const Tile &tile, const Point& tilePos, const std::vector<BYTE>& tilePaletteIndexes,
 						  const Point& start, const Point& end, const Point& shift,
-						  bool isSprite, bool flipY, bool flipX)
+						  bool isSprite, bool flipY, bool flipX, bool behindBg)
 {
 	for (int curByte = 0; curByte < 8; ++curByte)
 	{
@@ -134,7 +141,7 @@ void NESDisplay::DrawTile(const Tile &tile, const Point& tilePos, const std::vec
 			if ((pixelPos.x + shift.x) > DISPLAY_WIDTH) continue;
 			if ((pixelPos.y + shift.y) > DISPLAY_HEIGHT) continue;
 			
-			SetPixel(rgb, pixelPos + shift);
+			SetPixel(rgb, pixelPos + shift, m_pPalette->GetPalette().at(tilePaletteIndexes.at(0)), behindBg);
 		}
 	}
 }
@@ -276,8 +283,9 @@ void NESDisplay::DrawSprites()
 		const Tile *pCurTile = (const Tile *)(&(m_pPPU->GetCHR_ROM()->at(spriteBankAddr + selectedTileOffset)));
 
 		std::vector<BYTE> paletteColours = GetSpriteTilePalette(paletteIndex);
+
 		DrawTile(*pCurTile, {pCurSprite->tileX, pCurSprite->tileY}, paletteColours,
 				 {0, 0}, {DISPLAY_WIDTH, DISPLAY_HEIGHT}, {0, 0},
-				 true, shouldFlipVertical, shouldFlipHorizontal);
+				 true, shouldFlipVertical, shouldFlipHorizontal, pCurSprite->tileProperties & OAMProperties::PRIORITY);
 	}
 }
