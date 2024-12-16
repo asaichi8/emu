@@ -133,8 +133,6 @@ void Bus::UpdateJoypad(size_t joypad, Joypad::Button button, bool isDown)
 
 BYTE Bus::ReadPPURegister(PPURegAddr PPUreg)
 {
-	// see enum definitions for why flags are cleared/set
-	// TODO: handle unhandled readable registers
 	switch (PPUreg)
 	{
 		case PPURegAddr::PPUSTATUS: return (BYTE)(m_PPU->registers.ppustatus->Read().to_ulong());
@@ -148,8 +146,6 @@ BYTE Bus::ReadPPURegister(PPURegAddr PPUreg)
 
 void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 {
-	// see enum definitions for why flags are cleared/set
-	// TODO: handle unhandled writeable registers
 	switch (PPUreg)
 	{
 		case PPURegAddr::PPUCTRL: 	m_PPU->PPUCtrlWriteW(val); 													break;

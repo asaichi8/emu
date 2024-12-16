@@ -12,6 +12,7 @@ class IPPURegister
 public:
 	// https://www.nesdev.org/wiki/PPU_registers#Internal_registers
 	struct InternalRegisters {
+        // TODO: use v and t
 		WORD v = 0;	// "Current VRAM address (15 bits)"
 		WORD t = 0; // "Temporary VRAM address (15 bits)" : address of top-left onscreen tile
 		BYTE x = 0; // "Fine X scroll (3 bits)"
@@ -23,9 +24,7 @@ protected:
     InternalRegisters* internal_registers; // all registers point to one InternalRegisters class
 
 public:
-    //IPPURegister(WORD regAddr, InternalRegisters& internal_registers) : m_regAddr(regAddr) {}
     IPPURegister(WORD regAddr, InternalRegisters* _internal_registers) : m_regAddr(regAddr), internal_registers(_internal_registers) {}
-    /// TODO: need to make every ppu register have access to internal registers bby passing a pointer
     virtual ~IPPURegister() {}
     
     // https://www.nesdev.org/wiki/PPU_registers#Summary

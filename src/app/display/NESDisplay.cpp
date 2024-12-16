@@ -31,7 +31,6 @@ void NESDisplay::DrawScreen()
     //DrawTiles(m_pPPU->GetCHR_ROM(), 0);
 }
 
-// TODO: add start x,y
 void NESDisplay::DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank)
 {
 	const std::vector<BYTE>& nametable = m_pPPU->GetNametableRAM()[0]; // temporarily use nametable 0 only

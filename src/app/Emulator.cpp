@@ -1,8 +1,7 @@
 #include "Emulator.h"
-// TODO: add controller saving/remapping, add joypad2
+// TODO: add controller remapping
 // TODO: make DrawTiles popup in ImGUI
 
-// TODO: add palette loader/rom loader (on drag, cmdline)
 // TODO: add define for enabling/disabling debug rom
 
 // TODO: use unordered_map for enums

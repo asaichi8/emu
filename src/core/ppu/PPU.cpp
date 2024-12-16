@@ -5,8 +5,6 @@ PPU::PPU(std::vector<BYTE>* _pCHR_ROM, MirrorType* _pMirrorType) : m_pCHR_ROM(_p
 {
     for (auto& pTable : m_NametableRAM)
         pTable.assign(NAMETABLE_SIZE, 0);
-    // for (auto& pTable : TEST_NameTableRAMIsRealZero)
-    //     pTable.assign(NAMETABLE_SIZE, 0);
     m_OAM.assign(PAGE, 0); // https://www.nesdev.org/wiki/PPU_memory_map#OAM
     m_PaletteRAM.assign(PALETTE_RAM_TOTAL_SIZE, 0);
 }
@@ -36,7 +34,6 @@ bool PPU::Clock(DWORD nCycles)
     m_nPPUCycles -= SCANLINE_END;
     m_nScanlines++;
 
-    // PPUSTATUS* ppuStatusRegister = dynamic_cast<PPUSTATUS*>(registers.ppustatus.get());
     if (m_nScanlines == VBLANK_START)
     {
         ppuStatusRegister->SetVBLANK(1);

@@ -26,7 +26,6 @@ CPU::Instruction CPU::instructions[256] = {
 
 };
 
-// TODO: package status register flag setters into functions
 
 // === Load operations ===
 /// @brief Loads value at the address into the accumulator.
