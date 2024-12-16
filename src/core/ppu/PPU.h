@@ -95,7 +95,6 @@ class PPU
 
 	WORD GetMirroredPPUADDRAddress(bool shouldIncrement = false);
 	WORD MirrorPaletteRAMAddress(WORD addr);
-	std::pair<size_t, size_t> GetNametableRAMIndx(WORD addr);
 	
 public:
 	PPU(std::vector<BYTE>* _pCHR_ROM, MirrorType* _pMirrorType);
@@ -111,9 +110,11 @@ public:
 	int GetScanlineCount() const { return m_nScanlines; }
 	bool GetInterruptStatus() const { return m_bShouldNMIInterrupt; }
 	const std::vector<BYTE>* GetNametableRAM() const { return m_NametableRAM; }
+	size_t GetNametableIndex(WORD addr);
 	const std::vector<BYTE>* GetCHR_ROM() const { return m_pCHR_ROM; }
 	const std::vector<BYTE>& GetPaletteRAM() const { return m_PaletteRAM; }
 	const std::vector<BYTE>& GetOAM() const { return m_OAM; }
+	const MirrorType* GetMirrorType() const { return m_pMirrorType; }
 	
 	void WriteOAM(BYTE addr, BYTE val) { m_OAM.at(addr) = val; }
 	void PPUCtrlWriteW(BYTE val);

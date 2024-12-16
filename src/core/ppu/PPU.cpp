@@ -93,15 +93,13 @@ BYTE PPU::ReadPPUByte()
     }
     else if (addr < NAMETABLES_MIRRORED_END) // nametable 0x2000 - 0x3EFF
     {
-        // if (addr >= 0x3000)
-        //     std::cerr << "shouldnt be used" << std::endl;
         PPUDATA* ppuDataRegister = dynamic_cast<PPUDATA*>(registers.ppudata.get());
         data = ppuDataRegister->Read().to_ulong();
 
-        auto indexes = GetNametableRAMIndx(addr);
-        ppuDataRegister->Write(m_NametableRAM[indexes.first][indexes.second]);
-        // if (m_NametableRAM[indexes.first][indexes.second] == 0x0 && TEST_NameTableRAMIsRealZero[indexes.first][indexes.second] == false)
-        //     std::cerr << "Attempting to read from bad memory!!" << std::endl; //brk here
+        auto index = GetNametableIndex(addr);
+        addr = Bus::MirrorAddress(addr, NAMETABLES_TOTAL_SIZE); // mirror to 0x0000 - 0x0FFF
+        addr = Bus::MirrorAddress(addr, NAMETABLE_SIZE); // mirror to 0x0000 - 0x0400
+        ppuDataRegister->Write(m_NametableRAM[index][addr]);
     }
     else if (addr < PPU_ADDRESS_SPACE_END) // palette ram 0x3F00 - 0x3FFF
     {
@@ -126,12 +124,10 @@ void PPU::WritePPUByte(BYTE val)
     }
     else if (addr < NAMETABLES_MIRRORED_END) // nametable 0x2000 - 0x3EFF
     {
-        auto indexes = GetNametableRAMIndx(addr);
-        m_NametableRAM[indexes.first][indexes.second] = val;
-        // if (val == 0x0)
-        //     TEST_NameTableRAMIsRealZero[indexes.first][indexes.second] = true;
-        // else
-        //     TEST_NameTableRAMIsRealZero[indexes.first][indexes.second] = false;
+        auto index = GetNametableIndex(addr);
+        addr = Bus::MirrorAddress(addr, NAMETABLES_TOTAL_SIZE); // mirror to 0x0000 - 0x0FFF
+        addr = Bus::MirrorAddress(addr, NAMETABLE_SIZE); // mirror to 0x0000 - 0x0400
+        m_NametableRAM[index][addr] = val;
     }
     else if (addr < PALETTE_RAM_MIRRORED_END) // palette ram 0x3F00 - 0x3FFF
     {
@@ -186,7 +182,7 @@ WORD PPU::MirrorPaletteRAMAddress(WORD addr)
 }
 
 // https://www.nesdev.org/wiki/Mirroring#Nametable_Mirroring
-std::pair<size_t, size_t> PPU::GetNametableRAMIndx(WORD addr)
+size_t PPU::GetNametableIndex(WORD addr)
 {
     if (addr < NAMETABLES_BEGIN || addr >= NAMETABLES_MIRRORED_END)
     {
@@ -203,13 +199,15 @@ std::pair<size_t, size_t> PPU::GetNametableRAMIndx(WORD addr)
         case MirrorType::Vertical:
             if ((addr >= 0x400 && addr <= 0x800) || (addr >= 0xC00 && addr <= 0x1000))
                 indx = 1; // access second nametable
-            return {indx, Bus::MirrorAddress(addr, NAMETABLE_SIZE)};
+            break;
         case MirrorType::Horizontal:
             indx = (addr >= 0x800); // 0 if 0x7ff or lower, 1 otherwise
-            return {indx, Bus::MirrorAddress(addr, NAMETABLE_SIZE)};
+            break;
 
         default:
             std::cerr << "Unimplemented nametable mirror type: " << *m_pMirrorType << std::endl;
-            return {};
+            break;
     }
+
+    return indx;
 }
