@@ -15,7 +15,7 @@ NESDisplay::~NESDisplay()
 void NESDisplay::DrawScreen()
 {    
     WORD nametableAddr = dynamic_cast<PPUCTRL *>(m_pPPU->registers.ppuctrl.get())->GetNametableAddr();
-    bool useFirstNametable = (nametableAddr == 0x2000 || nametableAddr == 0x2800);
+    bool useFirstNametable = !m_pPPU->GetNametableIndex(nametableAddr);
 
     Point scroll = {
         dynamic_cast<PPUSCROLL *>(m_pPPU->registers.ppuscroll.get())->GetX(),
@@ -23,7 +23,10 @@ void NESDisplay::DrawScreen()
     };
 
     DrawNametable(m_pPPU->GetNametableRAM()[!useFirstNametable], scroll, {DISPLAY_WIDTH, DISPLAY_HEIGHT}, scroll * -1); 
-    DrawNametable(m_pPPU->GetNametableRAM()[useFirstNametable], {0, 0}, {scroll.x, DISPLAY_HEIGHT}, {DISPLAY_WIDTH - scroll.x, 0});
+	// TODO: support four scroll
+    if      (scroll.x) DrawNametable(m_pPPU->GetNametableRAM()[useFirstNametable], {0, 0}, {scroll.x, DISPLAY_HEIGHT}, {DISPLAY_WIDTH - scroll.x, 0});
+    else if (scroll.y) DrawNametable(m_pPPU->GetNametableRAM()[useFirstNametable], {0, 0}, {DISPLAY_WIDTH, scroll.y}, {0, DISPLAY_HEIGHT - scroll.y});
+
     DrawSprites();
     //DrawTiles(m_pPPU->GetCHR_ROM(), 0);
 }
