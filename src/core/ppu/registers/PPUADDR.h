@@ -2,7 +2,9 @@
 
 #include "IPPURegister.h"
 
+
 // https://www.nesdev.org/wiki/PPU_registers#PPUADDR_-_VRAM_address_($2006_write)
+// $2006
 class PPUADDR : public IPPURegister
 {
     // PPU address MUST be between 0 and 0x3FFF incl.

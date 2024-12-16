@@ -3,6 +3,8 @@
 #include "IPPURegister.h"
 
 
+// TODO: this is unused, probably delete it
+// $4014
 class OAMDMA : public IPPURegister
 {
 public:

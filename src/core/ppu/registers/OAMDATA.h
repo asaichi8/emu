@@ -3,6 +3,8 @@
 #include "IPPURegister.h"
 
 
+// TODO: this is unused, probably delete it
+// $2004
 class OAMDATA : public IPPURegister
 {
 public:

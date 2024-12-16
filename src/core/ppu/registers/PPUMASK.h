@@ -3,6 +3,7 @@
 #include "IPPURegister.h"
 
 
+// $2001
 class PPUMASK : public IPPURegister
 {
     std::bitset<8> ppu_mask_register{};

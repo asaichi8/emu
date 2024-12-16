@@ -3,6 +3,7 @@
 #include "IPPURegister.h"
 
 
+// $2002
 class PPUSTATUS : public IPPURegister
 {
     std::bitset<8> ppu_status_register{};

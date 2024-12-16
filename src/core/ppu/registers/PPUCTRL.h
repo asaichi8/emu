@@ -3,6 +3,7 @@
 #include "IPPURegister.h"
 
 
+// $2000
 class PPUCTRL : public IPPURegister
 {
     std::bitset<8> ppu_ctrl_register{};
