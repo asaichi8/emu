@@ -201,9 +201,8 @@ std::pair<size_t, size_t> PPU::GetNametableRAMIndx(WORD addr)
     switch (*m_pMirrorType)
     {
         case MirrorType::Vertical:
-            // To determine which nametable we need, we check the 11th bit. This tells equates to 1 if addr is between 0x400 and 0x800,
-            // or between 0xC00 and 0x1000 - otherwise it's 0.
-            indx = (addr & 0x0400) >> 11;
+            if ((addr >= 0x400 && addr <= 0x800) || (addr >= 0xC00 && addr <= 0x1000))
+                indx = 1; // access second nametable
             return {indx, Bus::MirrorAddress(addr, NAMETABLE_SIZE)};
         case MirrorType::Horizontal:
             indx = (addr >= 0x800); // 0 if 0x7ff or lower, 1 otherwise
