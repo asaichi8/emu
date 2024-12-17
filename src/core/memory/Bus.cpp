@@ -190,6 +190,8 @@ BYTE Bus::ReadPRGByte(WORD addr)
 		addr = MirrorAddress(addr, m_ROM->PRG_ROM.size(), PRG_RAM_START);
 
 	addr -= PRG_RAM_START;
+	// if (addr == 0x11D9) // SXIOPO (infinite lives in super mario)
+	// 	m_ROM->PRG_ROM[addr] = 0xAD;
 	return m_ROM->PRG_ROM[addr];
 }
 

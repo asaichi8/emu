@@ -15,6 +15,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src/core/ppu
     ${CMAKE_SOURCE_DIR}/src/core/ppu/registers
     ${CMAKE_SOURCE_DIR}/src/core/apu
+    ${CMAKE_SOURCE_DIR}/src/core/cheats
     ${CMAKE_SOURCE_DIR}/src/core/controller
     ${CMAKE_SOURCE_DIR}/src/core/loader
     ${CMAKE_SOURCE_DIR}/src/core/memory
@@ -31,6 +32,7 @@ file(GLOB_RECURSE SOURCES
     ${CMAKE_SOURCE_DIR}/src/core/memory/*.cpp
     ${CMAKE_SOURCE_DIR}/src/core/loader/*.cpp
     ${CMAKE_SOURCE_DIR}/src/core/controller/*.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/cheats/*.cpp
     ${CMAKE_SOURCE_DIR}/src/app/*.cpp
     ${CMAKE_SOURCE_DIR}/src/app/display/*.cpp
     ${CMAKE_SOURCE_DIR}/src/app/display/SDL/*.cpp
