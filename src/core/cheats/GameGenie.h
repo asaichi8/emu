@@ -1,10 +1,43 @@
 #pragma once
 
+#include <unordered_map>
+#include <bitset>
+#include <optional>
+#include <stdexcept>
+#include <vector>
+#include "typedefs.h"
 
+// https://github.com/jdratlif/ggencoder-java/blob/master/docs/nes.txt
 class GameGenie
 {
+    // from link above:
+    // Code:     110110100101100100011001
+    // Position: 1678H234-IJKLABCDMNO5EFG
 
+    // so, e.g. place the leftmost bit at 1 in the rearranged code, the second leftmost bit at position 6 in the
+    // rearranged code etc
+    // Original:   1101 1010 0101 1001 0001 1001
+    // Rearranged: 1010 1101 0001 0001 1101 1001
+    // Represents: VVVV VVVV -AAA AAAA AAAA AAAA
+    static const inline std::vector<int> POSITION_MAP = {
+        0, 5, 6, 7, 16, 1, 2, 3, -1, 17, 18, 19, 20, 9, 10, 11, 12, 21, 22, 23, 4, 13, 14, 15
+    };
+    std::unordered_map<char, std::bitset<4>> HexTable = {
+        {'A', 0x0}, {'P', 0x1}, {'Z', 0x2}, {'L', 0x3}, {'G', 0x4}, {'I', 0x5}, {'T', 0x6}, {'Y', 0x7},
+        {'E', 0x8}, {'O', 0x9}, {'X', 0xA}, {'U', 0xB}, {'K', 0xC}, {'S', 0xD}, {'V', 0xE}, {'N', 0xF}
+    };
+
+    std::bitset<24> StringCodeToBits(const std::string& code);
 
 public:
+    GameGenie();
 
+    struct DecodedCode
+    {
+        WORD addr{};
+        BYTE val{};
+        std::optional<BYTE> compare = std::nullopt;
+    };
+
+    DecodedCode Decode(const std::string& code);
 };
