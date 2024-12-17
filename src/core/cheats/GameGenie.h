@@ -1,11 +1,12 @@
 #pragma once
 
 #include <unordered_map>
-#include <bitset>
 #include <optional>
 #include <stdexcept>
 #include <vector>
+#include <algorithm>
 #include "typedefs.h"
+
 
 // https://github.com/jdratlif/ggencoder-java/blob/master/docs/nes.txt
 class GameGenie
