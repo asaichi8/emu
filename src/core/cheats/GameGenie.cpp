@@ -7,12 +7,13 @@ GameGenie::GameGenie()
 }
 
 
-std::bitset<24> GameGenie::StringCodeToBits(const std::string& code)
+std::vector<bool> GameGenie::StringCodeToBits(const std::string& code)
 {
-    if (code.length() != 6)
-        throw std::invalid_argument("String length was not 6!");
+    if (code.empty())
+        throw std::invalid_argument("String length must be greater than 0!");
 
-    std::bitset<24> bits{};
+    const size_t numBits = code.length() * 4;
+    std::vector<bool> bits(numBits, 0);
 
     for (int i = 0; i < code.length(); ++i)
     {
@@ -22,8 +23,12 @@ std::bitset<24> GameGenie::StringCodeToBits(const std::string& code)
         if (it == HexTable.end())
             throw std::invalid_argument("Not a valid Game Genie code!");
         
-        size_t shiftVal = 20 - (i * 4); // hex values go from left to right rather than right to left
-        bits |= (it->second.to_ulong() << shiftVal);
+        size_t shiftVal = numBits - ((i + 1) * 4); // hex values go from left to right rather than right to left
+        
+        for (int j = 3; j >= 0; --j)
+        {
+            bits.at(shiftVal + j) = (it->second >> j) & 1;
+        }
     }
 
     return bits;
@@ -31,26 +36,31 @@ std::bitset<24> GameGenie::StringCodeToBits(const std::string& code)
 
 GameGenie::DecodedCode GameGenie::Decode(const std::string& code)
 {
-    if (code.length() != 6)
-        throw std::invalid_argument("String length was not 6!");
+    const size_t numBits = code.length() * 4;
+    if (numBits != 24 && numBits != 32)
+        throw std::invalid_argument("String length was not 6 or 8!");
     
     GameGenie::DecodedCode decodedCode{};
 
-    std::bitset<24> encodedBits = StringCodeToBits(code);
-    std::bitset<24> decodedBits{};
-    for (int i = 0; i < 24; ++i)
-    {
-        if (POSITION_MAP.at(i) == -1)
-        {
-            decodedBits[23 - i] = 0;
-            continue;
-        }
+    std::vector<bool> encodedBits = StringCodeToBits(code);
 
-        decodedBits[23 - POSITION_MAP.at(i)] = encodedBits[23 - i];
-    }
 
-    decodedCode.val = (decodedBits.to_ulong() >> 16) & 0xFF; // extract high 8 bits
-    decodedCode.addr = decodedBits.to_ulong() & 0x7FFF; // extract low 15 bits
+    // std::bitset<numBits> encodedBits = StringCodeToBits(code);
+    // std::bitset<numBits> decodedBits{};
+    // for (int i = 0; i < numBits; ++i)
+    // {
+    //     if (POSITION_MAP_6.at(i) == -1)
+    //     {
+    //         decodedBits[(numBits - 1) - i] = 0;
+    //         continue;
+    //     }
 
+    //     decodedBits[(numBits - 1) - POSITION_MAP_6.at(i)] = encodedBits[(numBits - 1) - i];
+    // }
+
+    // decodedCode.val = (decodedBits.to_ulong() >> 16) & 0xFF; // extract high 8 bits
+    // decodedCode.addr = decodedBits.to_ulong() & 0x7FFF; // extract low 15 bits
+
+    // delete encodedBits;
     return decodedCode;
 }
