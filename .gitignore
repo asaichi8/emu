@@ -16,3 +16,4 @@ build
 bin/emu
 asm/default.o
 asm/default.nes
+bin/bin/
