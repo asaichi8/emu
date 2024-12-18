@@ -16,6 +16,7 @@ class Loader
 {
 	static std::string HashToHexStr(const BYTE hash[], size_t len);
 	static std::string CalcMD5(const std::vector<BYTE>& file);
+	static bool IsNESFile(const std::vector<BYTE>* romRaw);
 
 public:
 	Loader();

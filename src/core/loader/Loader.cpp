@@ -79,20 +79,50 @@ std::string Loader::HashToHexStr(const BYTE hash[], size_t len)
 	return ss.str();
 }
 
+bool Loader::IsNESFile(const std::vector<BYTE>* romRaw)
+{
+	const BYTE NES_SIG[4] = {'N', 'E', 'S', 0x1A}; // "NES^Z"
+	BYTE sig[4];
+
+	for (int i = 0; i < 4; ++i)
+	{
+		sig[i] = romRaw->at(i);
+	}
+
+	if (memcmp(sig, NES_SIG, sizeof(NES_SIG)) == 0)
+		return true;
+
+	return false;
+}
+
 Loader::GameInfo Loader::FindROM(const std::vector<BYTE>* romRaw, const std::string& dbPath)
 {
+	const size_t NES_HEADER_SIZE = 16;
 	GameInfo info{};
 
-	if (romRaw->empty() || dbPath.empty())
+	if (romRaw->empty() || romRaw->size() < NES_HEADER_SIZE + 1 || dbPath.empty())
 	{
 		std::cerr << "Invalid usage" << std::endl;
 		return {};
 	}
 
-    std::string md5 = Loader::CalcMD5(*romRaw);
+	// we must be able to calculate an md5 for the raw file, otherwise give up
+    std::string md5 = CalcMD5(*romRaw);
 	std::cout << "md5: " << md5 << std::endl;
 	if (md5.empty())
 		return {};
+
+	// we can optionally calculate a hash for the headerless version of the file, just in case the main hash fails. ROM dumpers
+	// may choose different header values, so this increases the success rate of finding the ROM greatly.
+	std::string md5headerless{};
+	if (IsNESFile(romRaw))
+	{
+		std::vector<BYTE> romCopy = *romRaw;
+		romCopy.erase(romCopy.begin(), romCopy.begin() + NES_HEADER_SIZE);
+
+		md5headerless = CalcMD5(romCopy);
+		std::cout << "md5-headerless: " << md5headerless << std::endl;
+	}
 
 
 	std::ifstream db(dbPath);
@@ -114,24 +144,43 @@ Loader::GameInfo Loader::FindROM(const std::vector<BYTE>* romRaw, const std::str
 
 	for (const auto& rom : j["roms"])
 	{
-		if (!rom.contains("md5") || rom["md5"] != md5)
+		bool foundRom = false;
+		
+		// search for both md5 & md5-headerless in each header, just in case
+		// search for headered md5
+		if (rom.contains("md5") && (rom["md5"] == md5 || (!md5headerless.empty() && rom["md5"] == md5headerless)))
+			foundRom = true;
+		
+		// search for headerless md5
+		if (rom.contains("md5-headerless") && (rom["md5-headerless"] == md5 || (!md5headerless.empty() && rom["md5-headerless"] == md5headerless)))
+		{
+			std::cout << "found headerless" << std::endl;
+			foundRom = true;
+		}
+
+		if (!foundRom)
 			continue;
-			
+
+		
+		// attempt to extract name
 		if (rom.contains("name"))
 			info.name = rom["name"].get<std::string>();
 		else
 			info.name = "Unknown";
 		
+		// attempt to extract game genie codes, if we have any
 		if (rom.contains("game_genie_codes") && rom["game_genie_codes"].is_array())
 		{
 			for (const auto& codeStruct : rom["game_genie_codes"])
 			{
+				// we must have a code and its description
 				if (!codeStruct.contains("code") || !codeStruct.contains("description"))
 					continue;
 				
 				std::string strCode = codeStruct["code"];
 				std::string strDescription = codeStruct["description"];
 
+				// may contain an is_active field, but if not, set it to false as default
 				bool isActive = false;
 				if (codeStruct.contains("is_active"))
 					isActive = codeStruct["is_active"].get<bool>();
