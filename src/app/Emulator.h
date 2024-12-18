@@ -9,12 +9,14 @@
 #include "../core/memory/Bus.h"
 #include "../core/cpu/CPU.h"
 #include "../core/ppu/PPU.h"
+#include "../core/cheats/GameGenie.h"
 #include "display/EmulatorDisplay.h"
 #include "display/NESDisplay.h"
 #include "ControllerHandler.h"
 
 //constexpr char ROM_RELATIVE_PATH[] = "../bin/donkeykong.nes"; 
 constexpr char PALETTE_RELATIVE_PATH[] = "../bin/ntscpalette.pal";  // TODO: add this to args or preload binary or something
+constexpr char DATABASE_RELATIVE_PATH[] = "../bin/rom_database.json";  // TODO: add this to args or preload binary or something
 
 
 /// @brief Responsible for the execution of all the emulator components.
@@ -23,6 +25,7 @@ class Emulator
 	int m_FPS = 60; // FPS of the GUI
 
 	ROM m_ROM{};
+	GameGenie m_gameGenie{};
 	std::unique_ptr<Palette> m_pPalette{};
 	std::shared_ptr<Bus> m_Bus{};
 	std::unique_ptr<CPU> m_CPU{};

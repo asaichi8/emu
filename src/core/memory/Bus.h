@@ -7,6 +7,7 @@
 #include "../../include/typedefs.h"
 #include "../ppu/registers/IPPURegister.h"
 #include "../core/controller/Joypad.h"
+#include "../cheats/GameGenie.h"
 
 // https://www.nesdev.org/wiki/CPU_memory_map
 #define INTERNAL_RAM_SIZE 0x800
@@ -26,6 +27,7 @@ class Bus
 	std::unique_ptr<PPU> m_PPU{};
 	std::vector<BYTE> m_CPURAM{};
 	ROM* m_ROM{};
+	GameGenie* m_gameGenie{};
 	QWORD m_nCPUCycles{};
 	Joypad m_Joypads[2];
 
@@ -35,7 +37,7 @@ class Bus
 	WORD ReadPRGWord(WORD addr, bool shouldWrapPage = false);
 
 public:
-	Bus(ROM* rom);
+	Bus(ROM* rom, GameGenie* gameGenie);
 
 
 	static WORD MirrorAddress(WORD addr, WORD size, WORD startAddr = 0x0);

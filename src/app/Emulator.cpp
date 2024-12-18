@@ -19,13 +19,23 @@ Emulator::Emulator(const std::string& romPath, EmulatorDisplay& GUI) : m_GUI(&GU
 	if (!errMsg.empty())
 		throw std::runtime_error("Failed to load ROM : " + errMsg);
 
+	Loader::GameInfo info = Loader::FindROM(m_ROM.GetRawFile(), Loader::GetFullFilePath(DATABASE_RELATIVE_PATH));
+	if (!info.name.empty())
+	{
+		std::cout << "Game: " << info.name << std::endl;
+		for (const auto& code : info.gameGenieCodes)
+		{
+			std::cout << "Code: " << code.code << "  Description: " << code.description << "  isActive: " << code.isActive << std::endl;
+		}
+	}
+
 	m_pPalette = std::make_unique<Palette>();
 	std::string paletteFullPath = Loader::GetFullFilePath(PALETTE_RELATIVE_PATH);
 	if (!m_pPalette->LoadPalette(paletteFullPath))
 		throw std::runtime_error("Failed to load colour palette!");
 
 	// Create devices
-	m_Bus = std::make_shared<Bus>(&m_ROM);
+	m_Bus = std::make_shared<Bus>(&m_ROM, &m_gameGenie);
 	m_CPU = std::make_unique<CPU>(m_Bus);
 }
 

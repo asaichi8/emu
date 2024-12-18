@@ -7,37 +7,6 @@ GameGenie::GameGenie()
 }
 
 
-// Maps each character to its equivalent hex value in the hex table, and returns a vector<bool> as a bitset.
-// e.g. code is SXIOPO, return value would be:
-// 1101 1010 0101 1001 0001 1001
-// where bits[23] is the left side, and bits[0] is the right side (bits[22] == 1, bits[1] == 0)
-std::vector<bool> GameGenie::StringCodeToBits(const std::string& code)
-{
-    if (code.empty())
-        throw std::invalid_argument("String length must be greater than 0!");
-
-    const size_t numBits = code.length() * 4;
-    std::vector<bool> bits(numBits, 0);
-
-    for (int i = 0; i < code.length(); ++i)
-    {
-        char c = code.at(i);
-
-        auto it = HexTable.find(c);
-        if (it == HexTable.end())
-            throw std::invalid_argument("Not a valid Game Genie code!");
-        
-        size_t shiftVal = numBits - ((i + 1) * 4); // hex values go from left to right rather than right to left
-        
-        for (int j = 3; j >= 0; --j)
-        {
-            bits.at(shiftVal + j) = (it->second >> j) & 1;
-        }
-    }
-
-    return bits;
-}
-
 GameGenie::DecodedCode GameGenie::Decode(const std::string& code)
 {
     const size_t numBits = code.length() * 4;
@@ -97,4 +66,36 @@ GameGenie::DecodedCode GameGenie::Decode(const std::string& code)
         decodedCode.compare = BitsToInt(bitsCompare); // extract low 8 bits
 
     return decodedCode;
+}
+
+
+// Maps each character to its equivalent hex value in the hex table, and returns a vector<bool> as a bitset.
+// e.g. code is SXIOPO, return value would be:
+// 1101 1010 0101 1001 0001 1001
+// where bits[23] is the left side, and bits[0] is the right side (bits[22] == 1, bits[1] == 0)
+std::vector<bool> GameGenie::StringCodeToBits(const std::string& code)
+{
+    if (code.empty())
+        throw std::invalid_argument("String length must be greater than 0!");
+
+    const size_t numBits = code.length() * 4;
+    std::vector<bool> bits(numBits, 0);
+
+    for (int i = 0; i < code.length(); ++i)
+    {
+        char c = code.at(i);
+
+        auto it = HexTable.find(c);
+        if (it == HexTable.end())
+            throw std::invalid_argument("Not a valid Game Genie code!");
+        
+        size_t shiftVal = numBits - ((i + 1) * 4); // hex values go from left to right rather than right to left
+        
+        for (int j = 3; j >= 0; --j)
+        {
+            bits.at(shiftVal + j) = (it->second >> j) & 1;
+        }
+    }
+
+    return bits;
 }

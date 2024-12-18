@@ -87,4 +87,5 @@ public:
 	
 	std::string CheckROM(const std::string& filePath, bool shouldUse = false);
 	std::string LoadROM(const std::string& filePath);
+	const std::vector<BYTE>* GetRawFile() const { return m_pRawFile.get(); }
 };
