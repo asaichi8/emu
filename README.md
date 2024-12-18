@@ -3,7 +3,7 @@ Untitled NES Emulator
 
 NES emulator
 
-Linux/MacOS
+Linux/macOS
 ------------
 ### Dependencies
 apt: ```sudo apt install cmake ninja g++ libsdl2-dev```
