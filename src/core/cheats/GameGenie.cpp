@@ -17,7 +17,8 @@ GameGenie::DecodedCode GameGenie::Decode(const std::string& code)
     else if (numBits == 32)
         positionMap = POSITION_MAP_8;
     else
-        throw std::invalid_argument("String length was not 6 or 8!");
+        return {}; // TODO: this should throw an error
+        //throw std::invalid_argument("String length was not 6 or 8!");
     
     GameGenie::DecodedCode decodedCode{};
 

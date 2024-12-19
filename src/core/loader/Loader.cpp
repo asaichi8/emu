@@ -98,7 +98,7 @@ bool Loader::IsNESFile(const std::vector<BYTE>* romRaw)
 Loader::GameInfo Loader::FindROM(const std::vector<BYTE>* romRaw, const std::string& dbPath)
 {
 	const size_t NES_HEADER_SIZE = 16;
-	GameInfo info{};
+	Loader::GameInfo info{};
 
 	if (romRaw->empty() || romRaw->size() < NES_HEADER_SIZE + 1 || dbPath.empty())
 	{

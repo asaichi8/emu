@@ -1,6 +1,6 @@
 #include "EmulatorDisplay.h"
 
-
+// TODO: refactor this its a mess
 EmulatorDisplay::EmulatorDisplay(const std::string& winName, int w, int h, int scale, ControllerHandler* pCH) 
 	: SDLApp(winName, w, h, scale), m_pControllerHandler(pCH)
 {
@@ -124,6 +124,8 @@ void EmulatorDisplay::StartImGuiFrame()
 
 		ImGui::EndMainMenuBar();
 	}
+
+	if (shouldOpenGameGenieWin) this->WinGameGenie();
 
 	if (shouldOpenControllerWin)
 	{
@@ -285,6 +287,60 @@ void EmulatorDisplay::RenderFrame(BYTE* screenBuffer, int size)
 	SDL_RenderPresent(GetRenderer());
 }
 
+
+void EmulatorDisplay::WinGameGenie()
+{
+	// TODO: resize this window based on the length, and set description to right hand side
+	// TODO: add "add code"
+	ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_Always);
+	ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+	//ImGui::OpenPopup("Game Genie Codes");
+	if (ImGui::Begin("Game Genie Codes", &shouldOpenGameGenieWin, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		for (int i = 0; i < m_pCodes->size(); ++i) // loop through each code
+		{
+			GameGenie::GameGenieCode* code = &m_pCodes->at(i);
+
+			ImGui::PushID(i); // give unique ID to each checkbox
+
+			if (ImGui::Checkbox("##EnableCode", &code->isActive))
+			{
+				// TODO: implement enabling code
+			}
+
+			ImGui::SameLine();
+			ImGui::Text("%s :  %s", code->code.c_str(), code->description.c_str());
+			//ImGui::SameLine();
+			//ImGui::SetCursorPosX(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(code->description.c_str()).x); // set to right hand side
+			//ImGui::Text("%s", code->description.c_str());
+
+			ImGui::PopID();
+		}
+
+		ImGui::End();
+	}
+
+		// 	ImGui::Begin("Controller", &shouldOpenControllerWin, ImGuiWindowFlags_AlwaysAutoResize);
+
+		// // create combo for each port
+		// for (int i = 1; i <= m_pControllerHandler->m_Ports.GetPortSize(); ++i)
+		// {
+		// 	CreateControllerCombo(i);
+		// }
+
+		// ImGui::Spacing();
+		// ImGui::Separator();
+		// ImGui::Spacing();
+
+		// if (ImGui::Button("Save defaults", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+		// {
+		// 	if (!m_pControllerHandler->SaveToConfig())
+		// 		std::cerr << "Failed to save ports!" << std::endl;
+		// }
+
+		// ImGui::End();
+}
 
 
 std::string EmulatorDisplay::GetSelectedFile()

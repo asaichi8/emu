@@ -10,6 +10,7 @@
 #include <openssl/evp.h>
 #include <nlohmann/json.hpp>
 #include "../../include/typedefs.h"
+#include "../cheats/GameGenie.h"
 
 
 class Loader
@@ -21,23 +22,13 @@ class Loader
 public:
 	Loader();
 
-	struct GameGenieCode
-	{
-		std::string code{};
-		std::string description{};
-		bool isActive = false;
-
-		GameGenieCode(const std::string& _code, const std::string& _description, bool _isActive)
-			: code(_code), description(_description), isActive(_isActive) {}
-	};
-
 	struct GameInfo
 	{
 		std::string name{};
 		// probably don't need md5 hash stuff
 		//std::string md5{}; 
 		//std::string md5headerless{};
-		std::vector<GameGenieCode> gameGenieCodes{};
+		std::vector<GameGenie::GameGenieCode> gameGenieCodes{};
 		BYTE szInesHeader[16]{};
 
 		void inline SetHeaderFromHexStr(const std::string& hexStr)
@@ -62,5 +53,5 @@ public:
 	static std::vector<BYTE> HexStrToBytes(const std::string& hexString);
 	static std::vector<BYTE> LoadFile(const std::string& filePath);
 	static std::string GetFullFilePath(const std::string& relativePath);
-	static GameInfo FindROM(const std::vector<BYTE>* romRaw, const std::string& dbPath);
+	static Loader::GameInfo FindROM(const std::vector<BYTE>* romRaw, const std::string& dbPath);
 };

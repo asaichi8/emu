@@ -6,21 +6,11 @@
 #include <vector>
 #include <algorithm>
 #include "typedefs.h"
-#include "../loader/Loader.h"
 
 
 // https://github.com/jdratlif/ggencoder-java/blob/master/docs/nes.txt
 class GameGenie
 {
-public:
-    struct DecodedCode
-    {
-        WORD addr{};
-        BYTE val{};
-        std::optional<BYTE> compare = std::nullopt;
-    };
-
-private:
     // string:   SXIOPO
     // from link above:
     // Code:     110110100101100100011001
@@ -45,13 +35,32 @@ private:
         {'E', 0x8}, {'O', 0x9}, {'X', 0xA}, {'U', 0xB}, {'K', 0xC}, {'S', 0xD}, {'V', 0xE}, {'N', 0xF}
     };
 
-    // list of codes - the string name, and then the decoded code
-    std::vector< std::pair<std::string, DecodedCode> > vec_activeCodes{};
-
     static std::vector<bool> StringCodeToBits(const std::string& code);
 
 public:
     GameGenie();
+
+    struct DecodedCode
+    {
+        WORD addr{};
+        BYTE val{};
+        std::optional<BYTE> compare = std::nullopt;
+    };
+    
+	struct GameGenieCode
+	{
+		std::string code{};
+		std::string description{};
+		bool isActive = false;
+		GameGenie::DecodedCode decoded{};
+
+		GameGenieCode(const std::string& _code, const std::string& _description, bool _isActive)
+			: code(_code), description(_description), isActive(_isActive)
+		{
+            // TODO: make GameGenieCode take a vector<string> code, and concatenate with " + "
+			decoded = GameGenie::Decode(code);
+		}
+	};
 
     static DecodedCode Decode(const std::string& code);
 };

@@ -1,7 +1,7 @@
 #include "Bus.h"
 
 
-Bus::Bus(ROM* rom, GameGenie* gameGenie) : m_ROM(rom), m_gameGenie(gameGenie)
+Bus::Bus(ROM* rom) : m_ROM(rom)
 {
 	m_PPU = std::make_unique<PPU>(&(m_ROM->CHR_ROM), &(m_ROM->mirrorType));
 	m_CPURAM.assign(8 * KB, 0); // the CPU's RAM is actually only 2KB in size - the rest of the 6KB are mirrored.
@@ -184,14 +184,34 @@ BYTE Bus::ReadPRGByte(WORD addr)
 		std::cerr << "ERROR: reading byte below PRG_RAM_START! (this should never occur)" << std::endl;
 		return 0;
 	}
-	
+
 	// mirror address if it's outside the PRG ROM size range
 	if (m_ROM->PRG_ROM.size() == (16 * KB) && addr >= (PRG_RAM_START + 16 * KB))
 		addr = MirrorAddress(addr, m_ROM->PRG_ROM.size(), PRG_RAM_START);
 
 	addr -= PRG_RAM_START;
-	// if (addr == 0x11D9) // SXIOPO (infinite lives in super mario)
-	// 	m_ROM->PRG_ROM[addr] = 0xAD;
+
+
+	// implement game genie code
+	for (const auto& code : m_ROM->GetGameInfo()->gameGenieCodes)
+	{
+		if (!code.isActive)
+			continue;
+
+		size_t decodedAddr = code.decoded.addr; // make a copy in case we need to modify it
+		if (m_ROM->PRG_ROM.size() == (16 * KB)) // decoded addresses need mirroring too
+			decodedAddr %= 16 * KB; // mirror to PRG_ROM size
+
+		if (decodedAddr != addr)
+			continue;
+
+		if (code.decoded.compare.has_value() && m_ROM->PRG_ROM[decodedAddr] != code.decoded.compare)
+			continue;
+
+		m_ROM->PRG_ROM[decodedAddr] = code.decoded.val;
+		break;
+	}
+	
 	return m_ROM->PRG_ROM[addr];
 }
 

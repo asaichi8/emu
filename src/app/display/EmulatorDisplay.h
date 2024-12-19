@@ -11,6 +11,7 @@
 #include "../../include/imgui/imgui_impl_sdlrenderer2.h"
 #include "../../core/cpu/CPURegisters.h"
 #include "../../include/typedefs.h"
+#include "../../core/loader/Loader.h"
 #include "SDL/controllers/ControllerHandler.h"
 #include "../../include/Config.h"
 #include "RecentFileQueue.h"
@@ -21,6 +22,7 @@ class EmulatorDisplay : public SDLApp
 {
 	ControllerHandler* m_pControllerHandler;
 	CPURegisters m_curReg{}; // A copy of the CPU's registers so they can be displayed.
+	std::vector<GameGenie::GameGenieCode>* m_pCodes;
 	std::string m_lastError = "Unknown error occured!";
 	std::string m_lastErrorTitle = "Error";
 	std::string m_selectedFile{};
@@ -39,6 +41,7 @@ class EmulatorDisplay : public SDLApp
 	void RenderImGuiFrame();
 	void OpenFileDialog();
 	void CreateControllerCombo(size_t port);
+	void WinGameGenie();
 
 public:
 	EmulatorDisplay(const std::string& winName, int w, int h, int scale, ControllerHandler* pCH);
@@ -51,6 +54,7 @@ public:
 	void RenderFrame(BYTE* screenBuffer, int size);
 	void ShutdownImGui();
 	void UpdateRegisters(const CPURegisters& registers) { m_curReg = registers; }
+	void UpdateCodes(std::vector<GameGenie::GameGenieCode>* codes) { m_pCodes = codes; }
 
 
 	// Getters/setters

@@ -45,7 +45,7 @@ Emulator::Emulator(const std::string& romPath, EmulatorDisplay& GUI) : m_GUI(&GU
 
 
 	// Create devices
-	m_Bus = std::make_shared<Bus>(&m_ROM, &m_gameGenie);
+	m_Bus = std::make_shared<Bus>(&m_ROM);
 	m_CPU = std::make_unique<CPU>(m_Bus);
 
 
@@ -129,7 +129,7 @@ std::string Emulator::Run()
 		else
 		{
 			m_GUI->RenderFrame(nesDisplay.GetScreen(), DISPLAY_WIDTH);
-			loopStart = std::chrono::high_resolution_clock::now();;
+			loopStart = std::chrono::high_resolution_clock::now();
 		}
 
 
@@ -148,6 +148,8 @@ std::string Emulator::Run()
 			m_CPU->Run(); // execute the CPU for a single instruction
 			m_GUI->SetShouldStepThrough(false);
 		}
+
+		m_GUI->UpdateCodes(&m_ROM.GetGameInfo()->gameGenieCodes);
  
 		if (m_GUI->GetSelectedFile() != "")
 		{
