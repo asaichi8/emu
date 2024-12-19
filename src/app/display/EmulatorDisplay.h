@@ -17,6 +17,7 @@
 #include "RecentFileQueue.h"
 #include "ui/UIManager.h"
 #include "ui/GameGenieWindow.h"
+#include "ui/ControllerWindow.h"
 
 
 /// @brief Responsible for the GUI/video of the emulator.
@@ -43,7 +44,6 @@ class EmulatorDisplay : public SDLApp
 	void StartImGuiFrame();
 	void RenderImGuiFrame();
 	void OpenFileDialog();
-	void CreateControllerCombo(size_t port);
 
 public:
 	EmulatorDisplay(const std::string& winName, int w, int h, int scale, ControllerHandler* pCH);

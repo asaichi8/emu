@@ -6,9 +6,11 @@ EmulatorDisplay::EmulatorDisplay(const std::string& winName, int w, int h, int s
 {
 	this->InitImGui();
 
-	auto gameGenieWindow = std::make_shared<GameGenieWindow>("Game Genie", &m_pCodes);
+	auto gameGenieWindow  = std::make_shared<GameGenieWindow> ("Game Genie",  &m_pCodes); // pass reference as m_pCodes may change
+	auto controllerWindow = std::make_shared<ControllerWindow>("Controllers", pCH);
+	
 	m_uiManager.RegisterWindow(gameGenieWindow);
-	//m_uiManager.RegisterWindow()
+	m_uiManager.RegisterWindow(controllerWindow);
 }
 
 EmulatorDisplay::~EmulatorDisplay()
@@ -112,8 +114,8 @@ void EmulatorDisplay::StartImGuiFrame()
 
 		if (ImGui::BeginMenu("Settings"))
 		{
-			if (ImGui::MenuItem("Controllers"))
-				shouldOpenControllerWin = true;
+			if (auto win = m_uiManager.GetWindow("Controllers"); win && ImGui::MenuItem(win->GetName().c_str()))
+				win->m_isOpen = true;
 			
 			ImGui::EndMenu();
 		}
@@ -130,29 +132,6 @@ void EmulatorDisplay::StartImGuiFrame()
 	}
 
 	m_uiManager.DrawAll();
-
-	if (shouldOpenControllerWin)
-	{
-		ImGui::Begin("Controller", &shouldOpenControllerWin, ImGuiWindowFlags_AlwaysAutoResize);
-
-		// create combo for each port
-		for (int i = 1; i <= m_pControllerHandler->m_Ports.GetPortSize(); ++i)
-		{
-			CreateControllerCombo(i);
-		}
-
-		ImGui::Spacing();
-		ImGui::Separator();
-		ImGui::Spacing();
-
-		if (ImGui::Button("Save defaults", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
-		{
-			if (!m_pControllerHandler->SaveToConfig())
-				std::cerr << "Failed to save ports!" << std::endl;
-		}
-
-		ImGui::End();
-	}
 
 	if (shouldReadRegisters)
 	{
@@ -221,46 +200,6 @@ void EmulatorDisplay::StartImGuiFrame()
 	ImGui::Render();
 }
 
-void EmulatorDisplay::CreateControllerCombo(size_t port)
-{
-	ImGui::Text("Port %d: ", port);
-	ImGui::SameLine();
-
-	auto curController = m_pControllerHandler->m_Ports.Retrieve(port);
-
-	// check if current controller is still connected
-	// (we do this here because if it's disconnected, it can't write anything anyway)
-	auto controllers = m_pControllerHandler->GetControllers();
-	if (curController != nullptr && std::find(controllers.begin(), controllers.end(), curController) == controllers.end())
-	{
-		// not connected so disconnect
-		m_pControllerHandler->m_Ports.Disconnect(port);
-		curController = nullptr;
-	}
-
-	std::string comboTitle = "##ControllerCombo" + std::to_string(port);
-	if (ImGui::BeginCombo(comboTitle.c_str(), SDL_GameControllerName(curController)))
-	{
-		// allow for a "None" option which deselects a port
-		bool isSelected = (curController == nullptr);
-		if (ImGui::Selectable("None", isSelected))
-			m_pControllerHandler->m_Ports.Disconnect(port);
-		
-		if (isSelected) ImGui::SetItemDefaultFocus();
-
-		// iterate & list Controllers
-		for (int i = 0; i < controllers.size(); ++i)
-		{
-			isSelected = (controllers.at(i) == curController);
-			if (ImGui::Selectable(SDL_GameControllerName(controllers.at(i)), isSelected))
-				m_pControllerHandler->m_Ports.Connect(controllers.at(i), port);
-
-			if (isSelected) ImGui::SetItemDefaultFocus();
-		}
-
-		ImGui::EndCombo();
-	}
-}
 
 /// @brief Renders the ImGui frame within the SDL2 context
 void EmulatorDisplay::RenderImGuiFrame() 
