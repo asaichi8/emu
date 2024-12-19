@@ -299,10 +299,11 @@ void NESDisplay::DrawSprites()
 		}
 
 		const Tile *pCurTile = (const Tile *)(&(m_pPPU->GetCHR_ROM()->at(selectedTileIndex)));
-
+		// add 1 to tileY, because sprite data is delayed by one scanline in the NES: https://www.youtube.com/watch?v=8M2V5Pv6_1A&t=294s
+		Point tilePos = {pCurSprite->tileX, pCurSprite->tileY + 1};
 		std::vector<BYTE> paletteColours = GetSpriteTilePalette(paletteIndex);
 
-		DrawTile(*pCurTile, {pCurSprite->tileX, pCurSprite->tileY}, paletteColours,
+		DrawTile(*pCurTile, tilePos, paletteColours,
 				 {0, 0}, {DISPLAY_WIDTH, DISPLAY_HEIGHT}, {0, 0},
 				 true, shouldFlipVertical, shouldFlipHorizontal, pCurSprite->tileProperties & OAMProperties::PRIORITY);
 	}
