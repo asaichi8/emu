@@ -8,7 +8,7 @@
 
 class ControllerWindow : public IGUIWindow
 {
-    ControllerHandler* m_pControllerHandler;
+    ControllerHandler* m_pControllerHandler{};
 
     void CreateControllerCombo(size_t port)
     {

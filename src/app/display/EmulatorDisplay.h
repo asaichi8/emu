@@ -18,6 +18,7 @@
 #include "ui/UIManager.h"
 #include "ui/GameGenieWindow.h"
 #include "ui/ControllerWindow.h"
+#include "ui/CPURegWindow.h"
 
 
 /// @brief Responsible for the GUI/video of the emulator.
@@ -67,9 +68,6 @@ public:
 
 	bool GetShouldStepThrough() { return shouldStepThrough; }
 	void SetShouldStepThrough(bool b) { shouldStepThrough = b; }
-
-	bool GetShouldReadRegisters() { return shouldReadRegisters; }
-	void SetShouldReadRegisters(bool b) { shouldReadRegisters = b; }
 
 	bool GetShouldShowErrorMsg() { return shouldShowErrorMsg; }
 	void SetShouldShowErrorMsg(bool b, const std::string& errMsg = "Unknown error occured!", const std::string& errTitle = "Error")

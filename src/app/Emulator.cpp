@@ -136,8 +136,7 @@ std::string Emulator::Run()
 		}
 
 
-		if (m_GUI->GetShouldReadRegisters())				// if read registers was clicked...
-			m_GUI->UpdateRegisters(m_CPU->ReadRegisters()); // update GUI with a copy of the CPU's current registers
+		m_GUI->UpdateRegisters(m_CPU->ReadRegisters()); // update GUI with a copy of the CPU's current registers
 
 		if (m_GUI->GetShouldRestart())
 		{
