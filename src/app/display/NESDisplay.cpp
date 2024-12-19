@@ -40,8 +40,8 @@ void NESDisplay::DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank)
 	std::vector<Tile> tiles{};
 	for (int tileNo = 0; tileNo < 16*16; ++tileNo)
 	{
-		const WORD curTileOffset = tileNo * sizeof(Tile);
-		const WORD curTilePos = tilesStartAddr + curTileOffset;
+		const size_t curTileOffset = tileNo * sizeof(Tile);
+		const size_t curTilePos = tilesStartAddr + curTileOffset;
 
 		if (tileNo && tileNo % 16 == 0)
 		{
@@ -254,9 +254,17 @@ void NESDisplay::DrawNametable(const std::vector<BYTE>& nametable, const Point& 
 			break;
 		}
 
-		const WORD selectedTilePos = nametable.at(tileNo);				// position of tile to be used
-		const WORD selectedTileOffset = selectedTilePos * sizeof(Tile); // address of tile to be used
-		const Tile *pCurTile = (const Tile *)(&(m_pPPU->GetCHR_ROM()->at(bgBankAddr + selectedTileOffset)));
+		const size_t selectedTilePos = nametable.at(tileNo);				// position of tile to be used
+		const size_t selectedTileOffset = selectedTilePos * sizeof(Tile); // address of tile to be used
+		const size_t selectedTileIndex = bgBankAddr + selectedTileOffset; // index in CHR_ROM of tile to be used
+
+		if (m_pPPU->GetCHR_ROM()->size() + sizeof(Tile) < selectedTileIndex)
+		{
+			std::cerr << "Attempted to access nametable tile outside of CHR_ROM!" << std::endl;
+			continue;
+		}
+
+		const Tile *pCurTile = (const Tile *)(&(m_pPPU->GetCHR_ROM()->at(selectedTileIndex)));
 
 		const Point tilePos = {tileNo % 32, tileNo / 32};
 
@@ -281,8 +289,16 @@ void NESDisplay::DrawSprites()
 		bool shouldFlipVertical = (pCurSprite->tileProperties & OAMProperties::FLIP_VERTICALLY);
 		bool shouldFlipHorizontal = (pCurSprite->tileProperties & OAMProperties::FLIP_HORIZONTALLY);
 
-		const WORD selectedTileOffset = pCurSprite->tileIndex * sizeof(Tile); // address of tile to be used
-		const Tile *pCurTile = (const Tile *)(&(m_pPPU->GetCHR_ROM()->at(spriteBankAddr + selectedTileOffset)));
+		const size_t selectedTileOffset = pCurSprite->tileIndex * sizeof(Tile); // address of tile to be used
+		const size_t selectedTileIndex = spriteBankAddr + selectedTileOffset;   // index in CHR_ROM of tile to be used
+
+		if (selectedTileIndex + sizeof(Tile) > m_pPPU->GetCHR_ROM()->size())
+		{
+			std::cerr << "Attempted to access sprite tile outside of CHR_ROM!" << std::endl;
+			continue;
+		}
+
+		const Tile *pCurTile = (const Tile *)(&(m_pPPU->GetCHR_ROM()->at(selectedTileIndex)));
 
 		std::vector<BYTE> paletteColours = GetSpriteTilePalette(paletteIndex);
 

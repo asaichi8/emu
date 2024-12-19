@@ -7,6 +7,9 @@ PPU::PPU(std::vector<BYTE>* _pCHR_ROM, MirrorType* _pMirrorType) : m_pCHR_ROM(_p
         pTable.assign(NAMETABLE_SIZE, 0);
     m_OAM.assign(PAGE, 0); // https://www.nesdev.org/wiki/PPU_memory_map#OAM
     m_PaletteRAM.assign(PALETTE_RAM_TOTAL_SIZE, 0);
+    
+    // if (m_pCHR_ROM->empty())
+    //     m_pCHR_ROM->assign(0x2000, 0);
 }
 
 
@@ -96,6 +99,7 @@ BYTE PPU::ReadPPUByte()
         auto index = GetNametableIndex(addr);
         addr = Bus::MirrorAddress(addr, NAMETABLES_TOTAL_SIZE); // mirror to 0x0000 - 0x0FFF
         addr = Bus::MirrorAddress(addr, NAMETABLE_SIZE); // mirror to 0x0000 - 0x0400
+
         ppuDataRegister->Write(m_NametableRAM[index][addr]);
     }
     else if (addr < PPU_ADDRESS_SPACE_END) // palette ram 0x3F00 - 0x3FFF
