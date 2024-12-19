@@ -295,51 +295,26 @@ void EmulatorDisplay::WinGameGenie()
 	ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_Always);
 	ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 
-	//ImGui::OpenPopup("Game Genie Codes");
-	if (ImGui::Begin("Game Genie Codes", &shouldOpenGameGenieWin, ImGuiWindowFlags_AlwaysAutoResize))
+	ImGui::Begin("Game Genie Codes", &shouldOpenGameGenieWin, ImGuiWindowFlags_AlwaysAutoResize);
+	
+	for (int i = 0; i < m_pCodes->size(); ++i) // loop through each code
 	{
-		for (int i = 0; i < m_pCodes->size(); ++i) // loop through each code
-		{
-			GameGenie::GameGenieCode* code = &m_pCodes->at(i);
+		GameGenie::GameGenieCode* code = &m_pCodes->at(i);
 
-			ImGui::PushID(i); // give unique ID to each checkbox
+		ImGui::PushID(i); // give unique ID to each checkbox
 
-			if (ImGui::Checkbox("##EnableCode", &code->isActive))
-			{
-				// TODO: implement enabling code
-			}
+		ImGui::Checkbox("##EnableCode", &code->isActive);
 
-			ImGui::SameLine();
-			ImGui::Text("%s :  %s", code->code.c_str(), code->description.c_str());
-			//ImGui::SameLine();
-			//ImGui::SetCursorPosX(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(code->description.c_str()).x); // set to right hand side
-			//ImGui::Text("%s", code->description.c_str());
+		ImGui::SameLine();
+		ImGui::Text("%s :  %s", code->code.c_str(), code->description.c_str());
+		//ImGui::SameLine();
+		//ImGui::SetCursorPosX(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(code->description.c_str()).x); // set to right hand side
+		//ImGui::Text("%s", code->description.c_str());
 
-			ImGui::PopID();
-		}
-
-		ImGui::End();
+		ImGui::PopID();
 	}
 
-		// 	ImGui::Begin("Controller", &shouldOpenControllerWin, ImGuiWindowFlags_AlwaysAutoResize);
-
-		// // create combo for each port
-		// for (int i = 1; i <= m_pControllerHandler->m_Ports.GetPortSize(); ++i)
-		// {
-		// 	CreateControllerCombo(i);
-		// }
-
-		// ImGui::Spacing();
-		// ImGui::Separator();
-		// ImGui::Spacing();
-
-		// if (ImGui::Button("Save defaults", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
-		// {
-		// 	if (!m_pControllerHandler->SaveToConfig())
-		// 		std::cerr << "Failed to save ports!" << std::endl;
-		// }
-
-		// ImGui::End();
+	ImGui::End();
 }
 
 
