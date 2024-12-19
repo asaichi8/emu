@@ -150,10 +150,9 @@ Loader::GameInfo Loader::FindROM(const std::vector<BYTE>* romRaw, const std::str
 		// search for headered md5
 		if (rom.contains("md5") && (rom["md5"] == md5 || (!md5headerless.empty() && rom["md5"] == md5headerless)))
 			foundRom = true;
-		
-		// search for headerless md5
-		if (rom.contains("md5-headerless") && (rom["md5-headerless"] == md5 || (!md5headerless.empty() && rom["md5-headerless"] == md5headerless)))
+		else if (rom.contains("md5-headerless") && (rom["md5-headerless"] == md5 || (!md5headerless.empty() && rom["md5-headerless"] == md5headerless)))
 		{
+			// search for headerless md5
 			std::cout << "found headerless" << std::endl;
 			foundRom = true;
 		}
