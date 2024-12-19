@@ -1,6 +1,12 @@
 {
     "roms": [
         {
+            "md5": "c88acfa48759f9b03c3271536ef6b26a",
+            "name": "Default emulator ROM",
+            "md5-headerless": "623998bbc349f24c10daccb5136698a6",
+            "ines-header": "4E45531A020100000000000000000000"
+        },
+        {
             "md5": "44091221ff27af8f274f210dec670bb1",
             "name": "'89 Dennou Kyuusei Uranai (Japan)",
             "md5-headerless": "4187a797e33bc96a96993220da6f09f7",
