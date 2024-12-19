@@ -13,13 +13,41 @@
 
 Emulator::Emulator(const std::string& romPath, EmulatorDisplay& GUI) : m_GUI(&GUI)
 {
-	// Map ROM into appropriate variables
+	// Get ROM file path
 	m_curRomPath = Loader::GetFullFilePath(romPath.c_str());
-	std::string errMsg = m_ROM.LoadROM(m_curRomPath);
-	if (!errMsg.empty())
-		throw std::runtime_error("Failed to load ROM : " + errMsg);
 
-	Loader::GameInfo info = Loader::FindROM(m_ROM.GetRawFile(), Loader::GetFullFilePath(DATABASE_RELATIVE_PATH));
+	// TODO: probably package these three lines into a function, returning std::string err msg and taking a shouldUse bool param.
+	// 		 it's used twice further down this file
+	// Load ROM here
+	std::unique_ptr<std::vector<BYTE>> romRaw = std::make_unique<std::vector<BYTE>>(Loader::LoadFile(m_curRomPath));
+
+	// Attempt to extract info of file from database based on MD5 hash
+	Loader::GameInfo info = Loader::FindROM(romRaw.get(), Loader::GetFullFilePath(DATABASE_RELATIVE_PATH));
+
+	// Move ROM to m_ROM & check if it's an actual NES file
+	std::string errMsg = m_ROM.CheckROM(std::move(romRaw), true, info);
+	if (!errMsg.empty())
+		throw std::runtime_error("Failed to map ROM : " + errMsg);
+
+
+	// Map ROM into appropriate variables
+	m_ROM.MapROM();
+
+	
+	// Create palette
+	m_pPalette = std::make_unique<Palette>();
+	std::string paletteFullPath = Loader::GetFullFilePath(PALETTE_RELATIVE_PATH);
+	if (!m_pPalette->LoadPalette(paletteFullPath))
+		throw std::runtime_error("Failed to load colour palette!");
+
+
+	// Create devices
+	m_Bus = std::make_shared<Bus>(&m_ROM, &m_gameGenie);
+	m_CPU = std::make_unique<CPU>(m_Bus);
+
+
+
+	// debug
 	if (!info.name.empty())
 	{
 		std::cout << "Game: " << info.name << std::endl;
@@ -28,15 +56,6 @@ Emulator::Emulator(const std::string& romPath, EmulatorDisplay& GUI) : m_GUI(&GU
 			std::cout << "Code: " << code.code << "  Description: " << code.description << "  isActive: " << code.isActive << std::endl;
 		}
 	}
-
-	m_pPalette = std::make_unique<Palette>();
-	std::string paletteFullPath = Loader::GetFullFilePath(PALETTE_RELATIVE_PATH);
-	if (!m_pPalette->LoadPalette(paletteFullPath))
-		throw std::runtime_error("Failed to load colour palette!");
-
-	// Create devices
-	m_Bus = std::make_shared<Bus>(&m_ROM, &m_gameGenie);
-	m_CPU = std::make_unique<CPU>(m_Bus);
 }
 
 Emulator::~Emulator()
@@ -131,8 +150,13 @@ std::string Emulator::Run()
 		{
 			std::string strSelectedFile = m_GUI->GetSelectedFile();
 			m_GUI->SetSelectedFile("");
-
-			std::string errMsg = m_ROM.CheckROM(strSelectedFile);
+			
+			// TODO: here, and the other point in which we're loading a new file (SDL_DROPFILE), we load the file, get its info, and
+			//		 when the loop continues and class Emulator is constructed again, we do it again. we could probably only call this
+			//		 stuff once by returning a struct of the raw file, info, filename etc.
+			std::unique_ptr<std::vector<BYTE>> romRaw = std::make_unique<std::vector<BYTE>>(Loader::LoadFile(strSelectedFile));
+			Loader::GameInfo info = Loader::FindROM(romRaw.get(), Loader::GetFullFilePath(DATABASE_RELATIVE_PATH));
+			std::string errMsg = m_ROM.CheckROM(std::move(romRaw), false, info);
 			if (!errMsg.empty())
 				m_GUI->SetShouldShowErrorMsg(true, errMsg, "Failed to load file");
 			else
@@ -174,7 +198,9 @@ std::string Emulator::Run()
 						if (!strDroppedFile.empty()) // no need to check if valid before pushing to recent files, only if empty
 							m_GUI->m_recentFiles.Push(strDroppedFile);
 
-						std::string errMsg = m_ROM.CheckROM(strDroppedFile);
+						std::unique_ptr<std::vector<BYTE>> romRaw = std::make_unique<std::vector<BYTE>>(Loader::LoadFile(strDroppedFile));
+						Loader::GameInfo info = Loader::FindROM(romRaw.get(), Loader::GetFullFilePath(DATABASE_RELATIVE_PATH));
+						std::string errMsg = m_ROM.CheckROM(std::move(romRaw));
 						if (!errMsg.empty())
 						{
 							m_GUI->SetShouldShowErrorMsg(true, errMsg, "Failed to load file");

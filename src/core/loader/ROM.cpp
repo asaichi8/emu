@@ -7,19 +7,23 @@ ROM::ROM()
 }
 
 
+
+
 // https://www.nesdev.org/wiki/INES
 
-/// @brief Checks if the file loaded is a valid .nes file.
+/// @brief Loads the file and checks if it is a valid .nes file.
 /// @param filePath 
 /// @return The error message. Succeeded if nothing was returned.
-std::string ROM::CheckROM(const std::string& filePath, bool shouldUse)
+std::string ROM::CheckROM(std::unique_ptr<std::vector<BYTE>> pRomRaw, bool shouldUse, const Loader::GameInfo& info)
 {
-	// avoid creating two vectors of bytes by using a pointer
-	std::unique_ptr<std::vector<BYTE>> pTempFile = std::make_unique<std::vector<BYTE>>(Loader::LoadFile(filePath));
-	std::vector<BYTE>* pFile = pTempFile.get();
-
+	// if shouldUse, we move the pointer to the member variable
 	if (shouldUse)
-		m_pRawFile = std::move(pTempFile);
+		m_pRawFile = std::move(pRomRaw);
+
+	// avoid creating two vectors of bytes by copying the pointer - use one pointer to refer to either the
+	//   moved raw file pointer, or the copied raw file pointer
+	std::vector<BYTE>* pFile = shouldUse ? m_pRawFile.get() : pRomRaw.get();
+
 
 	// check we actually loaded something
 	if (pFile->empty())
@@ -30,13 +34,26 @@ std::string ROM::CheckROM(const std::string& filePath, bool shouldUse)
 		return "File not large enough to read header!";
 
 	// map first 16 bytes to iNES_Header
-	const iNES_Header* header = (const iNES_Header*)(pFile->data());
+	iNES_Header* header = (iNES_Header*)(pFile->data());
 	if (shouldUse)
 		m_inesHeader = *header; // create a copy of the header to store as a member variable
 	
 	// check that the file is an iNES file and file actually has space for data requested by header
 	if (!CheckHeaderIsINES(header))
-		return "Not an NES file!";
+	{
+		if (info.IsHeaderNull()) // no backup header
+			return "Not an NES file!";
+
+		// we have a backup header meaning this is probably a headerless NES file, so let's try to insert the header ourselves
+		std::cout << "headereless file, inserting header..." << std::endl;
+		pFile->insert(pFile->begin(), &info.szInesHeader[0], &info.szInesHeader[16]);
+		header = (iNES_Header*)(pFile->data()); // now get the header again
+
+		// if shouldUse, we want to modify our stored raw file and header too
+		if (shouldUse)
+			m_inesHeader = *header;
+	}
+
 	if (!CheckFileSize(*pFile, header))
 		return "File not large enough to map data requested by header!";
 	// if (GetINESVersion(header) > 0) 
@@ -47,14 +64,8 @@ std::string ROM::CheckROM(const std::string& filePath, bool shouldUse)
 
 /// @brief Maps ROM into memory.
 /// @param filePath 
-/// @return The error message. Succeeded if nothing was returned.
-std::string ROM::LoadROM(const std::string& filePath)
+void ROM::MapROM()
 {
-	// CheckROM fills out m_rawFile & m_inesHeader
-	std::string errMsg = CheckROM(filePath, true);
-	if (!errMsg.empty())
-		return errMsg;
-
 	mapperType = GetMapperType(&m_inesHeader);
 	mirrorType = GetMirrorType(&m_inesHeader);
 
@@ -71,8 +82,6 @@ std::string ROM::LoadROM(const std::string& filePath)
 
 	PRG_ROM = std::vector<BYTE>(PRG_begin, PRG_end);
 	CHR_ROM = std::vector<BYTE>(CHR_begin, CHR_end);
-
-	return {};
 }
 
 

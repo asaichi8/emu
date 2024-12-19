@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <stdexcept>
+#include <memory>
+#include <iterator>
 #include "Loader.h"
 #include "../../include/typedefs.h"
 
@@ -85,7 +87,7 @@ public:
 	BYTE mapperType{};
 	MirrorType mirrorType{};
 	
-	std::string CheckROM(const std::string& filePath, bool shouldUse = false);
-	std::string LoadROM(const std::string& filePath);
+	std::string CheckROM(std::unique_ptr<std::vector<BYTE>> pRomRaw, bool shouldUse = false, const Loader::GameInfo& info = {});
+	void MapROM();
 	const std::vector<BYTE>* GetRawFile() const { return m_pRawFile.get(); }
 };
