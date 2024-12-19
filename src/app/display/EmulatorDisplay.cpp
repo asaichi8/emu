@@ -114,6 +114,14 @@ void EmulatorDisplay::StartImGuiFrame()
 			ImGui::EndMenu();
 		}
 
+		if (ImGui::BeginMenu("Cheats"))
+		{
+			if (ImGui::MenuItem("Game Genie"))
+				shouldOpenGameGenieWin = true;
+			
+			ImGui::EndMenu();
+		}
+
 		ImGui::EndMainMenuBar();
 	}
 

@@ -25,6 +25,7 @@ class EmulatorDisplay : public SDLApp
 	std::string m_lastErrorTitle = "Error";
 	std::string m_selectedFile{};
 
+	// TODO: this should probably be some kind of array
 	std::atomic<bool> shouldCPURun = true;
 	bool shouldRestart = false;
 	bool shouldStepThrough = false;
@@ -32,6 +33,7 @@ class EmulatorDisplay : public SDLApp
 	bool shouldShowErrorMsg = false;
 	std::atomic<bool> shouldShowFileDialog = false;
 	bool shouldOpenControllerWin = false;
+	bool shouldOpenGameGenieWin = false;
 
 	void StartImGuiFrame();
 	void RenderImGuiFrame();
