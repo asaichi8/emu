@@ -15,6 +15,8 @@
 #include "SDL/controllers/ControllerHandler.h"
 #include "../../include/Config.h"
 #include "RecentFileQueue.h"
+#include "ui/UIManager.h"
+#include "ui/GameGenieWindow.h"
 
 
 /// @brief Responsible for the GUI/video of the emulator.
@@ -26,6 +28,7 @@ class EmulatorDisplay : public SDLApp
 	std::string m_lastError = "Unknown error occured!";
 	std::string m_lastErrorTitle = "Error";
 	std::string m_selectedFile{};
+	UIManager m_uiManager{};
 
 	// TODO: this should probably be some kind of array
 	std::atomic<bool> shouldCPURun = true;
@@ -41,7 +44,6 @@ class EmulatorDisplay : public SDLApp
 	void RenderImGuiFrame();
 	void OpenFileDialog();
 	void CreateControllerCombo(size_t port);
-	void WinGameGenie();
 
 public:
 	EmulatorDisplay(const std::string& winName, int w, int h, int scale, ControllerHandler* pCH);

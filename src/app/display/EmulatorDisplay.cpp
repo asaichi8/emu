@@ -5,6 +5,10 @@ EmulatorDisplay::EmulatorDisplay(const std::string& winName, int w, int h, int s
 	: SDLApp(winName, w, h, scale), m_pControllerHandler(pCH)
 {
 	this->InitImGui();
+
+	auto gameGenieWindow = std::make_shared<GameGenieWindow>("Game Genie", &m_pCodes);
+	m_uiManager.RegisterWindow(gameGenieWindow);
+	//m_uiManager.RegisterWindow()
 }
 
 EmulatorDisplay::~EmulatorDisplay()
@@ -116,8 +120,8 @@ void EmulatorDisplay::StartImGuiFrame()
 
 		if (ImGui::BeginMenu("Cheats"))
 		{
-			if (ImGui::MenuItem("Game Genie"))
-				shouldOpenGameGenieWin = true;
+			if (auto win = m_uiManager.GetWindow("Game Genie"); win && ImGui::MenuItem(win->GetName().c_str()))
+				win->m_isOpen = true;
 			
 			ImGui::EndMenu();
 		}
@@ -125,7 +129,7 @@ void EmulatorDisplay::StartImGuiFrame()
 		ImGui::EndMainMenuBar();
 	}
 
-	if (shouldOpenGameGenieWin) this->WinGameGenie();
+	m_uiManager.DrawAll();
 
 	if (shouldOpenControllerWin)
 	{
@@ -285,36 +289,6 @@ void EmulatorDisplay::RenderFrame(BYTE* screenBuffer, int size)
 	RenderImGuiFrame();
 
 	SDL_RenderPresent(GetRenderer());
-}
-
-
-void EmulatorDisplay::WinGameGenie()
-{
-	// TODO: resize this window based on the length, and set description to right hand side
-	// TODO: add "add code"
-	ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_Always);
-	ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-
-	ImGui::Begin("Game Genie Codes", &shouldOpenGameGenieWin, ImGuiWindowFlags_AlwaysAutoResize);
-	
-	for (int i = 0; i < m_pCodes->size(); ++i) // loop through each code
-	{
-		GameGenie::GameGenieCode* code = &m_pCodes->at(i);
-
-		ImGui::PushID(i); // give unique ID to each checkbox
-
-		ImGui::Checkbox("##EnableCode", &code->isActive);
-
-		ImGui::SameLine();
-		ImGui::Text("%s :  %s", code->code.c_str(), code->description.c_str());
-		//ImGui::SameLine();
-		//ImGui::SetCursorPosX(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(code->description.c_str()).x); // set to right hand side
-		//ImGui::Text("%s", code->description.c_str());
-
-		ImGui::PopID();
-	}
-
-	ImGui::End();
 }
 
 
