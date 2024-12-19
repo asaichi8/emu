@@ -36,7 +36,10 @@ Emulator::Emulator(const std::string& romPath, EmulatorDisplay& GUI) : m_GUI(&GU
 	// Map ROM into appropriate variables
 	m_ROM.MapROM();
 
+	// Give GUI the Game Genie Codes pointer
+	m_GUI->UpdateCodes(&m_ROM.GetGameInfo()->gameGenieCodes);
 	
+
 	// Create palette
 	m_pPalette = std::make_unique<Palette>();
 	std::string paletteFullPath = Loader::GetFullFilePath(PALETTE_RELATIVE_PATH);
@@ -148,8 +151,6 @@ std::string Emulator::Run()
 			m_CPU->Run(); // execute the CPU for a single instruction
 			m_GUI->SetShouldStepThrough(false);
 		}
-
-		m_GUI->UpdateCodes(&m_ROM.GetGameInfo()->gameGenieCodes);
  
 		if (m_GUI->GetSelectedFile() != "")
 		{
