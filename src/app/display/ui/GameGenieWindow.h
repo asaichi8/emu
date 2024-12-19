@@ -10,7 +10,7 @@ class GameGenieWindow : public IGUIWindow
     std::vector<GameGenie::GameGenieCode>** m_ppCodes{};
 
 public:
-    GameGenieWindow(std::vector<GameGenie::GameGenieCode>** pCodes) : m_ppCodes(pCodes) {}
+    GameGenieWindow(const std::string& name, std::vector<GameGenie::GameGenieCode>** pCodes) : IGUIWindow(name), m_ppCodes(pCodes) {}
 
     void Draw() override
     {
