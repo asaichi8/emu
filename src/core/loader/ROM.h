@@ -69,6 +69,7 @@ class ROM
 
 	std::unique_ptr<std::vector<BYTE>> m_pRawFile{};
 	iNES_Header m_inesHeader{};
+	Loader::GameInfo m_gameInfo{};
 	size_t m_nPRG_ROM_size{};
 	size_t m_nCHR_ROM_size{};
 
@@ -89,5 +90,6 @@ public:
 	
 	std::string CheckROM(std::unique_ptr<std::vector<BYTE>> pRomRaw, bool shouldUse = false, const Loader::GameInfo& info = {});
 	void MapROM();
-	const std::vector<BYTE>* GetRawFile() const { return m_pRawFile.get(); }
+	const std::vector<BYTE>* GetRawFile() const { return m_pRawFile.get(); } // unused currently
+	const Loader::GameInfo& GetGameInfo() const { return m_gameInfo; }
 };

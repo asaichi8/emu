@@ -18,7 +18,10 @@ std::string ROM::CheckROM(std::unique_ptr<std::vector<BYTE>> pRomRaw, bool shoul
 {
 	// if shouldUse, we move the pointer to the member variable
 	if (shouldUse)
+	{
 		m_pRawFile = std::move(pRomRaw);
+		m_gameInfo = info;
+	}
 
 	// avoid creating two vectors of bytes by copying the pointer - use one pointer to refer to either the
 	//   moved raw file pointer, or the copied raw file pointer
