@@ -189,6 +189,10 @@ Loader::GameInfo Loader::FindROM(const std::vector<BYTE>* romRaw, const std::str
 			}
 		}
 
+		// attempt to extract iNES header, if it exists
+		if (rom.contains("ines-header"))
+			info.SetHeaderFromHexStr(rom["ines-header"].get<std::string>());
+
 		return info;
 	}
 	
