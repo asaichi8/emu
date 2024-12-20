@@ -7,7 +7,7 @@
 
 class RecentFileQueue
 {
-    static const size_t QUEUE_SIZE = 5;
+    static const size_t QUEUE_SIZE = 10;
 	static const inline std::string STR_RECENT_FILES = "recentfiles";
     std::deque<std::string> m_recentFiles;
 
