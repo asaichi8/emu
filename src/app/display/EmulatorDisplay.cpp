@@ -10,11 +10,13 @@ EmulatorDisplay::EmulatorDisplay(const std::string& winName, int w, int h, int s
 	auto controllerWindow = std::make_shared<ControllerWindow>("Controllers", pCH);
 	auto cpuRegWindow     = std::make_shared<CPURegWindow>	  ("Registers", m_curReg);
 	auto selectFileWindow = std::make_shared<SelectFileWindow>("Select file");
+	auto errorMsgWindow   = std::make_shared<ErrorMsgWindow>  ("Show error");
 	
 	m_uiManager.RegisterWindow(gameGenieWindow);
 	m_uiManager.RegisterWindow(controllerWindow);
 	m_uiManager.RegisterWindow(cpuRegWindow);
 	m_uiManager.RegisterWindow(selectFileWindow);
+	m_uiManager.RegisterWindow(errorMsgWindow);
 }
 
 EmulatorDisplay::~EmulatorDisplay()
@@ -136,32 +138,6 @@ void EmulatorDisplay::StartImGuiFrame()
 	}
 
 	m_uiManager.DrawAll();
-
-	if (shouldShowErrorMsg)
-	{
-		ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-		
-		ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(1.f, .3f, .3f, .9f));
-		ImGui::OpenPopup(m_lastErrorTitle.c_str());
-		ImGui::SetNextWindowSize(ImVec2(200, 84));
-		if (ImGui::BeginPopupModal(m_lastErrorTitle.c_str(), nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize))
-		{
-			ImGui::Text("%s", m_lastError.c_str());
-
-			ImGui::Spacing();
-			ImGui::Separator();
-			ImGui::Spacing();
-
-			if (ImGui::Button("OK", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
-			{
-				ImGui::CloseCurrentPopup();
-				shouldShowErrorMsg = false;
-			}
-
-			ImGui::EndPopup();
-		}
-		ImGui::PopStyleColor();
-	}
 
 	ImGui::Render();
 }

@@ -20,6 +20,7 @@
 #include "ui/ControllerWindow.h"
 #include "ui/CPURegWindow.h"
 #include "ui/SelectFileWindow.h"
+#include "ui/ErrorMsgWindow.h"
 
 
 /// @brief Responsible for the GUI/video of the emulator.
@@ -38,7 +39,6 @@ class EmulatorDisplay : public SDLApp
 	std::atomic<bool> shouldCPURun = true;
 	bool shouldRestart = false;
 	bool shouldStepThrough = false;
-	bool shouldShowErrorMsg = false;
 
 	void StartImGuiFrame();
 	void RenderImGuiFrame();
@@ -67,12 +67,17 @@ public:
 	bool GetShouldStepThrough() { return shouldStepThrough; }
 	void SetShouldStepThrough(bool b) { shouldStepThrough = b; }
 
-	bool GetShouldShowErrorMsg() { return shouldShowErrorMsg; }
+	bool GetShouldShowErrorMsg() { return m_uiManager.GetWindow("Show error")->IsOpen(); }
 	void SetShouldShowErrorMsg(bool b, const std::string& errMsg = "Unknown error occured!", const std::string& errTitle = "Error")
 	{ 
-		shouldShowErrorMsg = b;
-		m_lastError = errMsg; 
-		m_lastErrorTitle = errTitle;
+		// cast to ErrorMsgWindow to use its functions
+		std::shared_ptr<ErrorMsgWindow> errorMsgWin = std::dynamic_pointer_cast<ErrorMsgWindow>(m_uiManager.GetWindow("Show error"));
+
+		if (!errorMsgWin)
+			return;
+
+		errorMsgWin->Open(b);
+		errorMsgWin->SetError(errTitle, errMsg);
 	}
 
 	std::string GetSelectedFile();
