@@ -7,7 +7,7 @@
 
 class SelectFileWindow : public IGUIWindow
 {
-    std::atomic<bool> m_atomicIsOpen;
+    std::atomic<bool> m_atomicIsOpen{};
 
 public:
     SelectFileWindow(const std::string& name) : IGUIWindow(name) {}
