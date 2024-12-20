@@ -43,6 +43,7 @@ class EmulatorDisplay : public SDLApp
 	void StartImGuiFrame();
 	void RenderImGuiFrame();
 	void OpenFileDialog(std::atomic<bool>* pShouldCPURun);
+	void DrawMainMenu();
 
 public:
 	EmulatorDisplay(const std::string& winName, int w, int h, int scale, ControllerHandler* pCH);

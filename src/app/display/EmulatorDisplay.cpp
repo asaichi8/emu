@@ -44,26 +44,6 @@ void EmulatorDisplay::InitImGui()
 	ImGui_ImplSDLRenderer2_Init(m_Renderer);
 }
 
-void EmulatorDisplay::OpenFileDialog(std::atomic<bool>* pShouldCPURun)
-{
-	m_uiManager.GetWindow("Load file")->Open(true);
-	// pause CPU while we're opening a file - we still need to render though
-	bool preservedShouldCPURun = *pShouldCPURun;
-	*pShouldCPURun = false; // pause cpu
-
-	const char* filterPatterns[] = {"*.nes"};
-	const char* filePath = tinyfd_openFileDialog("Select a file", "", 1, filterPatterns, "NES files", 0);
-
-	if (filePath)
-	{
-		SetSelectedFile(filePath);
-		m_recentFiles.Push(filePath);
-	}
-	
-	*pShouldCPURun = preservedShouldCPURun;
-	m_uiManager.GetWindow("Load file")->Open(false);
-}
-
 /// @brief Called every frame that the GUI is rendered - consists of the actual UI
 void EmulatorDisplay::StartImGuiFrame() 
 {
@@ -73,6 +53,45 @@ void EmulatorDisplay::StartImGuiFrame()
 
 	ImGui::NewFrame();
 
+	DrawMainMenu();
+	m_uiManager.DrawAll();
+
+	ImGui::Render();
+}
+
+
+/// @brief Renders the ImGui frame within the SDL2 context
+void EmulatorDisplay::RenderImGuiFrame() 
+{
+	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
+}
+
+/// @brief Cleans up GUI stuff
+void EmulatorDisplay::ShutdownImGui() 
+{
+	ImGui_ImplSDLRenderer2_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
+	ImGui::DestroyContext();
+}
+
+/// @brief Responsible for starting and rendering ImGui and SDL2 frames
+/// @param screenBuffer Texture raw data
+/// @param size Size of each row of data
+void EmulatorDisplay::RenderFrame(BYTE* screenBuffer, int size)
+{
+	SDL_RenderClear(GetRenderer());
+	
+	SDL_UpdateTexture(GetTexture(), NULL, screenBuffer, size * 3);
+	SDL_RenderCopy(GetRenderer(), GetTexture(), NULL, NULL);
+	StartImGuiFrame();
+	RenderImGuiFrame();
+
+	SDL_RenderPresent(GetRenderer());
+}
+
+
+void EmulatorDisplay::DrawMainMenu()
+{
 	if (ImGui::BeginMainMenuBar()) 
 	{
 		if (ImGui::BeginMenu("File")) 
@@ -136,51 +155,24 @@ void EmulatorDisplay::StartImGuiFrame()
 
 		ImGui::EndMainMenuBar();
 	}
-
-	m_uiManager.DrawAll();
-
-	ImGui::Render();
 }
 
-
-/// @brief Renders the ImGui frame within the SDL2 context
-void EmulatorDisplay::RenderImGuiFrame() 
+void EmulatorDisplay::OpenFileDialog(std::atomic<bool>* pShouldCPURun)
 {
-	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
-}
+	m_uiManager.GetWindow("Load file")->Open(true);
+	// pause CPU while we're opening a file - we still need to render though
+	bool preservedShouldCPURun = *pShouldCPURun;
+	*pShouldCPURun = false; // pause cpu
 
-/// @brief Cleans up GUI stuff
-void EmulatorDisplay::ShutdownImGui() 
-{
-	ImGui_ImplSDLRenderer2_Shutdown();
-	ImGui_ImplSDL2_Shutdown();
-	ImGui::DestroyContext();
-}
+	const char* filterPatterns[] = {"*.nes"};
+	const char* filePath = tinyfd_openFileDialog("Select a file", "", 1, filterPatterns, "NES files", 0);
 
-/// @brief Responsible for starting and rendering ImGui and SDL2 frames
-/// @param screenBuffer Texture raw data
-/// @param size Size of each row of data
-void EmulatorDisplay::RenderFrame(BYTE* screenBuffer, int size)
-{
-	SDL_RenderClear(GetRenderer());
+	if (filePath)
+	{
+		SetSelectedFile(filePath);
+		m_recentFiles.Push(filePath);
+	}
 	
-	SDL_UpdateTexture(GetTexture(), NULL, screenBuffer, size * 3);
-	SDL_RenderCopy(GetRenderer(), GetTexture(), NULL, NULL);
-	StartImGuiFrame();
-	RenderImGuiFrame();
-
-	SDL_RenderPresent(GetRenderer());
+	*pShouldCPURun = preservedShouldCPURun;
+	m_uiManager.GetWindow("Load file")->Open(false);
 }
-
-
-// std::string EmulatorDisplay::GetSelectedFile()
-// {
-// 	std::lock_guard<std::mutex> lock(fileStrMutex);
-// 	return m_selectedFile;
-// };
-
-// void EmulatorDisplay::SetSelectedFile(const std::string& selectedFile)
-// {
-// 	std::lock_guard<std::mutex> lock(fileStrMutex);
-// 	m_selectedFile = selectedFile;
-// }

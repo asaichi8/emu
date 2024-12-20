@@ -21,6 +21,7 @@ Emulator::Emulator(const std::string& romPath, EmulatorDisplay& GUI) : m_GUI(&GU
 	// TODO: we should probably attempt to load the file first, because it's fast. what's certain is looping through the JSON is slow,
 	//		 and should probably be multithreaded.  if there's no header (so initial file load fails), THEN we can start searching
 	//		 for the game's info via multithreading and attempt to insert its header. 
+	//		 or maybe cache stuff in a .ini
 	// Load ROM here
 	std::unique_ptr<std::vector<BYTE>> romRaw = std::make_unique<std::vector<BYTE>>(Loader::LoadFile(m_curRomPath));
 
