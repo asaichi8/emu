@@ -1,14 +1,19 @@
 #pragma once
 
 #include <vector>
+#include <atomic>
 #include "IGUIWindow.h"
 
 
 class SelectFileWindow : public IGUIWindow
 {
+    std::atomic<bool> m_atomicIsOpen;
 
 public:
     SelectFileWindow(const std::string& name) : IGUIWindow(name) {}
+
+    void Open(bool open) override { m_atomicIsOpen.store(open); }
+    bool IsOpen() const override { return m_atomicIsOpen.load(); }
 
     void Draw() override
     {
@@ -19,7 +24,8 @@ public:
 		if (ImGui::BeginPopupModal(title, nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			ImGui::Text("Please choose a file.");
-			ImGui::EndPopup();
 		}
+
+		ImGui::EndPopup();
     }
 };
