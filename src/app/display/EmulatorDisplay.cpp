@@ -8,11 +8,13 @@ EmulatorDisplay::EmulatorDisplay(const std::string& winName, int w, int h, int s
 
 	auto gameGenieWindow  = std::make_shared<GameGenieWindow> ("Game Genie",  &m_pCodes); // pass reference as m_pCodes may change
 	auto controllerWindow = std::make_shared<ControllerWindow>("Controllers", pCH);
-	auto cpuRegWindow     = std::make_shared<CPURegWindow>("Registers", m_curReg);
+	auto cpuRegWindow     = std::make_shared<CPURegWindow>	  ("Registers", m_curReg);
+	auto selectFileWindow = std::make_shared<SelectFileWindow>("Select file");
 	
 	m_uiManager.RegisterWindow(gameGenieWindow);
 	m_uiManager.RegisterWindow(controllerWindow);
 	m_uiManager.RegisterWindow(cpuRegWindow);
+	m_uiManager.RegisterWindow(selectFileWindow);
 }
 
 EmulatorDisplay::~EmulatorDisplay()
@@ -42,7 +44,7 @@ void EmulatorDisplay::InitImGui()
 
 void EmulatorDisplay::OpenFileDialog()
 {
-	shouldShowFileDialog = true;
+	m_uiManager.GetWindow("Select file")->m_isOpen = true;
 	// pause CPU while we're opening a file - we still need to render though
 	bool preservedShouldCPURun = shouldCPURun;
 	shouldCPURun = false;
@@ -57,7 +59,7 @@ void EmulatorDisplay::OpenFileDialog()
 	}
 	
 	shouldCPURun = preservedShouldCPURun;
-	shouldShowFileDialog = false;
+	m_uiManager.GetWindow("Select file")->m_isOpen = false;
 }
 
 /// @brief Called every frame that the GUI is rendered - consists of the actual UI
@@ -159,19 +161,6 @@ void EmulatorDisplay::StartImGuiFrame()
 			ImGui::EndPopup();
 		}
 		ImGui::PopStyleColor();
-	}
-
-	if (shouldShowFileDialog)
-	{
-		ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-		
-		static const char* title = "Select a file";
-		ImGui::OpenPopup(title);
-		if (ImGui::BeginPopupModal(title, nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize))
-		{
-			ImGui::Text("Please choose a file.");
-			ImGui::EndPopup();
-		}
 	}
 
 	ImGui::Render();

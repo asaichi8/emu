@@ -19,11 +19,13 @@
 #include "ui/GameGenieWindow.h"
 #include "ui/ControllerWindow.h"
 #include "ui/CPURegWindow.h"
+#include "ui/SelectFileWindow.h"
 
 
 /// @brief Responsible for the GUI/video of the emulator.
 class EmulatorDisplay : public SDLApp
 {
+	// TODO: most of this stuff should probably be in their respective classes
 	ControllerHandler* m_pControllerHandler;
 	CPURegisters m_curReg{}; // A copy of the CPU's registers so they can be displayed.
 	std::vector<GameGenie::GameGenieCode>* m_pCodes;
@@ -36,11 +38,7 @@ class EmulatorDisplay : public SDLApp
 	std::atomic<bool> shouldCPURun = true;
 	bool shouldRestart = false;
 	bool shouldStepThrough = false;
-	bool shouldReadRegisters = false;
 	bool shouldShowErrorMsg = false;
-	std::atomic<bool> shouldShowFileDialog = false;
-	bool shouldOpenControllerWin = false;
-	bool shouldOpenGameGenieWin = false;
 
 	void StartImGuiFrame();
 	void RenderImGuiFrame();
@@ -80,6 +78,6 @@ public:
 	std::string GetSelectedFile();
 	void SetSelectedFile(const std::string& selectedFile);
 
-	bool GetShouldShowFileDialog() const { return shouldShowFileDialog.load(); }
+	bool GetShouldShowFileDialog() { return m_uiManager.GetWindow("Select file")->m_isOpen; }
 	ControllerHandler* GetControllerHandler() { return m_pControllerHandler; }
 };
