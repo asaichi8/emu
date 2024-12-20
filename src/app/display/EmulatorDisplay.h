@@ -36,13 +36,13 @@ class EmulatorDisplay : public SDLApp
 	UIManager m_uiManager{};
 
 	// TODO: this should probably be some kind of array
-	std::atomic<bool> shouldCPURun = true;
-	bool shouldRestart = false;
-	bool shouldStepThrough = false;
+	std::atomic<bool> m_bShouldCPURun = true;
+	bool m_bShouldRestart = false;
+	bool m_bShouldStepThrough = false;
 
 	void StartImGuiFrame();
 	void RenderImGuiFrame();
-	void OpenFileDialog();
+	void OpenFileDialog(std::atomic<bool>* pShouldCPURun);
 
 public:
 	EmulatorDisplay(const std::string& winName, int w, int h, int scale, ControllerHandler* pCH);
@@ -59,13 +59,13 @@ public:
 
 
 	// Getters/setters
-	bool GetShouldCPURun() const { return shouldCPURun.load(); }
+	bool GetShouldCPURun() const { return m_bShouldCPURun.load(); }
 
-	bool GetShouldRestart() { return shouldRestart; }
-	void SetShouldRestart(bool b) { shouldRestart = b; }
+	bool GetShouldRestart() { return m_bShouldRestart; }
+	void SetShouldRestart(bool b) { m_bShouldRestart = b; }
 
-	bool GetShouldStepThrough() { return shouldStepThrough; }
-	void SetShouldStepThrough(bool b) { shouldStepThrough = b; }
+	bool GetShouldStepThrough() { return m_bShouldStepThrough; }
+	void SetShouldStepThrough(bool b) { m_bShouldStepThrough = b; }
 
 	bool GetShouldShowErrorMsg() { return m_uiManager.GetWindow("Show error")->IsOpen(); }
 	void SetShouldShowErrorMsg(bool b, const std::string& errMsg = "Unknown error occured!", const std::string& errTitle = "Error")
@@ -80,8 +80,16 @@ public:
 		errorMsgWin->SetError(errTitle, errMsg);
 	}
 
-	std::string GetSelectedFile();
-	void SetSelectedFile(const std::string& selectedFile);
+	std::string GetSelectedFile()
+	{
+		std::lock_guard<std::mutex> lock(fileStrMutex);
+		return m_selectedFile;
+	};
+	void SetSelectedFile(const std::string& selectedFile)
+	{
+		std::lock_guard<std::mutex> lock(fileStrMutex);
+		m_selectedFile = selectedFile;
+	}
 
 	bool GetShouldShowFileDialog() { return m_uiManager.GetWindow("Select file")->IsOpen(); }
 	ControllerHandler* GetControllerHandler() { return m_pControllerHandler; }

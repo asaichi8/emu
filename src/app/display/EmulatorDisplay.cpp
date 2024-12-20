@@ -9,7 +9,7 @@ EmulatorDisplay::EmulatorDisplay(const std::string& winName, int w, int h, int s
 	auto gameGenieWindow  = std::make_shared<GameGenieWindow> ("Game Genie",  &m_pCodes); // pass reference as m_pCodes may change
 	auto controllerWindow = std::make_shared<ControllerWindow>("Controllers", pCH);
 	auto cpuRegWindow     = std::make_shared<CPURegWindow>	  ("Registers", m_curReg);
-	auto selectFileWindow = std::make_shared<SelectFileWindow>("Select file");
+	auto selectFileWindow = std::make_shared<SelectFileWindow>("Load file");
 	auto errorMsgWindow   = std::make_shared<ErrorMsgWindow>  ("Show error");
 	
 	m_uiManager.RegisterWindow(gameGenieWindow);
@@ -44,12 +44,12 @@ void EmulatorDisplay::InitImGui()
 	ImGui_ImplSDLRenderer2_Init(m_Renderer);
 }
 
-void EmulatorDisplay::OpenFileDialog()
+void EmulatorDisplay::OpenFileDialog(std::atomic<bool>* pShouldCPURun)
 {
-	m_uiManager.GetWindow("Select file")->Open(true);
+	m_uiManager.GetWindow("Load file")->Open(true);
 	// pause CPU while we're opening a file - we still need to render though
-	bool preservedShouldCPURun = shouldCPURun;
-	shouldCPURun = false;
+	bool preservedShouldCPURun = *pShouldCPURun;
+	*pShouldCPURun = false; // pause cpu
 
 	const char* filterPatterns[] = {"*.nes"};
 	const char* filePath = tinyfd_openFileDialog("Select a file", "", 1, filterPatterns, "NES files", 0);
@@ -60,8 +60,8 @@ void EmulatorDisplay::OpenFileDialog()
 		m_recentFiles.Push(filePath);
 	}
 	
-	shouldCPURun = preservedShouldCPURun;
-	m_uiManager.GetWindow("Select file")->Open(false);
+	*pShouldCPURun = preservedShouldCPURun;
+	m_uiManager.GetWindow("Load file")->Open(false);
 }
 
 /// @brief Called every frame that the GUI is rendered - consists of the actual UI
@@ -79,7 +79,7 @@ void EmulatorDisplay::StartImGuiFrame()
 		{
 			if (ImGui::MenuItem("Load file"))
 			{
-				std::thread t_FileDialog([this]() { OpenFileDialog(); });
+				std::thread t_FileDialog([this]() { OpenFileDialog(&m_bShouldCPURun); });
 				t_FileDialog.detach();
 			}
 
@@ -99,21 +99,21 @@ void EmulatorDisplay::StartImGuiFrame()
 			ImGui::Separator();
 
 			if (ImGui::MenuItem("Restart")) 
-				shouldRestart = true;
+				m_bShouldRestart = true;
 
 			ImGui::EndMenu();
 		}
 
 		if (ImGui::BeginMenu("Debug")) 
 		{
-			if (ImGui::MenuItem(shouldCPURun ? "Pause" : "Resume")) 
-				shouldCPURun = !shouldCPURun;
+			if (ImGui::MenuItem(m_bShouldCPURun ? "Pause" : "Resume")) 
+				m_bShouldCPURun = !m_bShouldCPURun;
 				
 			if (auto win = m_uiManager.GetWindow("Registers"); win && ImGui::MenuItem(win->IsOpen() ? "Hide registers" : "Display registers"))
 				win->Open(!win->IsOpen()); // toggle
 				
-			if (!shouldCPURun && ImGui::MenuItem("Step through")) 
-				shouldStepThrough = true;
+			if (!m_bShouldCPURun && ImGui::MenuItem("Step through")) 
+				m_bShouldStepThrough = true;
 					
 			ImGui::EndMenu();
 		}
@@ -173,14 +173,14 @@ void EmulatorDisplay::RenderFrame(BYTE* screenBuffer, int size)
 }
 
 
-std::string EmulatorDisplay::GetSelectedFile()
-{
-	std::lock_guard<std::mutex> lock(fileStrMutex);
-	return m_selectedFile;
-};
+// std::string EmulatorDisplay::GetSelectedFile()
+// {
+// 	std::lock_guard<std::mutex> lock(fileStrMutex);
+// 	return m_selectedFile;
+// };
 
-void EmulatorDisplay::SetSelectedFile(const std::string& selectedFile)
-{
-	std::lock_guard<std::mutex> lock(fileStrMutex);
-	m_selectedFile = selectedFile;
-}
+// void EmulatorDisplay::SetSelectedFile(const std::string& selectedFile)
+// {
+// 	std::lock_guard<std::mutex> lock(fileStrMutex);
+// 	m_selectedFile = selectedFile;
+// }

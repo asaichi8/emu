@@ -9,6 +9,27 @@ class SelectFileWindow : public IGUIWindow
 {
     std::atomic<bool> m_atomicIsOpen{};
 
+	// TODO: implement this
+	// void OpenFileDialog(std::atomic<bool>* pShouldCPURun)
+	// {
+	// 	this->Open(true);
+	// 	// pause CPU while we're opening a file - we still need to render though
+	// 	bool preservedShouldCPURun = *pShouldCPURun;
+	// 	*pShouldCPURun = false; // pause cpu
+
+	// 	const char* filterPatterns[] = {"*.nes"};
+	// 	const char* filePath = tinyfd_openFileDialog("Select a file", "", 1, filterPatterns, "NES files", 0);
+
+	// 	if (filePath)
+	// 	{
+	// 		SetSelectedFile(filePath);
+	// 		m_recentFiles.Push(filePath);
+	// 	}
+		
+	// 	*pShouldCPURun = preservedShouldCPURun;
+	// 	this->Open(false);
+	// }
+
 public:
     SelectFileWindow(const std::string& name) : IGUIWindow(name) {}
 
