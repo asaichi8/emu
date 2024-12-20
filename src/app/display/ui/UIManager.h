@@ -19,7 +19,7 @@ public:
     {
         for (auto& [name, window] : m_Windows)
         {
-            if (window->m_isOpen == true)
+            if (window->IsOpen())
                 window->Draw();
         }
     }

@@ -44,7 +44,7 @@ void EmulatorDisplay::InitImGui()
 
 void EmulatorDisplay::OpenFileDialog()
 {
-	m_uiManager.GetWindow("Select file")->m_isOpen = true;
+	m_uiManager.GetWindow("Select file")->Open(true);
 	// pause CPU while we're opening a file - we still need to render though
 	bool preservedShouldCPURun = shouldCPURun;
 	shouldCPURun = false;
@@ -59,7 +59,7 @@ void EmulatorDisplay::OpenFileDialog()
 	}
 	
 	shouldCPURun = preservedShouldCPURun;
-	m_uiManager.GetWindow("Select file")->m_isOpen = false;
+	m_uiManager.GetWindow("Select file")->Open(false);
 }
 
 /// @brief Called every frame that the GUI is rendered - consists of the actual UI
@@ -107,8 +107,8 @@ void EmulatorDisplay::StartImGuiFrame()
 			if (ImGui::MenuItem(shouldCPURun ? "Pause" : "Resume")) 
 				shouldCPURun = !shouldCPURun;
 				
-			if (auto win = m_uiManager.GetWindow("Registers"); win && ImGui::MenuItem(win->m_isOpen ? "Hide registers" : "Display registers"))
-				win->m_isOpen = !win->m_isOpen;
+			if (auto win = m_uiManager.GetWindow("Registers"); win && ImGui::MenuItem(win->IsOpen() ? "Hide registers" : "Display registers"))
+				win->Open(!win->IsOpen()); // toggle
 				
 			if (!shouldCPURun && ImGui::MenuItem("Step through")) 
 				shouldStepThrough = true;
@@ -119,7 +119,7 @@ void EmulatorDisplay::StartImGuiFrame()
 		if (ImGui::BeginMenu("Settings"))
 		{
 			if (auto win = m_uiManager.GetWindow("Controllers"); win && ImGui::MenuItem(win->GetName().c_str()))
-				win->m_isOpen = true;
+				win->Open(true);
 			
 			ImGui::EndMenu();
 		}
@@ -127,7 +127,7 @@ void EmulatorDisplay::StartImGuiFrame()
 		if (ImGui::BeginMenu("Cheats"))
 		{
 			if (auto win = m_uiManager.GetWindow("Game Genie"); win && ImGui::MenuItem(win->GetName().c_str()))
-				win->m_isOpen = true;
+				win->Open(true);
 			
 			ImGui::EndMenu();
 		}

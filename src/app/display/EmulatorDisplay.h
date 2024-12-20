@@ -78,6 +78,6 @@ public:
 	std::string GetSelectedFile();
 	void SetSelectedFile(const std::string& selectedFile);
 
-	bool GetShouldShowFileDialog() { return m_uiManager.GetWindow("Select file")->m_isOpen; }
+	bool GetShouldShowFileDialog() { return m_uiManager.GetWindow("Select file")->IsOpen(); }
 	ControllerHandler* GetControllerHandler() { return m_pControllerHandler; }
 };
