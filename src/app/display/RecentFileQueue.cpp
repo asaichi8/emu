@@ -37,7 +37,7 @@ void RecentFileQueue::MakeConfig(const std::string& configName)
     Config* config = &Config::GetInstance();
 
     config->_file.read(config->ini);
-    for (int i = 1; i <= 5; ++i)
+    for (int i = 1; i <= QUEUE_SIZE; ++i)
     {
         std::string val = "";
         if (m_recentFiles.size() > (i - 1))
