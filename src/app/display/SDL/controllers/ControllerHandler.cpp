@@ -15,34 +15,23 @@ ControllerHandler::~ControllerHandler()
 }
 
 
+/// @brief Called when we need to update the internal controller state (e.g. on program start, plugging in/disconnecting controllers etc.)
 void ControllerHandler::UpdateControllers()
 {
     m_Controllers = RetrieveControllers();
 	LoadFromConfig(); // check if we plugged in a default controller
 }
 
-std::vector<SDL_GameController*> ControllerHandler::RetrieveControllers()
-{
-	std::vector<SDL_GameController*> controllers{};
-
-	for (int i = 0; i < SDL_NumJoysticks(); ++i)
-	{
-		if (!SDL_IsGameController(i))
-			continue;
-			
-		controllers.push_back(SDL_GameControllerOpen(i));
-	}
-
-	return controllers;
-}
-
+/// @brief Saves the current internal controller state to an INI file, so we can remember the user's currently connected controllers when
+///		   RAM is cleared (e.g. "save as default"). If a controller is empty, its GUID is set to an empty string.
+/// @return Returns true if we successfully wrote to the file, false if otherwise.
 bool ControllerHandler::SaveToConfig()
 {
     Config* config = &Config::GetInstance();
 
     bool failedToRead = config->_file.read(config->ini);
 	
-    char szGuid[33];
+    char szGuid[33]; // GUIDs are 32 characters log
     for (int i = 1; i <= m_Ports.GetPortSize(); ++i)
     {
         SDL_JoystickGetGUIDString(m_Ports.GetJoystickGUID(i), szGuid, sizeof(szGuid));
@@ -51,29 +40,32 @@ bool ControllerHandler::SaveToConfig()
         if (std::all_of(strGuid.begin(), strGuid.end(), [](char c) { return c == '0'; }))
             strGuid = "";
 
-        config->ini[STR_PORTS]["port" + std::to_string(i)] = strGuid;
+        config->ini[STR_PORTS]["port" + std::to_string(i)] = strGuid; // write GUID to port in config
     }
 
     bool writeSuccess{};
-    if (failedToRead)
-        writeSuccess = config->_file.generate(config->ini, true);
-    else
+    if (failedToRead) // if we failed to read the file probably didn't exist, so try generating one
+        writeSuccess = config->_file.generate(config->ini, true); 
+    else // read successful, attempt to write to file
         writeSuccess = config->_file.write(config->ini, true);
 
     return writeSuccess;
 }
 
+/// @brief Loads the controller state from the previously saved config (saved using SaveToConfig())
+/// @return Returns false if the file does not exist, and true on a successful load.
 bool ControllerHandler::LoadFromConfig()
 {
     Config* config = &Config::GetInstance();
 
+	// check if we can read any ports from the config file
     if (!config->_file.read(config->ini) || !config->ini.has(STR_PORTS))
         return false;
     
 	int curPort = 0;
-	for (const auto& [key, val] : config->ini[STR_PORTS])
+	for (const auto& [key, val] : config->ini[STR_PORTS]) // for each port/GUID pair...
 	{
-		curPort++;
+		curPort++; // ports start at 1
 		if (m_Ports.GetPortSize() < curPort)
 			break; // too many keys!
 
@@ -81,7 +73,9 @@ bool ControllerHandler::LoadFromConfig()
             continue;
 		
 		const std::string& savedVal = config->ini[STR_PORTS]["port" + std::to_string(curPort)];
-
+		
+		// we've retrieved the GUID - now we need to check if any connected controllers match it, so we can connect them
+		// to the port
 		for (auto& controller : m_Controllers)
 		{
 			if (!controller)
@@ -98,9 +92,28 @@ bool ControllerHandler::LoadFromConfig()
 				continue;
 			
 			m_Ports.Connect(controller, curPort); // matched default controller, so connect
-			break;
+
+			break; 
 		}
 	}
 
 	return true;
+}
+
+
+/// @brief Retrieves a list of pointers to every currently connected controller.
+/// @return A list of pointers to every connected controller.
+std::vector<SDL_GameController*> ControllerHandler::RetrieveControllers()
+{
+	std::vector<SDL_GameController*> controllers{};
+
+	for (int i = 0; i < SDL_NumJoysticks(); ++i)
+	{
+		if (!SDL_IsGameController(i))
+			continue;
+			
+		controllers.push_back(SDL_GameControllerOpen(i));
+	}
+
+	return controllers;
 }

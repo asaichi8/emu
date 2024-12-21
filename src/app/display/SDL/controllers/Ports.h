@@ -5,9 +5,10 @@
 #include "Config.h"
 
 
+/// @brief Handles the connecting and disconnecting of controllers to emulator ports.
 class Ports
 {
-    size_t m_noPorts{};
+    size_t m_noPorts{}; // ports are indexed from 1 (e.g. m_noPorts == 2 means there are 2 ports)
 	SDL_GameController** m_ConnectedControllers{};
 
 public:

@@ -5,6 +5,7 @@
 #include "Ports.h"
 
 
+/// @brief Holds the current internal controller state (what controllers are connected to what ports), and handles saving/loading of controllers.
 class ControllerHandler
 {
 	static const inline std::string STR_PORTS = "ports";
@@ -19,8 +20,8 @@ public:
 	Ports m_Ports;
 
 	void UpdateControllers();
-    const std::vector<SDL_GameController*>& GetControllers() const { return m_Controllers; }
-
     bool SaveToConfig();
     bool LoadFromConfig();
+
+    const std::vector<SDL_GameController*>& GetControllers() const { return m_Controllers; }
 };
