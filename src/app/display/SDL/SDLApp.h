@@ -9,7 +9,7 @@
 class SDLApp
 {
 	void SetupWindow(const std::string& windowName, int w, int h, int scale);
-	void SetupRenderer(int scale);
+	void SetupRenderer();
 	void SetupTexture(int w, int h);
 
 protected:

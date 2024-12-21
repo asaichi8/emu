@@ -7,7 +7,7 @@ SDLApp::SDLApp(const std::string& windowName, int w, int h, int scale)
 		throw std::runtime_error("Failed to init SDL");
 	
 	SetupWindow(windowName, w, h, scale);
-	SetupRenderer(scale);
+	SetupRenderer();
 	SetupTexture(w, h);
 }
 
@@ -42,15 +42,12 @@ void SDLApp::SetupWindow(const std::string& windowName, int w, int h, int scale)
 }
 
 /// @brief Initialise the SDL renderer.
-/// @param scale Scale to scale renderer by
-void SDLApp::SetupRenderer(int scale)
+void SDLApp::SetupRenderer()
 {
 	m_Renderer = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_ACCELERATED);
 	
 	if (!m_Renderer) 
 		throw std::runtime_error(std::string("Failed to init renderer: ") + SDL_GetError());
-
-	//SDL_RenderSetScale(m_Renderer, scale, scale);
 }
 
 /// @brief Initialise a texture for the renderer.
