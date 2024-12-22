@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <iostream>
 #include <filesystem>
+#include <unordered_map>
 #include <openssl/evp.h>
 #include <nlohmann/json.hpp>
 #include "../../include/typedefs.h"
@@ -25,11 +26,9 @@ public:
 	struct GameInfo
 	{
 		std::string name{};
-		// probably don't need md5 hash stuff
-		//std::string md5{}; 
-		//std::string md5headerless{};
 		std::vector<GameGenie::GameGenieCode> gameGenieCodes{};
 		BYTE szInesHeader[16]{};
+		std::unordered_map<WORD, std::vector<GameGenie::GameGenieCode*>> activeCodeMap{};
 
 		void inline SetHeaderFromHexStr(const std::string& hexStr)
 		{
@@ -43,6 +42,19 @@ public:
 					throw std::invalid_argument("Hex string does not contain hex characters!");
 				
 				szInesHeader[i] = (BYTE)(std::stoi(strCurByte, nullptr, 16));
+			}
+		}
+
+		void inline BuildCodeMap()
+		{
+			activeCodeMap.clear();
+
+			for (auto& code : gameGenieCodes)
+			{
+				if (!code.isActive)
+					continue;
+
+				activeCodeMap[code.decoded.addr].push_back(&code);
 			}
 		}
 

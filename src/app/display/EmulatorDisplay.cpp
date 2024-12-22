@@ -6,7 +6,7 @@ EmulatorDisplay::EmulatorDisplay(const std::string& winName, int w, int h, int s
 {
 	this->InitImGui();
 
-	auto gameGenieWindow  = std::make_shared<GameGenieWindow> ("Game Genie",  &m_pCodes); // pass reference as m_pCodes may change
+	auto gameGenieWindow  = std::make_shared<GameGenieWindow> ("Game Genie",  &m_pGameInfo); // pass reference as m_pGameInfo may change
 	auto controllerWindow = std::make_shared<ControllerWindow>("Controllers", pCH);
 	auto cpuRegWindow     = std::make_shared<CPURegWindow>	  ("Registers", m_curReg);
 	auto selectFileWindow = std::make_shared<SelectFileWindow>("Load file");

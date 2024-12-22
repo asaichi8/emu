@@ -1,7 +1,7 @@
 #include "GameGenieWindow.h"
 
 
-GameGenieWindow::GameGenieWindow(const std::string& name, std::vector<GameGenie::GameGenieCode>** pCodes) : IGUIWindow(name), m_ppCodes(pCodes)
+GameGenieWindow::GameGenieWindow(const std::string& name, Loader::GameInfo** pGameInfo) : IGUIWindow(name), m_ppGameInfo(pGameInfo)
 {
 
 }
@@ -9,10 +9,10 @@ GameGenieWindow::GameGenieWindow(const std::string& name, std::vector<GameGenie:
 
 void GameGenieWindow::Draw()
 {
-    if (!m_ppCodes || !*m_ppCodes)
+    if (!m_ppGameInfo || !*m_ppGameInfo)
         return;
 
-    auto pCodes = *m_ppCodes;
+    auto pGameInfo = *m_ppGameInfo;
         
     // TODO: resize this window based on the length, and set description to right hand side
     // TODO: add "add code"
@@ -21,13 +21,14 @@ void GameGenieWindow::Draw()
 
     ImGui::Begin("Game Genie Codes", &this->m_isOpen, ImGuiWindowFlags_AlwaysAutoResize);
     
-    for (int i = 0; i < pCodes->size(); ++i) // loop through each code
+    for (int i = 0; i < pGameInfo->gameGenieCodes.size(); ++i) // loop through each code
     {
-        GameGenie::GameGenieCode* code = &pCodes->at(i);
+        GameGenie::GameGenieCode* code = &pGameInfo->gameGenieCodes.at(i);
 
         ImGui::PushID(i); // give unique ID to each checkbox
 
-        ImGui::Checkbox("##EnableCode", &code->isActive);
+        if (ImGui::Checkbox("##EnableCode", &code->isActive))
+            pGameInfo->BuildCodeMap();
 
         ImGui::SameLine();
         ImGui::Text("%s :  %s", code->code.c_str(), code->description.c_str());

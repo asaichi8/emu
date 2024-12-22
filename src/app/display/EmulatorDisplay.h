@@ -29,7 +29,7 @@ class EmulatorDisplay : public SDLApp
 	// TODO: most of this stuff should probably be in their respective classes
 	ControllerHandler* m_pControllerHandler;
 	CPURegisters m_curReg{}; // A copy of the CPU's registers so they can be displayed.
-	std::vector<GameGenie::GameGenieCode>* m_pCodes;
+	Loader::GameInfo* m_pGameInfo;
 	std::string m_lastError = "Unknown error occured!";
 	std::string m_lastErrorTitle = "Error";
 	std::string m_selectedFile{};
@@ -56,7 +56,7 @@ public:
 	void RenderFrame(BYTE* screenBuffer, int size);
 	void ShutdownImGui();
 	void UpdateRegisters(const CPURegisters& registers) { m_curReg = registers; }
-	void UpdateCodes(std::vector<GameGenie::GameGenieCode>* codes) { m_pCodes = codes; }
+	void UpdateCodes(Loader::GameInfo* info) { m_pGameInfo = info; }
 
 
 	// Getters/setters

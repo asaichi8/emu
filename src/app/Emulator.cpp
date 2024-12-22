@@ -37,8 +37,11 @@ Emulator::Emulator(const std::string& romPath, EmulatorDisplay& GUI) : m_GUI(&GU
 	// Map ROM into appropriate variables
 	m_ROM.MapROM();
 
+	// Mirror Game Genie codes to the PRG_ROM size
+	m_ROM.MirrorGameGenieCodes();
+
 	// Give GUI the Game Genie Codes pointer
-	m_GUI->UpdateCodes(&m_ROM.GetGameInfo()->gameGenieCodes);
+	m_GUI->UpdateCodes(m_ROM.GetGameInfo());
 	
 
 	// Create palette

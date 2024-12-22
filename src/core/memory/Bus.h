@@ -34,6 +34,7 @@ class Bus
 	void WritePPURegister(PPURegAddr PPUreg, BYTE val);
 	BYTE ReadPRGByte(WORD addr);
 	WORD ReadPRGWord(WORD addr, bool shouldWrapPage = false);
+	bool ApplyGameGenieCode(WORD addr);
 
 public:
 	Bus(ROM* rom);

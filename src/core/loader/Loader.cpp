@@ -184,8 +184,11 @@ Loader::GameInfo Loader::FindROM(const std::vector<BYTE>* romRaw, const std::str
 				if (codeStruct.contains("is_active"))
 					isActive = codeStruct["is_active"].get<bool>();
 
-				info.gameGenieCodes.emplace_back(strCode, strDescription, isActive);
+				GameGenie::GameGenieCode finalCode(strCode, strDescription, isActive);
+				info.gameGenieCodes.emplace_back(finalCode);
 			}
+
+			info.BuildCodeMap();
 		}
 
 		// attempt to extract iNES header, if it exists
