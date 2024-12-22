@@ -6,7 +6,7 @@
 #include "../include/Config.h"
 
 
-class RecentFileQueue
+class ConfigQueue
 {
     size_t m_nQueueSize = 10;
 	std::string m_strConfigName = "recentfiles";
@@ -16,7 +16,7 @@ class RecentFileQueue
     void MakeConfig(const std::string& configName);
 
 public:
-    RecentFileQueue(const std::string& configName, size_t queueSize);
+    ConfigQueue(const std::string& configName, size_t queueSize);
 
     void Push(std::string val, bool writeToFile = true);
     const std::deque<std::string>& GetQueue() const { return m_recentFiles; }

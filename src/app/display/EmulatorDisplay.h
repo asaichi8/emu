@@ -14,7 +14,7 @@
 #include "../../core/loader/Loader.h"
 #include "SDL/controllers/ControllerHandler.h"
 #include "../../include/Config.h"
-#include "RecentFileQueue.h"
+#include "ConfigQueue.h"
 #include "ui/UIManager.h"
 #include "ui/GameGenieWindow.h"
 #include "ui/ControllerWindow.h"
@@ -50,7 +50,7 @@ public:
 	~EmulatorDisplay();
 
 	std::mutex fileStrMutex{};
-	RecentFileQueue m_recentFiles;
+	ConfigQueue m_recentFiles;
 
 	void InitImGui();
 	void RenderFrame(BYTE* screenBuffer, int size);

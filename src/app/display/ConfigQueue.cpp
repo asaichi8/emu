@@ -1,7 +1,7 @@
-#include "RecentFileQueue.h"
+#include "ConfigQueue.h"
 
 
-RecentFileQueue::RecentFileQueue(const std::string& configName, size_t queueSize) : m_strConfigName(configName), m_nQueueSize(queueSize)
+ConfigQueue::ConfigQueue(const std::string& configName, size_t queueSize) : m_strConfigName(configName), m_nQueueSize(queueSize)
 {
     if (configName.empty() || m_nQueueSize == 0)
         throw std::invalid_argument("Arguments were invalid!");
@@ -10,7 +10,7 @@ RecentFileQueue::RecentFileQueue(const std::string& configName, size_t queueSize
 }
 
 
-void RecentFileQueue::Setup()
+void ConfigQueue::Setup()
 {
     Config* config = &Config::GetInstance();
     
@@ -34,7 +34,7 @@ void RecentFileQueue::Setup()
 	}
 }
 
-void RecentFileQueue::MakeConfig(const std::string& configName)
+void ConfigQueue::MakeConfig(const std::string& configName)
 {
     Config* config = &Config::GetInstance();
 
@@ -52,7 +52,7 @@ void RecentFileQueue::MakeConfig(const std::string& configName)
         std::cerr << "Failed to write to config file!" << std::endl;
 }
 
-void RecentFileQueue::Push(std::string val, bool writeToFile)
+void ConfigQueue::Push(std::string val, bool writeToFile)
 {
     if (val.empty())
         return;
