@@ -248,6 +248,12 @@ void NESDisplay::DrawNametable(const std::vector<BYTE>& nametable, const Point& 
 	// NES screen is 32 tiles long, 30 tiles high (32 * 8 = 256, 30 * 8 = 240)
 	for (int tileNo = 0; tileNo < 32 * 30; ++tileNo)
 	{
+		const Point tilePos = {tileNo % 32, tileNo / 32};
+
+		// prevent attempting to draw a tile out of bounds prematurely to avoid lag
+		if ((tilePos.x * 8) > end.x || ((tilePos.x + 1) * 8 < start.x) || (tilePos.y * 8) > end.y || (tilePos.y + 1) * 8 < start.y)
+			continue;
+
 		if (tileNo >= nametable.size())
 		{
 			std::cerr << "Attempted to access tile outside of nametable!" << std::endl;
@@ -265,8 +271,6 @@ void NESDisplay::DrawNametable(const std::vector<BYTE>& nametable, const Point& 
 		}
 
 		const Tile *pCurTile = (const Tile *)(&(m_pPPU->GetCHR_ROM()->at(selectedTileIndex)));
-
-		const Point tilePos = {tileNo % 32, tileNo / 32};
 
 		std::vector<BYTE> tilePaletteIndexes = GetBgTilePalette(nametable, tilePos);
 
