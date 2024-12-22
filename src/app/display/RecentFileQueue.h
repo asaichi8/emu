@@ -5,17 +5,18 @@
 #include <iostream>
 #include "../include/Config.h"
 
+
 class RecentFileQueue
 {
-    static const size_t QUEUE_SIZE = 10;
-	static const inline std::string STR_RECENT_FILES = "recentfiles";
+    size_t m_nQueueSize = 10;
+	std::string m_strConfigName = "recentfiles";
     std::deque<std::string> m_recentFiles;
 
     void Setup();
     void MakeConfig(const std::string& configName);
 
 public:
-    RecentFileQueue();
+    RecentFileQueue(const std::string& configName, size_t queueSize);
 
     void Push(std::string val, bool writeToFile = true);
     const std::deque<std::string>& GetQueue() const { return m_recentFiles; }

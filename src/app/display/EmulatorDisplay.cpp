@@ -2,7 +2,7 @@
 
 // TODO: refactor this its a mess
 EmulatorDisplay::EmulatorDisplay(const std::string& winName, int w, int h, int scale, ControllerHandler* pCH) 
-	: SDLApp(winName, w, h, scale), m_pControllerHandler(pCH)
+	: SDLApp(winName, w, h, scale), m_recentFiles("recentfiles", 10), m_pControllerHandler(pCH) 
 {
 	this->InitImGui();
 
