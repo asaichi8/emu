@@ -101,6 +101,10 @@ std::string Emulator::Run()
 		static auto loopStart = std::chrono::high_resolution_clock::now();
 		static auto nextFrameTime = std::chrono::high_resolution_clock::now() + FPStime;
 
+		// if we've waited too long, e.g. debugger pause/cpu not running/loading something etc, reset loopStart so there's no lag
+		if (std::chrono::duration<double, std::micro>(std::chrono::high_resolution_clock::now() - loopStart).count() > 100000)
+			loopStart = std::chrono::high_resolution_clock::now();
+
 		if (m_GUI->GetShouldCPURun())
 		{
 			now = std::chrono::high_resolution_clock::now();
@@ -133,7 +137,7 @@ std::string Emulator::Run()
 		else
 		{
 			m_GUI->RenderFrame(nesDisplay.GetScreen(), DISPLAY_WIDTH);
-			loopStart = std::chrono::high_resolution_clock::now();
+			//aloopStart = std::chrono::high_resolution_clock::now();
 		}
 
 
