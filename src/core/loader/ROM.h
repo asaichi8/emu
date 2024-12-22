@@ -90,6 +90,7 @@ public:
 	
 	std::string CheckROM(std::unique_ptr<std::vector<BYTE>> pRomRaw, bool shouldUse = false, const Loader::GameInfo& info = {});
 	void MapROM();
+	void MirrorGameGenieCodes();
 	//const std::vector<BYTE>* GetRawFile() const { return m_pRawFile.get(); } // unused currently
 	Loader::GameInfo* GetGameInfo() { return &m_gameInfo; }
 };

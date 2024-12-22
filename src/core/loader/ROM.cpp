@@ -69,6 +69,9 @@ std::string ROM::CheckROM(std::unique_ptr<std::vector<BYTE>> pRomRaw, bool shoul
 /// @param filePath 
 void ROM::MapROM()
 {
+	if (!m_pRawFile)
+		return;
+
 	mapperType = GetMapperType(&m_inesHeader);
 	mirrorType = GetMirrorType(&m_inesHeader);
 
@@ -85,6 +88,18 @@ void ROM::MapROM()
 
 	PRG_ROM = std::vector<BYTE>(PRG_begin, PRG_end);
 	CHR_ROM = std::vector<BYTE>(CHR_begin, CHR_end);
+}
+
+/// @brief Mirrors game genie codes to the PRG_ROM's size, so they line up when we access them later
+void ROM::MirrorGameGenieCodes()
+{
+	if (PRG_ROM.empty())
+		return;
+		
+	for (auto& code : m_gameInfo.gameGenieCodes)
+	{
+		code.decoded.addr %= PRG_ROM.size();
+	}
 }
 
 
