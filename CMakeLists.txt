@@ -9,6 +9,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 include_directories(
     ${CMAKE_SOURCE_DIR}/src/app
     ${CMAKE_SOURCE_DIR}/src/app/display
+    ${CMAKE_SOURCE_DIR}/src/app/display/ui
     ${CMAKE_SOURCE_DIR}/src/app/display/SDL
     ${CMAKE_SOURCE_DIR}/src/app/display/SDL/controllers
     ${CMAKE_SOURCE_DIR}/src/core/cpu
@@ -35,6 +36,7 @@ file(GLOB_RECURSE SOURCES
     ${CMAKE_SOURCE_DIR}/src/core/cheats/*.cpp
     ${CMAKE_SOURCE_DIR}/src/app/*.cpp
     ${CMAKE_SOURCE_DIR}/src/app/display/*.cpp
+    ${CMAKE_SOURCE_DIR}/src/app/display/ui/*.cpp
     ${CMAKE_SOURCE_DIR}/src/app/display/SDL/*.cpp
     ${CMAKE_SOURCE_DIR}/src/app/display/SDL/controllers/*.cpp
     ${CMAKE_SOURCE_DIR}/src/demos/*.cpp
