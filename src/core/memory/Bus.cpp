@@ -180,9 +180,6 @@ bool Bus::ApplyGameGenieCode(WORD addr)
 {
 	if (auto it = m_ROM->GetGameInfo()->activeCodeMap.find(addr); it != m_ROM->GetGameInfo()->activeCodeMap.end())
 	{
-		if (m_ROM->PRG_ROM.size() == 16 * KB)
-			addr %= 16 * KB;
-
 		auto* code = it->second;
 		if (code->decoded.compare.has_value() && m_ROM->PRG_ROM[addr] != code->decoded.compare)
 			return false;
