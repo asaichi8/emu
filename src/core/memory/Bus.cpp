@@ -183,14 +183,12 @@ bool Bus::ApplyGameGenieCode(WORD addr)
 		if (m_ROM->PRG_ROM.size() == 16 * KB)
 			addr %= 16 * KB;
 
-		for (auto* code : it->second)
-		{
-			if (code->decoded.compare.has_value() && m_ROM->PRG_ROM[addr] != code->decoded.compare)
-				continue;
+		auto* code = it->second;
+		if (code->decoded.compare.has_value() && m_ROM->PRG_ROM[addr] != code->decoded.compare)
+			return false;
 			
-			m_ROM->PRG_ROM[addr] = code->decoded.val;
-			return true;
-		}
+		m_ROM->PRG_ROM[addr] = code->decoded.val;
+		return true;
 	}
 
 	return false;

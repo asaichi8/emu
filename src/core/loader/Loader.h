@@ -28,7 +28,7 @@ public:
 		std::string name{};
 		std::vector<GameGenie::GameGenieCode> gameGenieCodes{};
 		BYTE szInesHeader[16]{};
-		std::unordered_map<WORD, std::vector<GameGenie::GameGenieCode*>> activeCodeMap{};
+		std::unordered_map<WORD, GameGenie::GameGenieCode*> activeCodeMap{};
 
 		void inline SetHeaderFromHexStr(const std::string& hexStr)
 		{
@@ -54,7 +54,7 @@ public:
 				if (!code.isActive)
 					continue;
 
-				activeCodeMap[code.decoded.addr].push_back(&code);
+				activeCodeMap[code.decoded.addr] = (&code);
 			}
 		}
 
