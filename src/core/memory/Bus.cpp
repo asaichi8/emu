@@ -189,6 +189,26 @@ bool Bus::ApplyGameGenieCode(WORD addr)
 	}
 
 	return false;
+
+
+
+	
+	// for (const auto& code : m_ROM->GetGameInfo()->gameGenieCodes)
+	// {
+	// 	if (!code.isActive)
+	// 		continue;
+			
+	// 	if (code.decoded.addr != addr)
+	// 		continue;
+
+	// 	if (code.decoded.compare.has_value() && m_ROM->PRG_ROM[addr] != code.decoded.compare)
+	// 		continue;
+
+	// 	m_ROM->PRG_ROM[addr] = code.decoded.val;
+	// 	return true;
+	// }
+	
+	// return false;
 }
 
 // addr must be between 0x8000 - 0xFFFF
@@ -206,37 +226,7 @@ BYTE Bus::ReadPRGByte(WORD addr)
 
 	addr -= PRG_RAM_START;
 
-
-	// implement game genie code
-	// if (m_ROM->PRG_ROM.size() == (16 * KB))
-	// {
-	// 	// if PRG_ROM size is 16kb, we need to account for potential mirroring. A game genie code address could be, for example, "0x71fd", but as the PRG_ROM size
-	// 	// is 16kb, the absolute address of this code would be mirrored by 16kb (0x31fd). Therefore, if the first game genie code application fails, we can try to
-	// 	// apply it to the mirrored address in case the code refers to the mirrored address rather than the absolute one.
-	// 	if (!ApplyGameGenieCode(addr))
-	// 		ApplyGameGenieCode((addr == (addr % (16*KB))) ? (addr + 16*KB) : (addr - 16*KB)); // if we're above 16kb, then negate 16kb, otherwise add it
-	// }
-	// else
 	ApplyGameGenieCode(addr);
-	
-	// for (const auto& code : m_ROM->GetGameInfo()->gameGenieCodes)
-	// {
-	// 	if (!code.isActive)
-	// 		continue;
-
-	// 	size_t decodedAddr = code.decoded.addr; // make a copy in case we need to modify it
-	// 	if (m_ROM->PRG_ROM.size() == (16 * KB)) // decoded addresses need mirroring too
-	// 		decodedAddr %= 16 * KB; // mirror to PRG_ROM size
-
-	// 	if (decodedAddr != addr)
-	// 		continue;
-
-	// 	if (code.decoded.compare.has_value() && m_ROM->PRG_ROM[decodedAddr] != code.decoded.compare)
-	// 		continue;
-
-	// 	m_ROM->PRG_ROM[decodedAddr] = code.decoded.val;
-	// 	break;
-	// }
 	
 	return m_ROM->PRG_ROM[addr];
 }

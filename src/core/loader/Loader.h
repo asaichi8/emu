@@ -45,6 +45,10 @@ public:
 			}
 		}
 
+		// To execute game genie codes, we need to access gameGenieCodes every time we read PRG ROM. Since we are reading PRG ROM a lot, it makes
+		// sense to attempt to optimise this access, especially since the code map could be very large. Therefore, every time we update whether a code
+		// is active or not, we call BuildCodeMap to build a hash map of active codes by address. Then, we can access a code by its address in a
+		// very quick fashion, as opposed to looping through the entire gameGenieCodes vector and checking if each one is active or not.
 		void inline BuildCodeMap()
 		{
 			activeCodeMap.clear();
