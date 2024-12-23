@@ -32,6 +32,15 @@ void GameGenieWindow::Draw()
 
         ImGui::SameLine();
         ImGui::Text("%s :  %s", code->code.c_str(), code->description.c_str());
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::BeginTooltip();
+            ImGui::Text("Address = 0x%x", code->decoded.addr);
+            ImGui::Text("Value = 0x%x", code->decoded.val);
+            if (code->decoded.compare.has_value())
+                ImGui::Text("Compare = 0x%x", code->decoded.compare.value());
+            ImGui::EndTooltip();
+        }
         //ImGui::SameLine();
         //ImGui::SetCursorPosX(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(code->description.c_str()).x); // set to right hand side
         //ImGui::Text("%s", code->description.c_str());
