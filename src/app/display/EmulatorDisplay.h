@@ -30,8 +30,6 @@ class EmulatorDisplay : public SDLApp
 	ControllerHandler* m_pControllerHandler;
 	CPURegisters m_curReg{}; // A copy of the CPU's registers so they can be displayed.
 	Loader::GameInfo* m_pGameInfo;
-	std::string m_lastError = "Unknown error occured!";
-	std::string m_lastErrorTitle = "Error";
 	std::string m_selectedFile{};
 	UIManager m_uiManager{};
 

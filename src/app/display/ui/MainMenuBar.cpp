@@ -1,0 +1,95 @@
+#include "MainMenuBar.h"
+
+
+MainMenuBar::MainMenuBar(UIManager& uiManager, ConfigQueue& recentFiles) : m_uiManager(uiManager), m_recentFiles(recentFiles)
+{
+
+}
+
+
+void MainMenuBar::Draw()
+{
+    if (ImGui::BeginMainMenuBar()) 
+	{
+		if (ImGui::BeginMenu("File")) 
+		{
+			if (ImGui::MenuItem("Load file"))
+			{
+				std::thread t_FileDialog([this]() { OpenFileDialog(&m_bShouldCPURun); });
+				t_FileDialog.detach();
+			}
+
+			if (!m_recentFiles.GetQueue().empty() && ImGui::BeginMenu("Load recent file"))
+			{
+				for (const auto& path : m_recentFiles.GetQueue())
+				{
+					if (ImGui::MenuItem(path.c_str()))
+					{
+						SetSelectedFile(path);
+						m_recentFiles.Push(path);
+					}
+				}
+				ImGui::EndMenu();
+			}
+
+			ImGui::Separator();
+
+			if (ImGui::MenuItem("Restart")) 
+				m_bShouldRestart = true;
+
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Debug")) 
+		{
+			if (ImGui::MenuItem(m_bShouldCPURun ? "Pause" : "Resume")) 
+				m_bShouldCPURun = !m_bShouldCPURun;
+				
+			if (auto win = m_uiManager.GetWindow("Registers"); win && ImGui::MenuItem(win->IsOpen() ? "Hide registers" : "Display registers"))
+				win->Open(!win->IsOpen()); // toggle
+				
+			if (!m_bShouldCPURun && ImGui::MenuItem("Step through")) 
+				m_bShouldStepThrough = true;
+					
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Settings"))
+		{
+			if (auto win = m_uiManager.GetWindow("Controllers"); win && ImGui::MenuItem(win->GetName().c_str()))
+				win->Open(true);
+			
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Cheats"))
+		{
+			if (auto win = m_uiManager.GetWindow("Game Genie"); win && ImGui::MenuItem(win->GetName().c_str()))
+				win->Open(true);
+			
+			ImGui::EndMenu();
+		}
+
+		ImGui::EndMainMenuBar();
+	}
+}
+
+void MainMenuBar::OpenFileDialog(std::atomic<bool>* pShouldCPURun)
+{
+	m_uiManager.GetWindow("Load file")->Open(true);
+	// pause CPU while we're opening a file - we still need to render though
+	bool preservedShouldCPURun = *pShouldCPURun;
+	*pShouldCPURun = false; // pause cpu
+
+	const char* filterPatterns[] = {"*.nes"};
+	const char* filePath = tinyfd_openFileDialog("Select a file", "", 1, filterPatterns, "NES files", 0);
+
+	if (filePath)
+	{
+		SetSelectedFile(filePath);
+		m_recentFiles.Push(filePath);
+	}
+	
+	*pShouldCPURun = preservedShouldCPURun;
+	m_uiManager.GetWindow("Load file")->Open(false);
+}
