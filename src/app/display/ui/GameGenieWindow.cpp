@@ -14,7 +14,7 @@ void GameGenieWindow::Draw()
 
     auto pGameInfo = *m_ppGameInfo;
         
-    // TODO: resize this window based on the length, and set description to right hand side
+    // TODO: set description to right hand side
     // TODO: add "add code"
     ImGui::SetNextWindowSizeConstraints({0.f, 0.f}, {750.f, 500.f});
     ImGui::Begin("Game Genie Codes", &this->m_isOpen, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);

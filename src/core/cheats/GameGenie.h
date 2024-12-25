@@ -36,6 +36,7 @@ class GameGenie
     };
 
     static std::vector<bool> StringCodeToBits(const std::string& code);
+    static std::string BitCodeToString(const std::vector<bool>& code);
 
 public:
     GameGenie();
@@ -63,4 +64,5 @@ public:
 	};
 
     static DecodedCode Decode(const std::string& code);
+    static std::string Encode(const DecodedCode& decodedCode);
 };
