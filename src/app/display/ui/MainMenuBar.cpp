@@ -1,9 +1,20 @@
 #include "MainMenuBar.h"
 
 
-MainMenuBar::MainMenuBar(UIManager& uiManager, ConfigQueue& recentFiles) : m_uiManager(uiManager), m_recentFiles(recentFiles)
+MainMenuBar::MainMenuBar(UIManager& uiManager, ControllerHandler* pCH) 
+	:  m_recentFiles("recentfiles", 10), m_uiManager(uiManager), m_pControllerHandler(pCH)
 {
-
+	auto gameGenieWindow  = std::make_shared<GameGenieWindow> ("Game Genie",  &m_pGameInfo); // pass reference as m_pGameInfo may change
+	auto controllerWindow = std::make_shared<ControllerWindow>("Controllers", pCH);
+	auto cpuRegWindow     = std::make_shared<CPURegWindow>	  ("Registers", m_curReg);
+	auto selectFileWindow = std::make_shared<SelectFileWindow>("Load file");
+	auto errorMsgWindow   = std::make_shared<ErrorMsgWindow>  ("Show error");
+	
+	m_uiManager.RegisterWindow(gameGenieWindow);
+	m_uiManager.RegisterWindow(controllerWindow);
+	m_uiManager.RegisterWindow(cpuRegWindow);
+	m_uiManager.RegisterWindow(selectFileWindow);
+	m_uiManager.RegisterWindow(errorMsgWindow);
 }
 
 

@@ -29,9 +29,9 @@ class MainMenuBar
 
 
 public:
-    MainMenuBar(UIManager& uiManager, ConfigQueue& recentFiles);
+    MainMenuBar(UIManager& uiManager, ControllerHandler* pCH);
 
-    ConfigQueue& m_recentFiles;
+    ConfigQueue m_recentFiles;
 	std::mutex fileStrMutex{};
 
     void Draw();

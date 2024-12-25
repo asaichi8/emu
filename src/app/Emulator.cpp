@@ -41,7 +41,7 @@ Emulator::Emulator(const std::string& romPath, EmulatorDisplay& GUI) : m_GUI(&GU
 	m_ROM.MirrorGameGenieCodes();
 
 	// Give GUI the Game Genie Codes pointer
-	m_GUI->UpdateCodes(m_ROM.GetGameInfo());
+	m_GUI->GetMainMenuBar()->UpdateCodes(m_ROM.GetGameInfo());
 	
 
 	// Create palette
@@ -108,7 +108,7 @@ std::string Emulator::Run()
 		if (std::chrono::duration<double, std::micro>(std::chrono::high_resolution_clock::now() - loopStart).count() > 100000)
 			loopStart = std::chrono::high_resolution_clock::now();
 
-		if (m_GUI->GetShouldCPURun())
+		if (m_GUI->GetMainMenuBar()->GetShouldCPURun())
 		{
 			now = std::chrono::high_resolution_clock::now();
 			double elapsed = std::chrono::duration<double, std::micro>(std::chrono::high_resolution_clock::now() - loopStart).count();
@@ -144,25 +144,25 @@ std::string Emulator::Run()
 		}
 
 
-		m_GUI->UpdateRegisters(m_CPU->ReadRegisters()); // update GUI with a copy of the CPU's current registers
+		m_GUI->GetMainMenuBar()->UpdateRegisters(m_CPU->ReadRegisters()); // update GUI with a copy of the CPU's current registers
 
-		if (m_GUI->GetShouldRestart())
+		if (m_GUI->GetMainMenuBar()->GetShouldRestart())
 		{
-			m_GUI->SetShouldRestart(false);
+			m_GUI->GetMainMenuBar()->SetShouldRestart(false);
 			shouldRestart = true;
 			running = false;
 			break;
 		}
-		if (m_GUI->GetShouldStepThrough())
+		if (m_GUI->GetMainMenuBar()->GetShouldStepThrough())
 		{
 			m_CPU->Run(); // execute the CPU for a single instruction
-			m_GUI->SetShouldStepThrough(false);
+			m_GUI->GetMainMenuBar()->SetShouldStepThrough(false);
 		}
  
-		if (m_GUI->GetSelectedFile() != "")
+		if (m_GUI->GetMainMenuBar()->GetSelectedFile() != "")
 		{
-			std::string strSelectedFile = m_GUI->GetSelectedFile();
-			m_GUI->SetSelectedFile("");
+			std::string strSelectedFile = m_GUI->GetMainMenuBar()->GetSelectedFile();
+			m_GUI->GetMainMenuBar()->SetSelectedFile("");
 			
 			// TODO: here, and the other point in which we're loading a new file (SDL_DROPFILE), we load the file, get its info, and
 			//		 when the loop continues and class Emulator is constructed again, we do it again. we could probably only call this
@@ -171,7 +171,7 @@ std::string Emulator::Run()
 			Loader::GameInfo info = Loader::FindROM(romRaw.get(), Loader::GetFullFilePath(DATABASE_RELATIVE_PATH));
 			std::string errMsg = m_ROM.CheckROM(std::move(romRaw), false, info);
 			if (!errMsg.empty())
-				m_GUI->SetShouldShowErrorMsg(true, errMsg, "Failed to load file");
+				m_GUI->GetMainMenuBar()->SetShouldShowErrorMsg(true, errMsg, "Failed to load file");
 			else
 				return strSelectedFile; // file drop succeeded
 		}
@@ -201,7 +201,7 @@ std::string Emulator::Run()
 					// https://wiki.libsdl.org/SDL2/SDL_DropEvent
 					case SDL_DROPFILE:
 					{
-						if (m_GUI->GetShouldShowErrorMsg()) 
+						if (m_GUI->GetMainMenuBar()->GetShouldShowErrorMsg()) 
 							break;
 							
 						char* droppedFile = event.drop.file; // MUST BE FREED WITH SDL_free
@@ -209,14 +209,14 @@ std::string Emulator::Run()
 						SDL_free(droppedFile);
 
 						if (!strDroppedFile.empty()) // no need to check if valid before pushing to recent files, only if empty
-							m_GUI->m_recentFiles.Push(strDroppedFile);
+							m_GUI->GetMainMenuBar()->m_recentFiles.Push(strDroppedFile);
 
 						std::unique_ptr<std::vector<BYTE>> romRaw = std::make_unique<std::vector<BYTE>>(Loader::LoadFile(strDroppedFile));
 						Loader::GameInfo info = Loader::FindROM(romRaw.get(), Loader::GetFullFilePath(DATABASE_RELATIVE_PATH));
 						std::string errMsg = m_ROM.CheckROM(std::move(romRaw));
 						if (!errMsg.empty())
 						{
-							m_GUI->SetShouldShowErrorMsg(true, errMsg, "Failed to load file");
+							m_GUI->GetMainMenuBar()->SetShouldShowErrorMsg(true, errMsg, "Failed to load file");
 							break;
 						}
 
@@ -227,14 +227,14 @@ std::string Emulator::Run()
 					case SDL_CONTROLLERDEVICEADDED:
 					case SDL_CONTROLLERDEVICEREMOVED:
 					case SDL_CONTROLLERDEVICEREMAPPED:
-						m_GUI->GetControllerHandler()->UpdateControllers();
+						m_GUI->GetMainMenuBar()->GetControllerHandler()->UpdateControllers();
 						break;
 
 					// === BUTTON HANDLING ===
 					case SDL_KEYDOWN:
 					case SDL_KEYUP:
 					{
-						if (m_GUI->GetShouldShowErrorMsg() || !m_GUI->GetShouldCPURun()) 
+						if (m_GUI->GetMainMenuBar()->GetShouldShowErrorMsg() || !m_GUI->GetMainMenuBar()->GetShouldCPURun()) 
 							break; // block input if error msg showing
 
 						auto iterator = m_keyButtonMap.find((SDL_KeyCode)event.key.keysym.sym);
@@ -247,10 +247,10 @@ std::string Emulator::Run()
 					case SDL_CONTROLLERBUTTONDOWN:
 					case SDL_CONTROLLERBUTTONUP:
 					{
-						if (m_GUI->GetShouldShowErrorMsg() || !m_GUI->GetShouldCPURun()) 
+						if (m_GUI->GetMainMenuBar()->GetShouldShowErrorMsg() || !m_GUI->GetMainMenuBar()->GetShouldCPURun()) 
 							break; // block input if error msg showing
 
-						Ports* ports = &m_GUI->GetControllerHandler()->m_Ports;
+						Ports* ports = &m_GUI->GetMainMenuBar()->GetControllerHandler()->m_Ports;
 						for (size_t portNo = 1; portNo < 3; ++portNo)
 						{
 							if (ports->GetJoystickID(portNo) != event.cbutton.which)
