@@ -178,37 +178,50 @@ void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 
 bool Bus::ApplyGameGenieCode(WORD addr)
 {
-	if (auto it = m_ROM->GetGameInfo()->activeCodeMap.find(addr); it != m_ROM->GetGameInfo()->activeCodeMap.end())
-	{
-		auto* code = it->second;
-		if (code->decoded.compare.has_value() && m_ROM->PRG_ROM[addr] != code->decoded.compare)
-			return false;
-			
-		m_ROM->PRG_ROM[addr] = code->decoded.val;
-		return true;
-	}
-
-	return false;
-
-
-
-	
-	// for (const auto& code : m_ROM->GetGameInfo()->gameGenieCodes)
+	// if (auto it = m_ROM->GetGameInfo()->activeCodeMap.find(addr); it != m_ROM->GetGameInfo()->activeCodeMap.end())
 	// {
-	// 	if (!code.isActive)
-	// 		continue;
+	// 	auto* code = it->second;
+	// 	if (code->decoded.compare.has_value() && m_ROM->PRG_ROM[addr] != code->decoded.compare)
+	// 		return false;
 			
-	// 	if (code.decoded.addr != addr)
-	// 		continue;
-
-	// 	if (code.decoded.compare.has_value() && m_ROM->PRG_ROM[addr] != code.decoded.compare)
-	// 		continue;
-
-	// 	m_ROM->PRG_ROM[addr] = code.decoded.val;
+	// 	m_ROM->PRG_ROM[addr] = code->decoded.val;
 	// 	return true;
 	// }
-	
+
 	// return false;
+
+
+
+	
+	for (const auto& code : m_ROM->GetGameInfo()->gameGenieCodes)
+	{
+		if (!code.isActive)
+			continue;
+			
+		const GameGenie::DecodedCode* curCode = nullptr;
+		for (const auto& decodedCode : code.decoded)
+		{
+			if (decodedCode.addr == addr)
+			{
+				curCode = &decodedCode;
+				break;
+			}
+
+		}
+
+		if (curCode == nullptr)
+			continue;
+		// if (code.decoded.addr != addr)
+		// 	continue;
+
+		if (curCode->compare.has_value() && m_ROM->PRG_ROM[addr] != curCode->compare)
+			continue;
+
+		m_ROM->PRG_ROM[addr] = curCode->val;
+		return true;
+	}
+	
+	return false;
 }
 
 // addr must be between 0x8000 - 0xFFFF

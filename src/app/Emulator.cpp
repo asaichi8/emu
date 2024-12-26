@@ -60,11 +60,11 @@ Emulator::Emulator(const std::string& romPath, EmulatorDisplay& GUI) : m_GUI(&GU
 	// debug
 	if (!info.name.empty())
 	{
-		std::cout << "Game: " << info.name << std::endl;
-		for (const auto& code : info.gameGenieCodes)
-		{
-			std::cout << "Code: " << code.code << "  Description: " << code.description << "  isActive: " << code.isActive << std::endl;
-		}
+		// std::cout << "Game: " << info.name << std::endl;
+		// for (const auto& code : info.gameGenieCodes)
+		// {
+		// 	std::cout << "Code: " << code.code << "  Description: " << code.description << "  isActive: " << code.isActive << std::endl;
+		// }
 	}
 }
 

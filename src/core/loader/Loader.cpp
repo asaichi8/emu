@@ -108,7 +108,7 @@ Loader::GameInfo Loader::FindROM(const std::vector<BYTE>* romRaw, const std::str
 
 	// we must be able to calculate an md5 for the raw file, otherwise give up
     std::string md5 = CalcMD5(*romRaw);
-	std::cout << "md5: " << md5 << std::endl;
+	// std::cout << "md5: " << md5 << std::endl;
 	if (md5.empty())
 		return {};
 
@@ -121,7 +121,7 @@ Loader::GameInfo Loader::FindROM(const std::vector<BYTE>* romRaw, const std::str
 		romCopy.erase(romCopy.begin(), romCopy.begin() + NES_HEADER_SIZE);
 
 		md5headerless = CalcMD5(romCopy);
-		std::cout << "md5-headerless: " << md5headerless << std::endl;
+		// std::cout << "md5-headerless: " << md5headerless << std::endl;
 	}
 
 
@@ -184,11 +184,11 @@ Loader::GameInfo Loader::FindROM(const std::vector<BYTE>* romRaw, const std::str
 				if (codeStruct.contains("is_active"))
 					isActive = codeStruct["is_active"].get<bool>();
 
-				GameGenie::GameGenieCode finalCode(strCode, strDescription, isActive);
+				GameGenie::GameGenieCode finalCode(GameGenie::ExtractCodes(strCode, '+'), strDescription, isActive);
 				info.gameGenieCodes.emplace_back(finalCode);
 			}
 
-			info.BuildCodeMap();
+			// info.BuildCodeMap();
 		}
 
 		// attempt to extract iNES header, if it exists

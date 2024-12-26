@@ -182,3 +182,25 @@ std::string GameGenie::BitCodeToString(const std::vector<bool>& code)
 
     return strCode;
 }
+
+
+std::vector<std::string> GameGenie::ExtractCodes(const std::string& codes, char delimiter)
+{
+    std::vector<std::string> result{};
+    std::string token{};
+
+    std::istringstream stream(codes);
+    while (std::getline(stream, token, delimiter))
+    {
+        // remove whitespace
+        size_t start = token.find_first_not_of(" \t");
+        size_t end = token.find_last_not_of(" \t");
+
+        if (start == std::string::npos || end == std::string::npos)
+            continue;
+
+        result.push_back(token.substr(start, end - start + 1));
+    }
+
+    return result;
+}

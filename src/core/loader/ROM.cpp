@@ -98,7 +98,10 @@ void ROM::MirrorGameGenieCodes()
 		
 	for (auto& code : m_gameInfo.gameGenieCodes)
 	{
-		code.decoded.addr %= PRG_ROM.size();
+		for (auto& decodedCode : code.decoded)
+		{
+			decodedCode.addr %= PRG_ROM.size();
+		}
 	}
 }
 

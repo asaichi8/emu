@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include <vector>
 #include <algorithm>
+#include <sstream>
+#include <iostream>
 #include "typedefs.h"
 
 
@@ -50,19 +52,22 @@ public:
     
 	struct GameGenieCode
 	{
-		std::string code{};
+		std::vector<std::string> code{};
 		std::string description{};
 		bool isActive = false;
-		GameGenie::DecodedCode decoded{};
+		std::vector<GameGenie::DecodedCode> decoded{};
 
-		GameGenieCode(const std::string& _code, const std::string& _description, bool _isActive)
+		GameGenieCode(const std::vector<std::string>& _code, const std::string& _description, bool _isActive)
 			: code(_code), description(_description), isActive(_isActive)
 		{
-            // TODO: make GameGenieCode take a vector<string> code, and concatenate with " + "
-			decoded = GameGenie::Decode(code);
+            for (const auto& c : code)
+            {
+                decoded.push_back(GameGenie::Decode(c));
+            }
 		}
 	};
 
     static DecodedCode Decode(const std::string& code);
     static std::string Encode(const DecodedCode& decodedCode);
+    static std::vector<std::string> ExtractCodes(const std::string& codes, char delimiter);
 };

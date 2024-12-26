@@ -28,7 +28,7 @@ public:
 		std::string name{};
 		std::vector<GameGenie::GameGenieCode> gameGenieCodes{};
 		BYTE szInesHeader[16]{};
-		std::unordered_map<WORD, GameGenie::GameGenieCode*> activeCodeMap{};
+		// std::unordered_map<WORD, GameGenie::GameGenieCode*> activeCodeMap{};
 
 		void inline SetHeaderFromHexStr(const std::string& hexStr)
 		{
@@ -49,18 +49,18 @@ public:
 		// sense to attempt to optimise this access, especially since the code map could be very large. Therefore, every time we update whether a code
 		// is active or not, we call BuildCodeMap to build a hash map of active codes by address. Then, we can access a code by its address in a
 		// very quick fashion, as opposed to looping through the entire gameGenieCodes vector and checking if each one is active or not.
-		void inline BuildCodeMap()
-		{
-			activeCodeMap.clear();
+		// void inline BuildCodeMap()
+		// {
+		// 	activeCodeMap.clear();
 
-			for (auto& code : gameGenieCodes)
-			{
-				if (!code.isActive)
-					continue;
+		// 	for (auto& code : gameGenieCodes)
+		// 	{
+		// 		if (!code.isActive)
+		// 			continue;
 
-				activeCodeMap[code.decoded.addr] = (&code);
-			}
-		}
+		// 		activeCodeMap[code.decoded.addr] = (&code);
+		// 	}
+		// }
 
 		// if the header doesn't begin with 'N', the header was loaded - header always starts with "NES"
 		const bool inline IsHeaderNull() const { return (szInesHeader[0] != 'N' || szInesHeader[1] != 'E' || szInesHeader[2] != 'S' || szInesHeader[3] != 0x1A); }

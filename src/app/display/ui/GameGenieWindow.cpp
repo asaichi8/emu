@@ -22,35 +22,48 @@ void GameGenieWindow::Draw()
     if (pGameInfo->gameGenieCodes.empty())
     {
         ImGui::Text("No codes are currently loaded.");
+        ImGui::End();
+        return;
     }
-    else
+    
+    for (int i = 0; i < pGameInfo->gameGenieCodes.size(); ++i) // loop through each code
     {
-        for (int i = 0; i < pGameInfo->gameGenieCodes.size(); ++i) // loop through each code
+        GameGenie::GameGenieCode* code = &pGameInfo->gameGenieCodes.at(i);
+
+        ImGui::PushID(i); // give unique ID to each checkbox
+
+        ImGui::Checkbox("##EnableCode", &code->isActive);
+            // pGameInfo->BuildCodeMap();
+
+        ImGui::SameLine();
+        for (int i = 0; i < code->code.size(); ++i)
         {
-            GameGenie::GameGenieCode* code = &pGameInfo->gameGenieCodes.at(i);
-
-            ImGui::PushID(i); // give unique ID to each checkbox
-
-            if (ImGui::Checkbox("##EnableCode", &code->isActive))
-                pGameInfo->BuildCodeMap();
-
-            ImGui::SameLine();
-            ImGui::Text("%s :  %s", code->code.c_str(), code->description.c_str());
+            ImGui::Text("%s", code->code.at(i).c_str());
             if (ImGui::IsItemHovered())
             {
                 ImGui::BeginTooltip();
-                ImGui::Text("Address = 0x%x", code->decoded.addr);
-                ImGui::Text("Value = 0x%x", code->decoded.val);
-                if (code->decoded.compare.has_value())
-                    ImGui::Text("Compare = 0x%x", code->decoded.compare.value());
+                ImGui::Text("Address = 0x%x", code->decoded.at(i).addr);
+                ImGui::Text("Value = 0x%x", code->decoded.at(i).val);
+                if (code->decoded.at(i).compare.has_value())
+                    ImGui::Text("Compare = 0x%x", code->decoded.at(i).compare.value());
                 ImGui::EndTooltip();
             }
-            //ImGui::SameLine();
-            //ImGui::SetCursorPosX(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(code->description.c_str()).x); // set to right hand side
-            //ImGui::Text("%s", code->description.c_str());
 
-            ImGui::PopID();
+            if (i != code->code.size() - 1) // if not last element
+            {
+                ImGui::SameLine();
+                ImGui::Text("+");
+            }
+
+            ImGui::SameLine();
         }
+        ImGui::Text(":  %s", code->description.c_str());
+        
+        //ImGui::SameLine();
+        //ImGui::SetCursorPosX(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(code->description.c_str()).x); // set to right hand side
+        //ImGui::Text("%s", code->description.c_str());
+
+        ImGui::PopID();
     }
 
     ImGui::End();
