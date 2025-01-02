@@ -4,19 +4,12 @@
 MainMenuBar::MainMenuBar(UIManager& uiManager, ControllerHandler* pCH) 
 	:  m_recentFiles("recentfiles", 10), m_uiManager(uiManager), m_pControllerHandler(pCH)
 {
-	auto codeListWindow   = std::make_shared<CodeListWindow>  ("Code list",  &m_pGameInfo); // pass reference as m_pGameInfo may change
-	auto controllerWindow = std::make_shared<ControllerWindow>("Controllers", pCH);
-	auto cpuRegWindow     = std::make_shared<CPURegWindow>	  ("Registers", m_curReg);
-	auto selectFileWindow = std::make_shared<SelectFileWindow>("Load file");
-	auto errorMsgWindow   = std::make_shared<ErrorMsgWindow>  ("Show error");
-	auto addCodeWindow    = std::make_shared<AddCodeWindow>   ("Add code");
-	
-	m_uiManager.RegisterWindow(codeListWindow);
-	m_uiManager.RegisterWindow(controllerWindow);
-	m_uiManager.RegisterWindow(cpuRegWindow);
-	m_uiManager.RegisterWindow(selectFileWindow);
-	m_uiManager.RegisterWindow(errorMsgWindow);
-	m_uiManager.RegisterWindow(addCodeWindow);
+	m_uiManager.RegisterWindow( std::make_shared<CodeListWindow>  ("Code list",  &m_pGameInfo) );
+	m_uiManager.RegisterWindow( std::make_shared<ControllerWindow>("Controllers", pCH) );
+	m_uiManager.RegisterWindow( std::make_shared<CPURegWindow>	  ("Registers", m_curReg) );
+	m_uiManager.RegisterWindow( std::make_shared<SelectFileWindow>("Load file") );
+	m_uiManager.RegisterWindow( std::make_shared<ErrorMsgWindow>  ("Show error") );
+	m_uiManager.RegisterWindow( std::make_shared<AddCodeWindow>   ("Add code") );
 }
 
 
