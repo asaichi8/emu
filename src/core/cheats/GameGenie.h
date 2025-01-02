@@ -31,17 +31,18 @@ class GameGenie
         0, 5, 6, 7, 16, 1, 2, 3, -1, 17, 18, 19, 20, 9, 10, 11, 12,
         21, 22, 23, 28, 13, 14, 15, 24, 29, 30, 31, 4, 25, 26, 27
     };
-    // in the game genie, each letter evaluates to an appropriate binary value
-    static const inline std::unordered_map<char, BYTE> HexTable = {
-        {'A', 0x0}, {'P', 0x1}, {'Z', 0x2}, {'L', 0x3}, {'G', 0x4}, {'I', 0x5}, {'T', 0x6}, {'Y', 0x7},
-        {'E', 0x8}, {'O', 0x9}, {'X', 0xA}, {'U', 0xB}, {'K', 0xC}, {'S', 0xD}, {'V', 0xE}, {'N', 0xF}
-    };
 
     static std::vector<bool> StringCodeToBits(const std::string& code);
     static std::string BitCodeToString(const std::vector<bool>& code);
 
 public:
     GameGenie();
+    
+    // in the game genie, each letter evaluates to an appropriate binary value
+    static const inline std::unordered_map<char, BYTE> HexTable = {
+        {'A', 0x0}, {'P', 0x1}, {'Z', 0x2}, {'L', 0x3}, {'G', 0x4}, {'I', 0x5}, {'T', 0x6}, {'Y', 0x7},
+        {'E', 0x8}, {'O', 0x9}, {'X', 0xA}, {'U', 0xB}, {'K', 0xC}, {'S', 0xD}, {'V', 0xE}, {'N', 0xF}
+    };
 
     struct DecodedCode
     {

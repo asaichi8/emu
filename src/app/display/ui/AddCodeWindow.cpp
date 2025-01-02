@@ -21,7 +21,12 @@ void AddCodeWindow::Draw()
     ImGui::Separator();
     ImGui::Spacing();
 
-    CreateEntry("Code:      ", m_szCode, IM_ARRAYSIZE(m_szCode));
+    // CreateEntry("Code:      ", m_szCode, IM_ARRAYSIZE(m_szCode));
+    ImGui::Text("Code:      ");
+    ImGui::SameLine();
+    // ensure that the only text in this InputText can be a valid game genie code character
+    ImGui::InputText("##Code", m_szCode, IM_ARRAYSIZE(m_szCode), ImGuiInputTextFlags_CallbackCharFilter,
+                     [](ImGuiInputTextCallbackData* data) -> int { return !IsValidGameGenieChar(data->EventChar); });
 
     ImGui::Spacing();
 
@@ -41,4 +46,9 @@ void AddCodeWindow::CreateEntry(const std::string& entryName, char* buffer, size
 
     std::string textboxName = "##" + entryName;
     ImGui::InputText(textboxName.c_str(), buffer, bufSize, flags);
+}
+
+bool AddCodeWindow::IsValidGameGenieChar(char c)
+{
+    return GameGenie::HexTable.find(toupper(c)) != GameGenie::HexTable.end();
 }
