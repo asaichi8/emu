@@ -13,9 +13,9 @@ void AddCodeWindow::Draw()
     ImGui::Begin("Add Game Genie Code", &this->m_isOpen, ImGuiWindowFlags_AlwaysAutoResize);
     
     // IM_ARRAYSIZE - "Don't use on pointers!", so pass it here instead
-    CreateEntry("Address: 0x", m_szAddress, IM_ARRAYSIZE(m_szAddress), ImGuiInputTextFlags_CharsHexadecimal);
-    CreateEntry("Value:   0x", m_szValue,   IM_ARRAYSIZE(m_szValue)  , ImGuiInputTextFlags_CharsHexadecimal);
-    CreateEntry("Compare: 0x", m_szCompare, IM_ARRAYSIZE(m_szCompare), ImGuiInputTextFlags_CharsHexadecimal);
+    CreateEntry("Address: 0x", m_szAddress, IM_ARRAYSIZE(m_szAddress), ImGuiInputTextFlags_CharsHexadecimal, [&]() { AttemptEncode(); });
+    CreateEntry("Value:   0x", m_szValue,   IM_ARRAYSIZE(m_szValue)  , ImGuiInputTextFlags_CharsHexadecimal, [&]() { AttemptEncode(); });
+    CreateEntry("Compare: 0x", m_szCompare, IM_ARRAYSIZE(m_szCompare), ImGuiInputTextFlags_CharsHexadecimal, [&]() { AttemptEncode(); });
 
     ImGui::Spacing();
     ImGui::Separator();
@@ -42,16 +42,44 @@ void AddCodeWindow::Draw()
 }
 
 
-void AddCodeWindow::CreateEntry(const std::string& entryName, char* buffer, size_t bufSize, ImGuiInputTextFlags flags)
+void AddCodeWindow::CreateEntry(const std::string& entryName, char* buffer, size_t bufSize, ImGuiInputTextFlags flags, const std::function<void()>& callback)
 {
     ImGui::Text("%s", entryName.c_str());
     ImGui::SameLine();
 
     std::string textboxName = "##" + entryName;
-    ImGui::InputText(textboxName.c_str(), buffer, bufSize, flags);
+    if (ImGui::InputText(textboxName.c_str(), buffer, bufSize, flags))
+    {
+        // use a callback so that we can keep this function modular
+        if (callback)
+            callback();
+    }
 }
 
 bool AddCodeWindow::IsValidGameGenieChar(char c)
 {
     return GameGenie::HexTable.find(toupper(c)) != GameGenie::HexTable.end();
+}
+
+bool AddCodeWindow::AttemptEncode()
+{
+    if (strlen(m_szAddress) == 0 || strlen(m_szValue) == 0)
+        return false;
+
+    GameGenie::DecodedCode code{};
+    code.addr = std::stoi(m_szAddress, nullptr, 16);
+    code.val = std::stoi(m_szValue, nullptr, 16);
+    if (strlen(m_szCompare) != 0)
+        code.compare = std::stoi(m_szCompare, nullptr, 16);
+    
+    std::string encodedString = GameGenie::Encode(code);
+    if (encodedString.length() != 6 && encodedString.length() != 8)
+    {
+        std::cerr << "Encoded string was wrong length: " << encodedString.length() << std::endl;
+        return false;
+    }
+
+    strncpy(m_szCode, encodedString.c_str(), sizeof(m_szCode));
+
+    return true;
 }
