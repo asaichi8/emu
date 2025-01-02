@@ -14,6 +14,7 @@ class AddCodeWindow : public IGUIWindow
     char m_szCompare[3]{};
 
     char m_szCode[9]{};
+    char m_szDescription[256]{};
 
     static bool IsValidGameGenieChar(char c);
     void CreateEntry(const std::string& entryName, char* buffer, size_t bufSize, ImGuiInputTextFlags flags = 0, const std::function<void()>& callback = nullptr);

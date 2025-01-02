@@ -14,15 +14,15 @@ void AddCodeWindow::Draw()
     
     // IM_ARRAYSIZE - "Don't use on pointers!", so pass it here instead
     // call AttemptEncode() every time an entry is modified
-    CreateEntry("Address: 0x", m_szAddress, IM_ARRAYSIZE(m_szAddress), ImGuiInputTextFlags_CharsHexadecimal, [&]() { AttemptEncode(); });
-    CreateEntry("Value:   0x", m_szValue,   IM_ARRAYSIZE(m_szValue)  , ImGuiInputTextFlags_CharsHexadecimal, [&]() { AttemptEncode(); });
-    CreateEntry("Compare: 0x", m_szCompare, IM_ARRAYSIZE(m_szCompare), ImGuiInputTextFlags_CharsHexadecimal, [&]() { AttemptEncode(); });
+    CreateEntry("Address:   0x", m_szAddress, IM_ARRAYSIZE(m_szAddress), ImGuiInputTextFlags_CharsHexadecimal, [&]() { AttemptEncode(); });
+    CreateEntry("Value:     0x", m_szValue,   IM_ARRAYSIZE(m_szValue)  , ImGuiInputTextFlags_CharsHexadecimal, [&]() { AttemptEncode(); });
+    CreateEntry("Compare:   0x", m_szCompare, IM_ARRAYSIZE(m_szCompare), ImGuiInputTextFlags_CharsHexadecimal, [&]() { AttemptEncode(); });
 
     ImGui::Spacing();
     ImGui::Separator();
     ImGui::Spacing();
 
-    ImGui::Text("Code:      ");
+    ImGui::Text("Code:        ");
     ImGui::SameLine();
     // ensure that the only text in this InputText can be a valid game genie code character
     if (ImGui::InputText("##Code", m_szCode, IM_ARRAYSIZE(m_szCode), ImGuiInputTextFlags_CallbackCharFilter,
@@ -30,6 +30,8 @@ void AddCodeWindow::Draw()
     {
         AttemptDecode(); // call AttemptDecode() every time the code is modified
     }
+
+    CreateEntry("Description: ", m_szDescription, IM_ARRAYSIZE(m_szDescription));
         
 
     ImGui::Spacing();
