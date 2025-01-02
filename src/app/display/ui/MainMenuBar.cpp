@@ -4,17 +4,19 @@
 MainMenuBar::MainMenuBar(UIManager& uiManager, ControllerHandler* pCH) 
 	:  m_recentFiles("recentfiles", 10), m_uiManager(uiManager), m_pControllerHandler(pCH)
 {
-	auto codeListWindow   = std::make_shared<CodeListWindow> ("Code list",  &m_pGameInfo); // pass reference as m_pGameInfo may change
+	auto codeListWindow   = std::make_shared<CodeListWindow>  ("Code list",  &m_pGameInfo); // pass reference as m_pGameInfo may change
 	auto controllerWindow = std::make_shared<ControllerWindow>("Controllers", pCH);
 	auto cpuRegWindow     = std::make_shared<CPURegWindow>	  ("Registers", m_curReg);
 	auto selectFileWindow = std::make_shared<SelectFileWindow>("Load file");
 	auto errorMsgWindow   = std::make_shared<ErrorMsgWindow>  ("Show error");
+	auto addCodeWindow    = std::make_shared<AddCodeWindow>   ("Add code");
 	
 	m_uiManager.RegisterWindow(codeListWindow);
 	m_uiManager.RegisterWindow(controllerWindow);
 	m_uiManager.RegisterWindow(cpuRegWindow);
 	m_uiManager.RegisterWindow(selectFileWindow);
 	m_uiManager.RegisterWindow(errorMsgWindow);
+	m_uiManager.RegisterWindow(addCodeWindow);
 }
 
 
@@ -78,6 +80,9 @@ void MainMenuBar::Draw()
 			if (ImGui::BeginMenu("Game Genie"))
 			{
 				if (auto win = m_uiManager.GetWindow("Code list"); win && ImGui::MenuItem(win->GetName().c_str()))
+					win->Open(true);
+				
+				if (auto win = m_uiManager.GetWindow("Add code"); win && ImGui::MenuItem(win->GetName().c_str()))
 					win->Open(true);
 				
 				ImGui::EndMenu();

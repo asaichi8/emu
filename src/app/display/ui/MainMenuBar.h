@@ -9,6 +9,7 @@
 #include "CPURegWindow.h"
 #include "SelectFileWindow.h"
 #include "ErrorMsgWindow.h"
+#include "AddCodeWindow.h"
 #include "../ConfigQueue.h"
 #include "../../../include/tinyfiledialogs/tinyfiledialogs.h"
 
