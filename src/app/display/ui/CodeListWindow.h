@@ -5,12 +5,12 @@
 #include "../../../core/loader/Loader.h"
 
 
-class GameGenieWindow : public IGUIWindow
+class CodeListWindow : public IGUIWindow
 {
     Loader::GameInfo** m_ppGameInfo{};
 
 public:
-    GameGenieWindow(const std::string& name, Loader::GameInfo** pGameInfo);
+    CodeListWindow(const std::string& name, Loader::GameInfo** pGameInfo);
 
     void Draw() override;
 };

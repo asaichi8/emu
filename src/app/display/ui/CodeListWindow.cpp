@@ -1,13 +1,13 @@
-#include "GameGenieWindow.h"
+#include "CodeListWindow.h"
 
 
-GameGenieWindow::GameGenieWindow(const std::string& name, Loader::GameInfo** pGameInfo) : IGUIWindow(name), m_ppGameInfo(pGameInfo)
+CodeListWindow::CodeListWindow(const std::string& name, Loader::GameInfo** pGameInfo) : IGUIWindow(name), m_ppGameInfo(pGameInfo)
 {
 
 }
 
 
-void GameGenieWindow::Draw()
+void CodeListWindow::Draw()
 {
     if (!m_ppGameInfo || !*m_ppGameInfo)
         return;

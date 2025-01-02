@@ -4,7 +4,7 @@
 #include <atomic>
 #include <mutex>
 #include "UIManager.h"
-#include "GameGenieWindow.h"
+#include "CodeListWindow.h"
 #include "ControllerWindow.h"
 #include "CPURegWindow.h"
 #include "SelectFileWindow.h"
