@@ -35,7 +35,7 @@ void AddCodeWindow::Draw()
     ImGui::Spacing();
 
     ImGui::BeginDisabled(strlen(m_szCode) != 6 && strlen(m_szCode) != 8); // disable button if invalid code
-    if (ImGui::Button("Add to code list", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+    if (ImGui::Button("Add to code list (unimplemented)", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
     {
         // TODO: implement add to code list
     }
