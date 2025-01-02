@@ -21,7 +21,6 @@ void AddCodeWindow::Draw()
     ImGui::Separator();
     ImGui::Spacing();
 
-    // CreateEntry("Code:      ", m_szCode, IM_ARRAYSIZE(m_szCode));
     ImGui::Text("Code:      ");
     ImGui::SameLine();
     // ensure that the only text in this InputText can be a valid game genie code character
@@ -30,10 +29,14 @@ void AddCodeWindow::Draw()
 
     ImGui::Spacing();
 
+    static size_t codeLen{};
+    codeLen = strlen(m_szCode);
+    ImGui::BeginDisabled(codeLen != 6 && codeLen != 8); // disable button if invalid code
     if (ImGui::Button("Add to code list", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
     {
         // TODO: implement add to code list
     }
+    ImGui::EndDisabled();
 
     ImGui::End();
 }
