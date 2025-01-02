@@ -13,6 +13,7 @@ void AddCodeWindow::Draw()
     ImGui::Begin("Add Game Genie Code", &this->m_isOpen, ImGuiWindowFlags_AlwaysAutoResize);
     
     // IM_ARRAYSIZE - "Don't use on pointers!", so pass it here instead
+    // call AttemptEncode() every time an entry is modified
     CreateEntry("Address: 0x", m_szAddress, IM_ARRAYSIZE(m_szAddress), ImGuiInputTextFlags_CharsHexadecimal, [&]() { AttemptEncode(); });
     CreateEntry("Value:   0x", m_szValue,   IM_ARRAYSIZE(m_szValue)  , ImGuiInputTextFlags_CharsHexadecimal, [&]() { AttemptEncode(); });
     CreateEntry("Compare: 0x", m_szCompare, IM_ARRAYSIZE(m_szCompare), ImGuiInputTextFlags_CharsHexadecimal, [&]() { AttemptEncode(); });
@@ -24,14 +25,16 @@ void AddCodeWindow::Draw()
     ImGui::Text("Code:      ");
     ImGui::SameLine();
     // ensure that the only text in this InputText can be a valid game genie code character
-    ImGui::InputText("##Code", m_szCode, IM_ARRAYSIZE(m_szCode), ImGuiInputTextFlags_CallbackCharFilter,
-                     [](ImGuiInputTextCallbackData* data) -> int { return !IsValidGameGenieChar(data->EventChar); });
+    if (ImGui::InputText("##Code", m_szCode, IM_ARRAYSIZE(m_szCode), ImGuiInputTextFlags_CallbackCharFilter,
+                     [](ImGuiInputTextCallbackData* data) -> int { return !IsValidGameGenieChar(data->EventChar); }))
+    {
+        AttemptDecode(); // call AttemptDecode() every time the code is modified
+    }
+        
 
     ImGui::Spacing();
 
-    static size_t codeLen{};
-    codeLen = strlen(m_szCode);
-    ImGui::BeginDisabled(codeLen != 6 && codeLen != 8); // disable button if invalid code
+    ImGui::BeginDisabled(strlen(m_szCode) != 6 && strlen(m_szCode) != 8); // disable button if invalid code
     if (ImGui::Button("Add to code list", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
     {
         // TODO: implement add to code list
@@ -80,6 +83,37 @@ bool AddCodeWindow::AttemptEncode()
     }
 
     strncpy(m_szCode, encodedString.c_str(), sizeof(m_szCode));
+
+    return true;
+}
+
+// assumes that the code in m_szCode has valid game genie code characters!
+bool AddCodeWindow::AttemptDecode()
+{
+    if (!(strlen(m_szCode) == 6 || strlen(m_szCode) == 8))
+        return false;
+    
+    GameGenie::DecodedCode code = GameGenie::Decode(m_szCode);
+
+    std::stringstream ss;
+
+    ss << std::hex << std::uppercase << code.addr;
+    strncpy(m_szAddress, ss.str().c_str(), sizeof(m_szAddress));
+
+    ss.str(""); ss.clear();
+    ss << std::hex << std::uppercase << (int)code.val;
+    strncpy(m_szValue, ss.str().c_str(), sizeof(m_szValue));
+
+    if (code.compare.has_value())
+    {
+        ss.str(""); ss.clear();
+        ss << std::hex << std::uppercase << (int)code.compare.value();
+        strncpy(m_szCompare, ss.str().c_str(), sizeof(m_szCompare));
+    }
+    else
+    {
+        m_szCompare[0] = '\0'; // clear string
+    }
 
     return true;
 }
