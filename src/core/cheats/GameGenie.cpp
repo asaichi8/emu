@@ -7,7 +7,8 @@ GameGenie::GameGenie()
 }
 
 
-GameGenie::DecodedCode GameGenie::Decode(const std::string& code)
+// assumes code is of length 6 or 8
+GameGenie::DecodedCode GameGenie::Decode(std::string code)
 {
     const size_t numBits = code.length() * 4;
 
@@ -21,7 +22,7 @@ GameGenie::DecodedCode GameGenie::Decode(const std::string& code)
         //throw std::invalid_argument("String length was not 6 or 8!");
     
     GameGenie::DecodedCode decodedCode{};
-
+    std::transform(code.begin(), code.end(), code.begin(), ::toupper);
 
     // e.g. code was SXIOPO, so encodedBits is 1101 1010 0101 1001 0001 1001 (leftmost position is 23)
     std::vector<bool> encodedBits = StringCodeToBits(code);

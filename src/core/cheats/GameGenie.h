@@ -37,7 +37,7 @@ class GameGenie
 
 public:
     GameGenie();
-    
+
     // in the game genie, each letter evaluates to an appropriate binary value
     static const inline std::unordered_map<char, BYTE> HexTable = {
         {'A', 0x0}, {'P', 0x1}, {'Z', 0x2}, {'L', 0x3}, {'G', 0x4}, {'I', 0x5}, {'T', 0x6}, {'Y', 0x7},
@@ -68,7 +68,7 @@ public:
 		}
 	};
 
-    static DecodedCode Decode(const std::string& code);
+    static DecodedCode Decode(std::string code);
     static std::string Encode(const DecodedCode& decodedCode);
     static std::vector<std::string> ExtractCodes(const std::string& codes, char delimiter);
 };
