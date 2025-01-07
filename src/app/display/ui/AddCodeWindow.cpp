@@ -38,10 +38,14 @@ void AddCodeWindow::Draw()
     ImGui::Spacing();
 
     ImGui::BeginDisabled(strlen(m_szCode) != 6 && strlen(m_szCode) != 8); // disable button if invalid code
-    if (ImGui::Button("Add to code list", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+    static std::atomic<bool> isThreadRunning{};
+    const char* addLabel = isThreadRunning ? "Saving..." : "Add to code list";
+    if (ImGui::Button(addLabel, ImVec2(ImGui::GetContentRegionAvail().x, 0)))
     {
         // inserting into database can be laggy if its a big file, so create a new thread
         std::thread t([this]() {
+            isThreadRunning = true;
+
             std::lock_guard<std::mutex> lock(*m_pDBmutex);
 
             // create our code as a GameGenieCode
@@ -60,6 +64,8 @@ void AddCodeWindow::Draw()
             auto pMD5pair = *m_ppMD5pair;
             if (!DatabaseHandler::InsertInfoW(info, pMD5pair->first, pMD5pair->second, Loader::GetFullFilePath(DATABASE_RELATIVE_PATH), false))
                 std::cerr << "failed to insert info" << std::endl;
+
+            isThreadRunning = false;
         });
 
         t.detach();

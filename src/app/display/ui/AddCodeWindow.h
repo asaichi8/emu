@@ -5,6 +5,7 @@
 #include <functional>
 #include <thread>
 #include <mutex>
+#include <atomic>
 #include "IGUIWindow.h"
 #include "../../../core/cheats/GameGenie.h"
 #include "../../../core/loader/Loader.h"

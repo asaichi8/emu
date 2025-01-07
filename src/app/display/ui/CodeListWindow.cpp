@@ -71,15 +71,21 @@ void CodeListWindow::Draw()
 
     ImGui::EndChild();
 
-    if (ImGui::Button("Save changes", {ImGui::GetContentRegionAvail().x, 0}))
+    static std::atomic<bool> isThreadRunning{};
+    const char* saveLabel = isThreadRunning ? "Saving..." : "Save changes";
+    if (ImGui::Button(saveLabel, {ImGui::GetContentRegionAvail().x, 0}))
     {
         // inserting into database can be laggy if its a big file, so create a new thread
         std::thread t([this]() {
+            isThreadRunning = true;
+
             std::lock_guard<std::mutex> lock(*m_pDBmutex);
 
             auto pMD5pair = *m_ppMD5pair;
             if (!DatabaseHandler::InsertInfoW(**m_ppGameInfo, pMD5pair->first, pMD5pair->second, Loader::GetFullFilePath(DATABASE_RELATIVE_PATH), true))
                 std::cerr << "failed to insert info" << std::endl;
+                
+            isThreadRunning = false;
         });
 
         t.detach();

@@ -3,6 +3,7 @@
 #include <vector>
 #include <thread>
 #include <mutex>
+#include <atomic>
 #include "IGUIWindow.h"
 #include "../../../core/loader/Loader.h"
 #include "../../../core/loader/DatabaseHandler.h"
