@@ -16,8 +16,8 @@ void CodeListWindow::Draw()
         
     // TODO: set description to right hand side
     // TODO: add "add code"
-    ImGui::SetNextWindowSizeConstraints({0.f, 0.f}, {750.f, 500.f});
-    ImGui::Begin("Game Genie Codes", &this->m_isOpen, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
+    ImGui::SetNextWindowSizeConstraints({300.f, 200.f}, {750.f, 500.f});
+    ImGui::Begin("Game Genie Codes", &this->m_isOpen, ImGuiWindowFlags_HorizontalScrollbar);
     
     if (pGameInfo->gameGenieCodes.empty())
     {
@@ -26,6 +26,7 @@ void CodeListWindow::Draw()
         return;
     }
     
+    ImGui::BeginChild("Code List", {0, -ImGui::GetFrameHeightWithSpacing()}, false, ImGuiWindowFlags_AlwaysVerticalScrollbar);
     for (int i = 0; i < pGameInfo->gameGenieCodes.size(); ++i) // loop through each code
     {
         GameGenie::GameGenieCode* code = &pGameInfo->gameGenieCodes.at(i);
@@ -64,6 +65,14 @@ void CodeListWindow::Draw()
         //ImGui::Text("%s", code->description.c_str());
 
         ImGui::PopID();
+    }
+
+
+    ImGui::EndChild();
+
+    if (ImGui::Button("Save changes", {ImGui::GetContentRegionAvail().x, 0}))
+    {
+        // TODO: implement me
     }
 
     ImGui::End();
