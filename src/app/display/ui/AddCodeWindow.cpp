@@ -47,9 +47,14 @@ void AddCodeWindow::Draw()
         auto pGameInfo = *m_ppGameInfo;
         pGameInfo->gameGenieCodes.push_back(curCode);
 
+        // create a new GameInfo, and push back the sole code. this is so we can append the code to the database without modifying
+        // the state of anything else
+        Loader::GameInfo info;
+        info.gameGenieCodes.push_back(curCode);
+
         // attempt to insert new code into database
         auto pMD5pair = *m_ppMD5pair;
-        if (!DatabaseHandler::InsertInfoW(**m_ppGameInfo, pMD5pair->first, pMD5pair->second, Loader::GetFullFilePath(DATABASE_RELATIVE_PATH), false))
+        if (!DatabaseHandler::InsertInfoW(info, pMD5pair->first, pMD5pair->second, Loader::GetFullFilePath(DATABASE_RELATIVE_PATH), false))
             std::cerr << "failed to insert info" << std::endl;
     }
     ImGui::EndDisabled();
