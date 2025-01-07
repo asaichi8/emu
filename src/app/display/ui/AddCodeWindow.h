@@ -3,6 +3,8 @@
 
 #include <sstream>
 #include <functional>
+#include <thread>
+#include <mutex>
 #include "IGUIWindow.h"
 #include "../../../core/cheats/GameGenie.h"
 #include "../../../core/loader/Loader.h"
@@ -23,6 +25,7 @@ class AddCodeWindow : public IGUIWindow
 
     Loader::GameInfo** m_ppGameInfo{};
     std::pair<std::string, std::string>** m_ppMD5pair{};
+    std::mutex* m_pDBmutex;
 
 
     static bool IsValidGameGenieChar(char c);
@@ -31,7 +34,7 @@ class AddCodeWindow : public IGUIWindow
     bool AttemptDecode();
 
 public:
-    AddCodeWindow(const std::string& name, Loader::GameInfo** pGameInfo, std::pair<std::string, std::string>** pMD5pair);
+    AddCodeWindow(const std::string& name, Loader::GameInfo** pGameInfo, std::pair<std::string, std::string>** pMD5pair, std::mutex* dbMutex);
 
     void Draw() override;
 };

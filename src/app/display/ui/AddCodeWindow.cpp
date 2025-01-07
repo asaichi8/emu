@@ -1,8 +1,8 @@
 #include "AddCodeWindow.h"
 
 
-AddCodeWindow::AddCodeWindow(const std::string& name, Loader::GameInfo** pGameInfo, std::pair<std::string, std::string>** pMD5pair)
-    : IGUIWindow(name), m_ppGameInfo(pGameInfo), m_ppMD5pair(pMD5pair)
+AddCodeWindow::AddCodeWindow(const std::string& name, Loader::GameInfo** pGameInfo, std::pair<std::string, std::string>** pMD5pair, std::mutex* dbMutex)
+    : IGUIWindow(name), m_ppGameInfo(pGameInfo), m_ppMD5pair(pMD5pair), m_pDBmutex(dbMutex)
 {
 
 }
@@ -40,22 +40,29 @@ void AddCodeWindow::Draw()
     ImGui::BeginDisabled(strlen(m_szCode) != 6 && strlen(m_szCode) != 8); // disable button if invalid code
     if (ImGui::Button("Add to code list", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
     {
-        // create our code as a GameGenieCode
-        GameGenie::GameGenieCode curCode = {{m_szCode}, m_szDescription, false};
+        // inserting into database can be laggy if its a big file, so create a new thread
+        std::thread t([this]() {
+            std::lock_guard<std::mutex> lock(*m_pDBmutex);
 
-        // add code to the list, updating the views
-        auto pGameInfo = *m_ppGameInfo;
-        pGameInfo->gameGenieCodes.push_back(curCode);
+            // create our code as a GameGenieCode
+            GameGenie::GameGenieCode curCode = {{m_szCode}, m_szDescription, false};
 
-        // create a new GameInfo, and push back the sole code. this is so we can append the code to the database without modifying
-        // the state of anything else
-        Loader::GameInfo info;
-        info.gameGenieCodes.push_back(curCode);
+            // add code to the list, updating the views
+            auto pGameInfo = *m_ppGameInfo;
+            pGameInfo->gameGenieCodes.push_back(curCode);
 
-        // attempt to insert new code into database
-        auto pMD5pair = *m_ppMD5pair;
-        if (!DatabaseHandler::InsertInfoW(info, pMD5pair->first, pMD5pair->second, Loader::GetFullFilePath(DATABASE_RELATIVE_PATH), false))
-            std::cerr << "failed to insert info" << std::endl;
+            // create a new GameInfo, and push back the sole code. this is so we can append the code to the database without modifying
+            // the state of anything else
+            Loader::GameInfo info;
+            info.gameGenieCodes.push_back(curCode);
+
+            // attempt to insert new code into database
+            auto pMD5pair = *m_ppMD5pair;
+            if (!DatabaseHandler::InsertInfoW(info, pMD5pair->first, pMD5pair->second, Loader::GetFullFilePath(DATABASE_RELATIVE_PATH), false))
+                std::cerr << "failed to insert info" << std::endl;
+        });
+
+        t.detach();
     }
     ImGui::EndDisabled();
 

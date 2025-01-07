@@ -34,7 +34,8 @@ public:
     MainMenuBar(UIManager& uiManager, ControllerHandler* pCH);
 
     ConfigQueue m_recentFiles;
-	std::mutex fileStrMutex{};
+	std::mutex m_fileStrMutex{};
+	std::mutex m_dbMutex{};
 
     void Draw();
 
@@ -65,12 +66,12 @@ public:
 
 	std::string GetSelectedFile()
 	{
-		std::lock_guard<std::mutex> lock(fileStrMutex);
+		std::lock_guard<std::mutex> lock(m_fileStrMutex);
 		return m_selectedFile;
 	};
 	void SetSelectedFile(const std::string& selectedFile)
 	{
-		std::lock_guard<std::mutex> lock(fileStrMutex);
+		std::lock_guard<std::mutex> lock(m_fileStrMutex);
 		m_selectedFile = selectedFile;
 	}
 
