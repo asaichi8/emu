@@ -37,12 +37,14 @@ Emulator::Emulator(const std::string& romPath, EmulatorDisplay& GUI) : m_GUI(&GU
 	// Map ROM into appropriate variables
 	m_ROM.MapROM();
 
+	// Save the MD5 values in the ROM class
+	m_ROM.UpdateHash();
+
 	// Mirror Game Genie codes to the PRG_ROM size
 	m_ROM.MirrorGameGenieCodes();
 
-	// Give GUI the Game Genie Codes pointer
-	m_GUI->GetMainMenuBar()->UpdateCodes(m_ROM.GetGameInfo());
-	
+	m_GUI->GetMainMenuBar()->UpdateCodes(m_ROM.GetGameInfo()); // Give GUI the Game Genie Codes pointer
+	m_GUI->GetMainMenuBar()->UpdateHash(m_ROM.GetMD5Pair());   // Give GUI a pointer to our saved MD5 hashes
 
 	// Create palette
 	m_pPalette = std::make_unique<Palette>();

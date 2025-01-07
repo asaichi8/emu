@@ -69,7 +69,7 @@ bool DatabaseHandler::InsertInfo(const Loader::GameInfo& info, const std::string
         j["roms"] = json::array();
 	}
 
-    json curRom;
+    json* curRom = nullptr;
 
     // loop through every rom & attempt to find our rom based on md5 hash.
     for (auto& rom : j["roms"])
@@ -84,25 +84,27 @@ bool DatabaseHandler::InsertInfo(const Loader::GameInfo& info, const std::string
 
 		if (foundRom)
         {
-            curRom = rom;
+            curRom = &rom;
             break;
         }
     }
 
     // if we didn't find the rom, we'll just create a json entry, otherwise we'll modify it
+    if (!curRom)
+        curRom = &j["roms"].emplace_back(json::object());
 
     auto ShouldUpdate = [&curRom, shouldReplace](const std::string& field) {
-        return shouldReplace || (!shouldReplace && !curRom.contains(field));
+        return shouldReplace || (!shouldReplace && !curRom->contains(field));
     };
 
     if (!md5.empty() && ShouldUpdate("md5"))
-        curRom["md5"] = md5;
+        (*curRom)["md5"] = md5;
 
     if (!info.name.empty() && ShouldUpdate("name"))
-        curRom["name"] = info.name;
+        (*curRom)["name"] = info.name;
 
     if (!md5headerless.empty() && ShouldUpdate("md5headerless"))
-        curRom["md5headerless"] = md5headerless;
+        (*curRom)["md5headerless"] = md5headerless;
 
     if (!info.gameGenieCodes.empty())
     {
@@ -111,8 +113,8 @@ bool DatabaseHandler::InsertInfo(const Loader::GameInfo& info, const std::string
         if (shouldReplace) // if we should replace it, just create a new array
             genieArray = json::array();
         else
-            if (curRom.contains("game_genie_codes") && curRom["game_genie_codes"].is_array())
-                genieArray = curRom["game_genie_codes"]; // shouldn't replace and we found our array, so append to it
+            if (curRom->contains("game_genie_codes") && (*curRom)["game_genie_codes"].is_array())
+                genieArray = (*curRom)["game_genie_codes"]; // shouldn't replace and we found our array, so append to it
             else
                 genieArray = json::array(); // couldnt find our array so just create a new one
 
@@ -129,7 +131,7 @@ bool DatabaseHandler::InsertInfo(const Loader::GameInfo& info, const std::string
             genieArray.push_back(jCode);
         }
 
-        curRom["game_genie_codes"] = genieArray;
+        (*curRom)["game_genie_codes"] = genieArray;
     }
 
     // attempt to write our new changes to the file (we need to replace the entire file because json)
@@ -143,6 +145,13 @@ bool DatabaseHandler::InsertInfo(const Loader::GameInfo& info, const std::string
         }
 
         db << j.dump(4);
+
+        if (!db)
+        {
+            std::cerr << "Failed to write all data to databasee!" << std::endl;
+            return false;
+        }
+
         db.close();
     }
     catch (const std::exception& e)
@@ -160,7 +169,7 @@ bool DatabaseHandler::InsertInfo(const Loader::GameInfo& info, const std::string
 ///			being the headerless MD5 value of the ROM (which is empty if inapplicable).
 std::pair<std::string, std::string> DatabaseHandler::GetMD5(const std::vector<BYTE>* romRaw)
 {
-	if (romRaw->empty() || romRaw->size() < NES_HEADER_SIZE + 1)
+	if (!romRaw || romRaw->empty() || romRaw->size() < NES_HEADER_SIZE + 1)
 	{
 		std::cerr << "Invalid usage of GetMD5()" << std::endl;
 		return {{}, {}};
@@ -187,8 +196,15 @@ std::pair<std::string, std::string> DatabaseHandler::GetMD5(const std::vector<BY
 	return {md5, md5headerless};
 }
 
+// TODO: this should probably just take md5s, add it to the wrappers maybe
 Loader::GameInfo DatabaseHandler::FindROMGameInfo(const std::vector<BYTE>* romRaw, const nlohmann::json& j)
 {
+    if (!romRaw || romRaw->empty())
+    {
+        std::cerr << "Error with romRaw!" << std::endl;
+        return {};
+    }
+
 	using json = nlohmann::json;
 	Loader::GameInfo info{};
 

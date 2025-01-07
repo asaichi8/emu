@@ -4,7 +4,7 @@
 MainMenuBar::MainMenuBar(UIManager& uiManager, ControllerHandler* pCH) 
 	:  m_recentFiles("recentfiles", 10), m_uiManager(uiManager), m_pControllerHandler(pCH)
 {
-	m_uiManager.RegisterWindow( std::make_shared<CodeListWindow>  ("Code list",  &m_pGameInfo) );
+	m_uiManager.RegisterWindow( std::make_shared<CodeListWindow>  ("Code list",  &m_pGameInfo, &m_pMD5pair) );
 	m_uiManager.RegisterWindow( std::make_shared<ControllerWindow>("Controllers", pCH) );
 	m_uiManager.RegisterWindow( std::make_shared<CPURegWindow>	  ("Registers", m_curReg) );
 	m_uiManager.RegisterWindow( std::make_shared<SelectFileWindow>("Load file") );

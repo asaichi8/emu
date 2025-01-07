@@ -20,6 +20,7 @@ class MainMenuBar
     ControllerHandler* m_pControllerHandler;
 	CPURegisters m_curReg{}; // A copy of the CPU's registers so they can be displayed.
 	Loader::GameInfo* m_pGameInfo;
+	std::pair<std::string, std::string>* m_pMD5pair;
 	std::string m_selectedFile{};
 
 	std::atomic<bool> m_bShouldCPURun = true;
@@ -40,6 +41,7 @@ public:
 
 	void UpdateRegisters(const CPURegisters& registers) { m_curReg = registers; }
 	void UpdateCodes(Loader::GameInfo* info) { m_pGameInfo = info; }
+	void UpdateHash(std::pair<std::string, std::string>* md5) { m_pMD5pair = md5; }
     bool GetShouldCPURun() const { return m_bShouldCPURun.load(); }
 
 	bool GetShouldRestart() { return m_bShouldRestart; }

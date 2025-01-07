@@ -5,6 +5,7 @@
 #include <memory>
 #include <iterator>
 #include "Loader.h"
+#include "DatabaseHandler.h"
 #include "../../include/typedefs.h"
 
 
@@ -70,6 +71,7 @@ class ROM
 	std::unique_ptr<std::vector<BYTE>> m_pRawFile{};
 	iNES_Header m_inesHeader{};
 	Loader::GameInfo m_gameInfo{};
+	std::pair<std::string, std::string> m_MD5pair{};
 	size_t m_nPRG_ROM_size{};
 	size_t m_nCHR_ROM_size{};
 
@@ -91,7 +93,9 @@ public:
 	static bool CheckINES(const std::vector<BYTE>* romRaw);
 	std::string CheckROM(std::unique_ptr<std::vector<BYTE>> pRomRaw, bool shouldUse = false, const Loader::GameInfo& info = {});
 	void MapROM();
+	void UpdateHash();
 	void MirrorGameGenieCodes();
 	//const std::vector<BYTE>* GetRawFile() const { return m_pRawFile.get(); } // unused currently
 	Loader::GameInfo* GetGameInfo() { return &m_gameInfo; }
+	std::pair<std::string, std::string>* GetMD5Pair() { return &m_MD5pair; }
 };

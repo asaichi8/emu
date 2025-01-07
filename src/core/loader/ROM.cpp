@@ -90,6 +90,14 @@ void ROM::MapROM()
 	CHR_ROM = std::vector<BYTE>(CHR_begin, CHR_end);
 }
 
+void ROM::UpdateHash()
+{
+	if (!m_pRawFile)
+		return;
+
+	m_MD5pair = DatabaseHandler::GetMD5(m_pRawFile.get());
+}
+
 /// @brief Mirrors game genie codes to the PRG_ROM's size, so they line up when we access them later
 void ROM::MirrorGameGenieCodes()
 {

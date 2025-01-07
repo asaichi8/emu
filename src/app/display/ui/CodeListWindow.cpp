@@ -1,7 +1,8 @@
 #include "CodeListWindow.h"
 
 
-CodeListWindow::CodeListWindow(const std::string& name, Loader::GameInfo** pGameInfo) : IGUIWindow(name), m_ppGameInfo(pGameInfo)
+CodeListWindow::CodeListWindow(const std::string& name, Loader::GameInfo** pGameInfo, std::pair<std::string, std::string>** pMD5pair)
+    : IGUIWindow(name), m_ppGameInfo(pGameInfo), m_ppMD5pair(pMD5pair)
 {
 
 }
@@ -72,6 +73,9 @@ void CodeListWindow::Draw()
 
     if (ImGui::Button("Save changes (unimplemented)", {ImGui::GetContentRegionAvail().x, 0}))
     {
+        auto pMD5pair = *m_ppMD5pair;
+        if (!DatabaseHandler::InsertInfoW(**m_ppGameInfo, pMD5pair->first, pMD5pair->second, Loader::GetFullFilePath(DATABASE_RELATIVE_PATH), true))
+            std::cerr << "failed to insert info" << std::endl;
         // TODO: implement me
     }
 
