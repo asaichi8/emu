@@ -26,7 +26,7 @@ Emulator::Emulator(const std::string& romPath, EmulatorDisplay& GUI) : m_GUI(&GU
 	std::unique_ptr<std::vector<BYTE>> romRaw = std::make_unique<std::vector<BYTE>>(Loader::LoadFile(m_curRomPath));
 
 	// Attempt to extract info of file from database based on MD5 hash
-	Loader::GameInfo info = Loader::FindROM(romRaw.get(), Loader::GetFullFilePath(DATABASE_RELATIVE_PATH));
+	Loader::GameInfo info = DatabaseHandler::FindROMGameInfo(romRaw.get(), Loader::GetFullFilePath(DATABASE_RELATIVE_PATH));
 
 	// Move ROM to m_ROM & check if it's an actual NES file
 	std::string errMsg = m_ROM.CheckROM(std::move(romRaw), true, info);
@@ -168,7 +168,7 @@ std::string Emulator::Run()
 			//		 when the loop continues and class Emulator is constructed again, we do it again. we could probably only call this
 			//		 stuff once by returning a struct of the raw file, info, filename etc.
 			std::unique_ptr<std::vector<BYTE>> romRaw = std::make_unique<std::vector<BYTE>>(Loader::LoadFile(strSelectedFile));
-			Loader::GameInfo info = Loader::FindROM(romRaw.get(), Loader::GetFullFilePath(DATABASE_RELATIVE_PATH));
+			Loader::GameInfo info = DatabaseHandler::FindROMGameInfo(romRaw.get(), Loader::GetFullFilePath(DATABASE_RELATIVE_PATH));
 			std::string errMsg = m_ROM.CheckROM(std::move(romRaw), false, info);
 			if (!errMsg.empty())
 				m_GUI->GetMainMenuBar()->SetShouldShowErrorMsg(true, errMsg, "Failed to load file");
@@ -212,7 +212,7 @@ std::string Emulator::Run()
 							m_GUI->GetMainMenuBar()->m_recentFiles.Push(strDroppedFile);
 
 						std::unique_ptr<std::vector<BYTE>> romRaw = std::make_unique<std::vector<BYTE>>(Loader::LoadFile(strDroppedFile));
-						Loader::GameInfo info = Loader::FindROM(romRaw.get(), Loader::GetFullFilePath(DATABASE_RELATIVE_PATH));
+						Loader::GameInfo info = DatabaseHandler::FindROMGameInfo(romRaw.get(), Loader::GetFullFilePath(DATABASE_RELATIVE_PATH));
 						std::string errMsg = m_ROM.CheckROM(std::move(romRaw));
 						if (!errMsg.empty())
 						{

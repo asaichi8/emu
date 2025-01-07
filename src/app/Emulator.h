@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <unordered_map>
 #include "../core/loader/ROM.h"
+#include "../core/loader/DatabaseHandler.h"
 #include "../core/memory/Bus.h"
 #include "../core/cpu/CPU.h"
 #include "../core/ppu/PPU.h"
