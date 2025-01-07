@@ -103,8 +103,8 @@ bool DatabaseHandler::InsertInfo(const Loader::GameInfo& info, const std::string
     if (!info.name.empty() && ShouldUpdate("name"))
         (*curRom)["name"] = info.name;
 
-    if (!md5headerless.empty() && ShouldUpdate("md5headerless"))
-        (*curRom)["md5headerless"] = md5headerless;
+    if (!md5headerless.empty() && ShouldUpdate("md5-headerless"))
+        (*curRom)["md5-headerless"] = md5headerless;
 
     if (!info.gameGenieCodes.empty())
     {
