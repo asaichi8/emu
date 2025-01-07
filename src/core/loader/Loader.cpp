@@ -95,22 +95,23 @@ bool Loader::IsNESFile(const std::vector<BYTE>* romRaw)
 	return false;
 }
 
-Loader::GameInfo Loader::FindROM(const std::vector<BYTE>* romRaw, const std::string& dbPath)
+/// @brief Gets the MD5 and headerless MD5 of a given ROM.
+/// @param romRaw A vector containing the entire ROM.
+/// @return A pair of strings - the first being the MD5 value of the ROM (which is empty on failure), and the second
+///			being the headerless MD5 value of the ROM (which is empty if inapplicable).
+std::pair<std::string, std::string> Loader::GetMD5(const std::vector<BYTE>* romRaw)
 {
-	const size_t NES_HEADER_SIZE = 16;
-	Loader::GameInfo info{};
-
-	if (romRaw->empty() || romRaw->size() < NES_HEADER_SIZE + 1 || dbPath.empty())
+	if (romRaw->empty() || romRaw->size() < NES_HEADER_SIZE + 1)
 	{
-		std::cerr << "Invalid usage" << std::endl;
-		return {};
+		std::cerr << "Invalid usage of GetMD5()" << std::endl;
+		return {{}, {}};
 	}
 
 	// we must be able to calculate an md5 for the raw file, otherwise give up
     std::string md5 = CalcMD5(*romRaw);
 	// std::cout << "md5: " << md5 << std::endl;
 	if (md5.empty())
-		return {};
+		return {{}, {}};
 
 	// we can optionally calculate a hash for the headerless version of the file, just in case the main hash fails. ROM dumpers
 	// may choose different header values, so this increases the success rate of finding the ROM greatly.
@@ -124,6 +125,16 @@ Loader::GameInfo Loader::FindROM(const std::vector<BYTE>* romRaw, const std::str
 		// std::cout << "md5-headerless: " << md5headerless << std::endl;
 	}
 
+	return {md5, md5headerless};
+}
+
+Loader::GameInfo Loader::FindROM(const std::vector<BYTE>* romRaw, const std::string& dbPath)
+{
+	Loader::GameInfo info{};
+
+	auto md5pair = GetMD5(romRaw);
+	std::string md5 = md5pair.first;
+	std::string md5headerless = md5pair.second;
 
 	std::ifstream db(dbPath);
 	if (!db.is_open())

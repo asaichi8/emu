@@ -16,6 +16,8 @@
 
 class Loader
 {
+	static const size_t NES_HEADER_SIZE = 16;
+
 	static std::string HashToHexStr(const BYTE hash[], size_t len);
 	static std::string CalcMD5(const std::vector<BYTE>& file);
 	static bool IsNESFile(const std::vector<BYTE>* romRaw);
@@ -69,5 +71,6 @@ public:
 	static std::vector<BYTE> HexStrToBytes(const std::string& hexString);
 	static std::vector<BYTE> LoadFile(const std::string& filePath);
 	static std::string GetFullFilePath(const std::string& relativePath);
+	static std::pair<std::string, std::string> GetMD5(const std::vector<BYTE>* romRaw);
 	static Loader::GameInfo FindROM(const std::vector<BYTE>* romRaw, const std::string& dbPath);
 };
