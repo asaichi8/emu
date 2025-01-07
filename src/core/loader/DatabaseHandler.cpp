@@ -28,6 +28,132 @@ std::string DatabaseHandler::HashToHexStr(const BYTE hash[], size_t len)
 	return ss.str();
 }
 
+nlohmann::json DatabaseHandler::GetJSONDatabase(const std::string &dbPath)
+{
+    nlohmann::json j;
+
+    std::ifstream db(dbPath);
+    if (!db.is_open())
+    {
+        std::cerr << "Could not open JSON database!" << std::endl;
+        return {};
+    }
+
+    try
+    {
+        db >> j;
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Failed to parse JSON database: " << e.what() << std::endl;
+        db.close();
+        return {};
+    }
+
+    db.close();
+    return j;
+}
+
+bool DatabaseHandler::InsertInfo(const Loader::GameInfo& info, const std::string &md5, const std::string &md5headerless, const std::string& dbPath, bool shouldReplace)
+{
+    if (md5.empty() && md5headerless.empty())
+        return false;
+
+    using json = nlohmann::json;
+
+    json j = GetJSONDatabase(dbPath);
+
+    // find roms array & create one if it doesnt exist
+	if (!j.contains("roms") || !j["roms"].is_array())
+	{
+        j["roms"] = json::array();
+	}
+
+    json curRom;
+
+    // loop through every rom & attempt to find our rom based on md5 hash.
+    for (auto& rom : j["roms"])
+    {
+        bool foundRom = false;
+		
+		// search for both md5 & md5-headerless in each header
+		if (rom.contains("md5") && (rom["md5"] == md5 || (!md5headerless.empty() && rom["md5"] == md5headerless)))
+			foundRom = true;
+		else if (rom.contains("md5-headerless") && (rom["md5-headerless"] == md5 || (!md5headerless.empty() && rom["md5-headerless"] == md5headerless)))
+			foundRom = true;
+
+		if (foundRom)
+        {
+            curRom = rom;
+            break;
+        }
+    }
+
+    // if we didn't find the rom, we'll just create a json entry, otherwise we'll modify it
+
+    auto ShouldUpdate = [&curRom, shouldReplace](const std::string& field) {
+        return shouldReplace || (!shouldReplace && !curRom.contains(field));
+    };
+
+    if (!md5.empty() && ShouldUpdate("md5"))
+        curRom["md5"] = md5;
+
+    if (!info.name.empty() && ShouldUpdate("name"))
+        curRom["name"] = info.name;
+
+    if (!md5headerless.empty() && ShouldUpdate("md5headerless"))
+        curRom["md5headerless"] = md5headerless;
+
+    if (!info.gameGenieCodes.empty())
+    {
+        json genieArray;
+
+        if (shouldReplace) // if we should replace it, just create a new array
+            genieArray = json::array();
+        else
+            if (curRom.contains("game_genie_codes") && curRom["game_genie_codes"].is_array())
+                genieArray = curRom["game_genie_codes"]; // shouldn't replace and we found our array, so append to it
+            else
+                genieArray = json::array(); // couldnt find our array so just create a new one
+
+        // for each code in info...
+        for (const auto& codeObj : info.gameGenieCodes)
+        {
+            std::string code = GameGenie::ConcatenateCodes(codeObj.code, " + ");
+
+            json jCode;
+            jCode["code"] = code;
+            jCode["description"] = codeObj.description;
+            jCode["is_active"] = codeObj.isActive;
+
+            genieArray.push_back(jCode);
+        }
+
+        curRom["game_genie_codes"] = genieArray;
+    }
+
+    // attempt to write our new changes to the file (we need to replace the entire file because json)
+    try
+    {
+        std::ofstream db(dbPath, std::ios::trunc);
+        if (!db.is_open())
+        {
+            std::cerr << "Couldn't truncate database!" << std::endl;
+            return false;
+        }
+
+        db << j.dump(4);
+        db.close();
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Failed to write to database: " << e.what() << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
 /// @brief Gets the MD5 and headerless MD5 of a given ROM.
 /// @param romRaw A vector containing the entire ROM.
 /// @return A pair of strings - the first being the MD5 value of the ROM (which is empty on failure), and the second
@@ -61,24 +187,14 @@ std::pair<std::string, std::string> DatabaseHandler::GetMD5(const std::vector<BY
 	return {md5, md5headerless};
 }
 
-Loader::GameInfo DatabaseHandler::FindROMGameInfo(const std::vector<BYTE>* romRaw, const std::string& dbPath)
+Loader::GameInfo DatabaseHandler::FindROMGameInfo(const std::vector<BYTE>* romRaw, const nlohmann::json& j)
 {
+	using json = nlohmann::json;
 	Loader::GameInfo info{};
 
 	auto md5pair = GetMD5(romRaw);
 	std::string md5 = md5pair.first;
 	std::string md5headerless = md5pair.second;
-
-	std::ifstream db(dbPath);
-	if (!db.is_open())
-	{
-		std::cerr << "Could not open JSON database!" << std::endl;
-		return {};
-	}
-
-	using json = nlohmann::json;
-	json j;
-	db >> j;
 
 	if (!j.contains("roms") || !j["roms"].is_array())
 	{
@@ -145,3 +261,28 @@ Loader::GameInfo DatabaseHandler::FindROMGameInfo(const std::vector<BYTE>* romRa
 	std::cerr << "couldn't find hash" << std::endl;
     return {};
 }
+
+Loader::GameInfo DatabaseHandler::FindROMGameInfoW(const std::vector<BYTE> *romRaw, const nlohmann::json &j)
+{
+    return FindROMGameInfo(romRaw, j);
+}
+Loader::GameInfo DatabaseHandler::FindROMGameInfoW(const std::vector<BYTE> *romRaw, const std::string &dbPath)
+{
+	nlohmann::json j = GetJSONDatabase(dbPath);
+
+    return FindROMGameInfo(romRaw, j);
+}
+
+bool DatabaseHandler::InsertInfoW(const Loader::GameInfo& info, const std::vector<BYTE> *romRaw, const std::string& dbPath, bool shouldReplace)
+{
+	auto md5pair = GetMD5(romRaw);
+	std::string md5 = md5pair.first;
+	std::string md5headerless = md5pair.second;
+
+    return InsertInfo(info, md5, md5headerless, dbPath, shouldReplace);
+}
+bool DatabaseHandler::InsertInfoW(const Loader::GameInfo& info, const std::string &md5, const std::string &md5headerless, const std::string& dbPath, bool shouldReplace)
+{
+    return InsertInfo(info, md5, md5headerless, dbPath, shouldReplace);
+}
+
