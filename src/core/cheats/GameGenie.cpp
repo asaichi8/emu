@@ -205,3 +205,18 @@ std::vector<std::string> GameGenie::ExtractCodes(const std::string& codes, char 
 
     return result;
 }
+
+std::string GameGenie::ConcatenateCodes(const std::vector<std::string>& codes, std::string delimiter)
+{
+    std::string s{};
+
+    for (int i = 0; i < codes.size(); ++i)
+    {
+        s += codes.at(i);
+
+        if (i != codes.size() - 1) // if not last element of array
+            s += delimiter;
+    }
+
+    return s;
+}

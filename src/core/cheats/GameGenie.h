@@ -71,4 +71,5 @@ public:
     static DecodedCode Decode(std::string code);
     static std::string Encode(const DecodedCode& decodedCode);
     static std::vector<std::string> ExtractCodes(const std::string& codes, char delimiter);
+    static std::string ConcatenateCodes(const std::vector<std::string>& codes, std::string delimiter);
 };
