@@ -1,7 +1,8 @@
 #include "AddCodeWindow.h"
 
 
-AddCodeWindow::AddCodeWindow(const std::string& name) : IGUIWindow(name)
+AddCodeWindow::AddCodeWindow(const std::string& name, Loader::GameInfo** pGameInfo, std::pair<std::string, std::string>** pMD5pair)
+    : IGUIWindow(name), m_ppGameInfo(pGameInfo), m_ppMD5pair(pMD5pair)
 {
 
 }

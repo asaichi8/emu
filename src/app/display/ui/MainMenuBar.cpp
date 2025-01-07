@@ -9,7 +9,7 @@ MainMenuBar::MainMenuBar(UIManager& uiManager, ControllerHandler* pCH)
 	m_uiManager.RegisterWindow( std::make_shared<CPURegWindow>	  ("Registers", m_curReg) );
 	m_uiManager.RegisterWindow( std::make_shared<SelectFileWindow>("Load file") );
 	m_uiManager.RegisterWindow( std::make_shared<ErrorMsgWindow>  ("Show error") );
-	m_uiManager.RegisterWindow( std::make_shared<AddCodeWindow>   ("Add code") );
+	m_uiManager.RegisterWindow( std::make_shared<AddCodeWindow>   ("Add code", &m_pGameInfo, &m_pMD5pair) );
 }
 
 
