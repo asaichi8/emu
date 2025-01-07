@@ -1,8 +1,8 @@
 #include "CodeListWindow.h"
 
 
-CodeListWindow::CodeListWindow(const std::string& name, Loader::GameInfo** pGameInfo, std::pair<std::string, std::string>** pMD5pair)
-    : IGUIWindow(name), m_ppGameInfo(pGameInfo), m_ppMD5pair(pMD5pair)
+CodeListWindow::CodeListWindow(const std::string& name, Loader::GameInfo** pGameInfo, std::pair<std::string, std::string>** pMD5pair, std::mutex* dbMutex)
+    : IGUIWindow(name), m_ppGameInfo(pGameInfo), m_ppMD5pair(pMD5pair), m_pDBmutex(dbMutex)
 {
 
 }
@@ -73,9 +73,16 @@ void CodeListWindow::Draw()
 
     if (ImGui::Button("Save changes", {ImGui::GetContentRegionAvail().x, 0}))
     {
-        auto pMD5pair = *m_ppMD5pair;
-        if (!DatabaseHandler::InsertInfoW(**m_ppGameInfo, pMD5pair->first, pMD5pair->second, Loader::GetFullFilePath(DATABASE_RELATIVE_PATH), true))
-            std::cerr << "failed to insert info" << std::endl;
+        // inserting into database can be laggy if its a big file, so create a new thread
+        std::thread t([this]() {
+            std::lock_guard<std::mutex> lock(*m_pDBmutex);
+
+            auto pMD5pair = *m_ppMD5pair;
+            if (!DatabaseHandler::InsertInfoW(**m_ppGameInfo, pMD5pair->first, pMD5pair->second, Loader::GetFullFilePath(DATABASE_RELATIVE_PATH), true))
+                std::cerr << "failed to insert info" << std::endl;
+        });
+
+        t.detach();
     }
 
     ImGui::End();
