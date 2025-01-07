@@ -76,7 +76,6 @@ void CodeListWindow::Draw()
         auto pMD5pair = *m_ppMD5pair;
         if (!DatabaseHandler::InsertInfoW(**m_ppGameInfo, pMD5pair->first, pMD5pair->second, Loader::GetFullFilePath(DATABASE_RELATIVE_PATH), true))
             std::cerr << "failed to insert info" << std::endl;
-        // TODO: implement me
     }
 
     ImGui::End();

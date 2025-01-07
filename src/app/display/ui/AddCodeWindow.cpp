@@ -38,9 +38,19 @@ void AddCodeWindow::Draw()
     ImGui::Spacing();
 
     ImGui::BeginDisabled(strlen(m_szCode) != 6 && strlen(m_szCode) != 8); // disable button if invalid code
-    if (ImGui::Button("Add to code list (unimplemented)", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+    if (ImGui::Button("Add to code list", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
     {
-        // TODO: implement add to code list
+        // create our code as a GameGenieCode
+        GameGenie::GameGenieCode curCode = {{m_szCode}, m_szDescription, false};
+
+        // add code to the list, updating the views
+        auto pGameInfo = *m_ppGameInfo;
+        pGameInfo->gameGenieCodes.push_back(curCode);
+
+        // attempt to insert new code into database
+        auto pMD5pair = *m_ppMD5pair;
+        if (!DatabaseHandler::InsertInfoW(**m_ppGameInfo, pMD5pair->first, pMD5pair->second, Loader::GetFullFilePath(DATABASE_RELATIVE_PATH), false))
+            std::cerr << "failed to insert info" << std::endl;
     }
     ImGui::EndDisabled();
 
