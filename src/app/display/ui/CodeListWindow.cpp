@@ -71,7 +71,7 @@ void CodeListWindow::Draw()
 
     ImGui::EndChild();
 
-    if (ImGui::Button("Save changes (unimplemented)", {ImGui::GetContentRegionAvail().x, 0}))
+    if (ImGui::Button("Save changes", {ImGui::GetContentRegionAvail().x, 0}))
     {
         auto pMD5pair = *m_ppMD5pair;
         if (!DatabaseHandler::InsertInfoW(**m_ppGameInfo, pMD5pair->first, pMD5pair->second, Loader::GetFullFilePath(DATABASE_RELATIVE_PATH), true))
