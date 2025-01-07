@@ -70,7 +70,7 @@ void CodeListWindow::Draw()
 
     ImGui::EndChild();
 
-    if (ImGui::Button("Save changes", {ImGui::GetContentRegionAvail().x, 0}))
+    if (ImGui::Button("Save changes (unimplemented)", {ImGui::GetContentRegionAvail().x, 0}))
     {
         // TODO: implement me
     }
