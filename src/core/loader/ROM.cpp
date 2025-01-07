@@ -44,7 +44,7 @@ std::string ROM::CheckROM(std::unique_ptr<std::vector<BYTE>> pRomRaw, bool shoul
 	// check that the file is an iNES file and file actually has space for data requested by header
 	if (!CheckINES(header))
 	{
-		if (info.IsHeaderNull()) // no backup header
+		if (!CheckINES((iNES_Header*)(info.szInesHeader))) // no backup header
 			return "Not an NES file!";
 
 		// we have a backup header meaning this is probably a headerless NES file, so let's try to insert the header ourselves

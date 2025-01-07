@@ -57,9 +57,6 @@ public:
 		// 		activeCodeMap[code.decoded.addr] = (&code);
 		// 	}
 		// }
-
-		// if the header doesn't begin with 'N', the header was loaded - header always starts with "NES"
-		const bool inline IsHeaderNull() const { return (szInesHeader[0] != 'N' || szInesHeader[1] != 'E' || szInesHeader[2] != 'S' || szInesHeader[3] != 0x1A); }
 	};
 
 	static std::vector<BYTE> HexStrToBytes(const std::string& hexString);
