@@ -62,7 +62,7 @@ class ROM
 	};
 	#pragma pack(pop)
 	
-	const BYTE NES_SIG[4] = {'N', 'E', 'S', 0x1A}; // "NES^Z"
+	static const inline BYTE NES_SIG[4] = {'N', 'E', 'S', 0x1A}; // "NES^Z"
 	const size_t TRAINER_SIZE = 512;
 	const size_t PRG_ROM_BANK_SIZE = 16 * KB;
 	const size_t CHR_ROM_BANK_SIZE = 8 * KB;
@@ -73,8 +73,8 @@ class ROM
 	size_t m_nPRG_ROM_size{};
 	size_t m_nCHR_ROM_size{};
 
-	bool CheckHeaderFits(const std::vector<BYTE> rawFile);
-	bool CheckHeaderIsINES(const iNES_Header* header);
+	static bool CheckHeaderFits(const std::vector<BYTE> rawFile);
+	static bool CheckINES(const iNES_Header* header);
 	bool CheckFileSize(const std::vector<BYTE>& rawFile, const iNES_Header* header);
 	BYTE GetINESVersion(const iNES_Header* header);
 	BYTE GetMapperType(const iNES_Header* header);
@@ -88,6 +88,7 @@ public:
 	BYTE mapperType{};
 	MirrorType mirrorType{};
 	
+	static bool CheckINES(const std::vector<BYTE>* romRaw);
 	std::string CheckROM(std::unique_ptr<std::vector<BYTE>> pRomRaw, bool shouldUse = false, const Loader::GameInfo& info = {});
 	void MapROM();
 	void MirrorGameGenieCodes();

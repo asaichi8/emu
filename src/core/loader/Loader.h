@@ -65,5 +65,4 @@ public:
 	static std::vector<BYTE> HexStrToBytes(const std::string& hexString);
 	static std::vector<BYTE> LoadFile(const std::string& filePath);
 	static std::string GetFullFilePath(const std::string& relativePath);
-	static bool IsNESFile(const std::vector<BYTE>* romRaw);
 };

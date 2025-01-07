@@ -49,7 +49,7 @@ std::pair<std::string, std::string> DatabaseHandler::GetMD5(const std::vector<BY
 	// we can optionally calculate a hash for the headerless version of the file, just in case the main hash fails. ROM dumpers
 	// may choose different header values, so this increases the success rate of finding the ROM greatly.
 	std::string md5headerless{};
-	if (Loader::IsNESFile(romRaw))
+	if (ROM::CheckINES(romRaw))
 	{
 		std::vector<BYTE> romCopy = *romRaw;
 		romCopy.erase(romCopy.begin(), romCopy.begin() + NES_HEADER_SIZE);

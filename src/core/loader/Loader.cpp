@@ -45,19 +45,3 @@ std::string Loader::GetFullFilePath(const std::string& relativePath)
 	std::filesystem::path executablePath = std::filesystem::current_path();
 	return ((std::filesystem::path)(executablePath / relativePath)).string();
 }
-
-bool Loader::IsNESFile(const std::vector<BYTE>* romRaw)
-{
-	const BYTE NES_SIG[4] = {'N', 'E', 'S', 0x1A}; // "NES^Z"
-	BYTE sig[4];
-
-	for (int i = 0; i < 4; ++i)
-	{
-		sig[i] = romRaw->at(i);
-	}
-
-	if (memcmp(sig, NES_SIG, sizeof(NES_SIG)) == 0)
-		return true;
-
-	return false;
-}

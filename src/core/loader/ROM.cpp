@@ -42,7 +42,7 @@ std::string ROM::CheckROM(std::unique_ptr<std::vector<BYTE>> pRomRaw, bool shoul
 		m_inesHeader = *header; // create a copy of the header to store as a member variable
 	
 	// check that the file is an iNES file and file actually has space for data requested by header
-	if (!CheckHeaderIsINES(header))
+	if (!CheckINES(header))
 	{
 		if (info.IsHeaderNull()) // no backup header
 			return "Not an NES file!";
@@ -111,9 +111,21 @@ bool ROM::CheckHeaderFits(const std::vector<BYTE> rawFile)
 	return rawFile.size() > sizeof(iNES_Header);
 }
 
-bool ROM::CheckHeaderIsINES(const iNES_Header* header)
+bool ROM::CheckINES(const iNES_Header* header)
 {
 	return (memcmp(header->signature, NES_SIG, 4) == 0);
+}
+bool ROM::CheckINES(const std::vector<BYTE>* romRaw)
+{
+	BYTE sig[4];
+
+	// fill sig with first 4 bytes of ROM
+	for (int i = 0; i < 4; ++i)
+	{
+		sig[i] = romRaw->at(i);
+	}
+
+	return (memcmp(sig, NES_SIG, sizeof(NES_SIG)) == 0);
 }
 
 /// @brief 
