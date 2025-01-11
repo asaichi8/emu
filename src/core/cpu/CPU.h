@@ -172,6 +172,7 @@ class CPU
 
 	void Execute(const Instruction& instruction);
 	size_t GetInstructionLenBytes(const Instruction& instruction);
+	std::string Disassemble(WORD addr);
 	void Log();
 
 public:

@@ -28,6 +28,24 @@ size_t CPU::GetInstructionLenBytes(const Instruction& instruction)
 	return 3;
 }
 
+std::string CPU::Disassemble(WORD addr)
+{
+	// grab instruction
+	BYTE opcode = m_Bus->ReadByte(addr);
+	addr++;
+
+	// look up instruction in instruction table
+	const Instruction& instruction = instructions[opcode];
+	
+	// get name of instruction
+	std::string strAsm = instruction.strName;
+
+	//if ()
+
+
+	return strAsm;
+}
+
 void CPU::Log()
 {
 	const std::string logFile = "mynestest.log";
