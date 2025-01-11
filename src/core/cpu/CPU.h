@@ -32,7 +32,8 @@ class CPU
 		WORD (CPU::*addrMode)();
 		DWORD cycles;
 		bool extraCycle;
-		std::string name;
+		std::string strName;
+		std::string strAddrMode;
 	};
 
 	void PushStackByte(BYTE val);

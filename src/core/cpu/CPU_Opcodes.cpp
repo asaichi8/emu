@@ -1,7 +1,7 @@
 #include "CPU.h"
 
 
-#define i(x, y, z, w) {&CPU::x, &CPU::y, z, w, #x}
+#define i(x, y, z, w) {&CPU::x, &CPU::y, z, w, #x, #y}
 
 // http://www.oxyron.de/html/opcodes02.html
 // additional table, contains information for ACC addressing mode: https://www.masswerk.at/6502/6502_instruction_set.html
