@@ -1,3 +1,4 @@
+#include "Logger.h"
 #include "Emulator.h"
 
 int main(int argc, char* argv[]) 
@@ -9,6 +10,15 @@ int main(int argc, char* argv[])
 	}
 
 	std::string romPath = argv[1];*/
+
+	/* // TODO: safe implementation of verbose arguments
+	for (int i = 1; i < argc; ++i)
+	{
+		if (argv[i] == "--verbose" || argv[i] == "-v")
+			g_verboseLevel = (VerboseLevel)(std::stoi(argv[++i]));
+	}*/
+	VerboseLevel g_verboseLevel = VerboseLevel::DEBUG;
+
 	std::string romPath = "default.nes";
 
 	try
