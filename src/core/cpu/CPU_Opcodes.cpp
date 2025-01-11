@@ -1,7 +1,7 @@
 #include "CPU.h"
 
 
-#define i(x, y, z, w) {&CPU::x, &CPU::y, z, w}
+#define i(x, y, z, w) {&CPU::x, &CPU::y, z, w, #x}
 
 // http://www.oxyron.de/html/opcodes02.html
 CPU::Instruction CPU::instructions[256] = {
