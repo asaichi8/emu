@@ -8,7 +8,7 @@ std::string DatabaseHandler::CalcMD5(const std::vector<BYTE>& file)
 
 	if (!EVP_Q_digest(nullptr, "MD5", nullptr, file.data(), file.size(), hash, &hashLength))
 	{
-		std::cerr << "Failed to calculate MD5 hash!" << std::endl;
+        LOG_CRITICAL("Failed to calculate MD5 hash!");
 		return {};
 	}
 
@@ -35,7 +35,7 @@ nlohmann::json DatabaseHandler::GetJSONDatabase(const std::string &dbPath)
     std::ifstream db(dbPath);
     if (!db.is_open())
     {
-        std::cerr << "Could not open JSON database!" << std::endl;
+        LOG_ERROR("Could not open JSON database!");
         return {};
     }
 
@@ -45,7 +45,7 @@ nlohmann::json DatabaseHandler::GetJSONDatabase(const std::string &dbPath)
     }
     catch (const std::exception& e)
     {
-        std::cerr << "Failed to parse JSON database: " << e.what() << std::endl;
+        LOG_CRITICAL("Failed to parse JSON database: " << e.what());
         db.close();
         return {};
     }
@@ -140,7 +140,7 @@ bool DatabaseHandler::InsertInfo(const Loader::GameInfo& info, const std::string
         std::ofstream db(dbPath, std::ios::trunc);
         if (!db.is_open())
         {
-            std::cerr << "Couldn't truncate database!" << std::endl;
+            LOG_ERROR("Couldn't truncate database!");
             return false;
         }
 
@@ -148,7 +148,7 @@ bool DatabaseHandler::InsertInfo(const Loader::GameInfo& info, const std::string
 
         if (!db)
         {
-            std::cerr << "Failed to write all data to databasee!" << std::endl;
+            LOG_ERROR("Failed to write all data to databasee!");
             return false;
         }
 
@@ -156,7 +156,7 @@ bool DatabaseHandler::InsertInfo(const Loader::GameInfo& info, const std::string
     }
     catch (const std::exception& e)
     {
-        std::cerr << "Failed to write to database: " << e.what() << std::endl;
+        LOG_CRITICAL("Failed to write to database: " << e.what());
         return false;
     }
 
@@ -171,13 +171,13 @@ std::pair<std::string, std::string> DatabaseHandler::GetMD5(const std::vector<BY
 {
 	if (!romRaw || romRaw->empty() || romRaw->size() < NES_HEADER_SIZE + 1)
 	{
-		std::cerr << "Invalid usage of GetMD5()" << std::endl;
+        LOG_ERROR("Invalid usage of GetMD5()");
 		return {{}, {}};
 	}
 
 	// we must be able to calculate an md5 for the raw file, otherwise give up
     std::string md5 = CalcMD5(*romRaw);
-	// std::cout << "md5: " << md5 << std::endl;
+    LOG_INFO("md5: " << md5);
 	if (md5.empty())
 		return {{}, {}};
 
@@ -190,7 +190,7 @@ std::pair<std::string, std::string> DatabaseHandler::GetMD5(const std::vector<BY
 		romCopy.erase(romCopy.begin(), romCopy.begin() + NES_HEADER_SIZE);
 
 		md5headerless = CalcMD5(romCopy);
-		// std::cout << "md5-headerless: " << md5headerless << std::endl;
+        LOG_INFO("md5-headerless: " << md5headerless);
 	}
 
 	return {md5, md5headerless};
@@ -201,7 +201,7 @@ Loader::GameInfo DatabaseHandler::FindROMGameInfo(const std::vector<BYTE>* romRa
 {
     if (!romRaw || romRaw->empty())
     {
-        std::cerr << "Error with romRaw!" << std::endl;
+        LOG_CRITICAL("Error with romRaw!");
         return {};
     }
 
@@ -214,7 +214,7 @@ Loader::GameInfo DatabaseHandler::FindROMGameInfo(const std::vector<BYTE>* romRa
 
 	if (!j.contains("roms") || !j["roms"].is_array())
 	{
-		std::cerr << "Invalid JSON format!" << std::endl;
+        LOG_ERROR("Invalid JSON format!");
 		return {};
 	}
 
@@ -229,7 +229,7 @@ Loader::GameInfo DatabaseHandler::FindROMGameInfo(const std::vector<BYTE>* romRa
 		else if (rom.contains("md5-headerless") && (rom["md5-headerless"] == md5 || (!md5headerless.empty() && rom["md5-headerless"] == md5headerless)))
 		{
 			// search for headerless md5
-			std::cout << "found headerless" << std::endl;
+            LOG_DEBUG("found headerless");
 			foundRom = true;
 		}
 
@@ -274,7 +274,7 @@ Loader::GameInfo DatabaseHandler::FindROMGameInfo(const std::vector<BYTE>* romRa
 		return info;
 	}
 	
-	std::cerr << "couldn't find hash" << std::endl;
+    LOG_ERROR("Couldn't find hash");
     return {};
 }
 

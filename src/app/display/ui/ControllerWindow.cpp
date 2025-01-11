@@ -27,7 +27,7 @@ void ControllerWindow::Draw()
     if (ImGui::Button("Save defaults", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
     {
         if (!m_pControllerHandler->SaveToConfig())
-            std::cerr << "Failed to save ports!" << std::endl;
+            LOG_ERROR("Failed to save ports!");
     }
 
     ImGui::End();

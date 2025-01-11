@@ -42,8 +42,8 @@ public:
     };
 
     //virtual std::bitset<8>* GetRegVal() { return nullptr; }
-    virtual void Write(std::bitset<8> val) { std::cerr << "ERROR: Unimplemented PPU register write!" << std::endl; }
-    virtual std::bitset<8> Read()          { std::cerr << "ERROR: Unimplemented PPU register read!"  << std::endl; return 0; }
+    virtual void Write(std::bitset<8> val) { LOG_ERROR("Unimplemented PPU register write!"); }
+    virtual std::bitset<8> Read()          { LOG_ERROR("Unimplemented PPU register read!"); return 0; }
 
     bool operator==(WORD r) const
     {

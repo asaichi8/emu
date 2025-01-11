@@ -48,7 +48,7 @@ std::string ROM::CheckROM(std::unique_ptr<std::vector<BYTE>> pRomRaw, bool shoul
 			return "Not an NES file!";
 
 		// we have a backup header meaning this is probably a headerless NES file, so let's try to insert the header ourselves
-		std::cout << "headerless file, inserting header..." << std::endl;
+		LOG_DEBUG("headerless file, inserting header...");
 		pFile->insert(pFile->begin(), &info.szInesHeader[0], &info.szInesHeader[16]);
 		header = (iNES_Header*)(pFile->data()); // now get the header again
 

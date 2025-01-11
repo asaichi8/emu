@@ -64,7 +64,7 @@ void Bus::WriteByte(WORD addr, BYTE val)
 	else if (addr == (WORD)PPURegAddr::OAMDMA) // 0x4014
 		WritePPURegister(PPURegAddr::OAMDMA, val);
 	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
-		std::cerr << "Attempted to write to cartridge ROM at address 0x" << std::hex << addr << std::dec << " (this should never occur)" << std::endl;
+		LOG_WARN("Attempted to write to cartridge ROM at address 0x" << std::hex << addr << std::dec << " (this should never occur)");
 	else if (addr == 0x4016) // TODO: get rid of magic number
 	{
 		m_Joypads[0].CPUWrite(val);
@@ -72,7 +72,7 @@ void Bus::WriteByte(WORD addr, BYTE val)
 	}
 	else if (addr >= 0x4000 && addr < 0x4020) {} // TODO: RESERVED for APU stuff
 	else
-		std::cerr << "Attempted to write byte 0x" << std::hex << (int)val << " at address 0x" << std::hex << addr << std::dec << " outside of CPU/PPU (not implemented)" << std::endl;
+		LOG_WARN("Attempted to write byte 0x" << std::hex << (int)val << " at address 0x" << std::hex << addr << std::dec << " outside of CPU/PPU (not implemented)");
 }
 
 // TODO: what if addr = INTERNAL_RAM_SIZE, or PRG_RAM_END?
@@ -80,16 +80,14 @@ void Bus::WriteByte(WORD addr, BYTE val)
 WORD Bus::ReadWord(WORD addr, bool shouldWrapPage)
 {
 	if (addr == INTERNAL_RAM_SIZE || addr == PRG_RAM_END)
-		std::cerr << "out of bounds" << std::endl;
+		LOG_WARN("Attempted to read out of bounds address");
 
 	if (addr < MIRRORED_INTERNAL_RAM_END)
 		addr = MirrorAddress(addr, INTERNAL_RAM_SIZE);
 	else if (addr < MIRRORED_PPU_REGISTER_END)
 	{
-		std::cout << "err" << std::endl;
 		// TODO: it is implemented
-		//std::cerr << "Attempted to read word from PPU (not implemented)" << std::endl;
-		//return 0;
+		LOG_WARN("Attempted to read word from PPU (not implemented)");
 	}
 	else if (addr < PRG_RAM_START)
 		return 0;
@@ -113,7 +111,7 @@ void Bus::WriteWord(WORD addr, WORD val)
 		addr %= INTERNAL_RAM_SIZE;
 	else
 	{
-		std::cerr << "Attempted to write word outside of CPU (not implemented)" << std::endl;
+		LOG_WARN("Attempted to write word outside of CPU (not implemented)");
 		return;
 	}
 
@@ -139,7 +137,7 @@ BYTE Bus::ReadPPURegister(PPURegAddr PPUreg)
 		case PPURegAddr::OAMDATA: 	return m_PPU->GetOAM().at(m_PPU->registers.oamaddr->Read().to_ulong());
 		case PPURegAddr::PPUDATA: 	return m_PPU->ReadPPUByte();
 		default:
-			std::cerr << "ERROR: Not a readable PPU register!" << std::endl;
+			LOG_WARN("Not a readable PPU register: " << (WORD)PPUreg);
 			return 0;
 	}
 }
@@ -171,7 +169,7 @@ void Bus::WritePPURegister(PPURegAddr PPUreg, BYTE val)
 		}
 			
 		default:
-			std::cerr << "ERROR: Not a writeable PPU register!" << std::endl;
+			LOG_WARN("Not a writeable PPU register: " << (WORD)PPUreg);
 			break;
 	}
 }
@@ -229,7 +227,7 @@ BYTE Bus::ReadPRGByte(WORD addr)
 {
 	if (addr < PRG_RAM_START)
 	{
-		std::cerr << "ERROR: reading byte below PRG_RAM_START! (this should never occur)" << std::endl;
+		LOG_WARN("Reading byte below PRG_RAM_START! (this should never occur)");
 		return 0;
 	}
 

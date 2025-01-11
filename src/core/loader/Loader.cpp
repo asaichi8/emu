@@ -23,7 +23,7 @@ std::vector<BYTE> Loader::LoadFile(const std::string& filePath)
 	std::ifstream file(filePath, std::ios::binary | std::ios::ate);
 	if (!file) 
 	{
-		std::cerr << "Failed to load file (does it exist?)" << std::endl;
+		LOG_ERROR("Failed to load file (does it exist?)");
 		return {};
 	}
 
@@ -33,7 +33,7 @@ std::vector<BYTE> Loader::LoadFile(const std::string& filePath)
 	std::vector<BYTE> buffer(size);
 	if (!file.read((char*)(buffer.data()), size)) 
 	{
-		std::cerr << "Failed to read from file!" << std::endl;
+		LOG_ERROR("Failed to read from file!");
 		return {};
 	}
 

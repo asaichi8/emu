@@ -106,11 +106,11 @@ BYTE PPU::ReadPPUByte()
     {
         addr = MirrorPaletteRAMAddress(addr);
         if (addr >= PALETTE_RAM_BEGIN + PALETTE_RAM_TOTAL_SIZE)
-            std::cerr << "ERROR: failed to mirror palette ram address" << std::endl;
+            LOG_ERROR("Failed to mirror palette ram address!");
         data = m_PaletteRAM.at(addr - PALETTE_RAM_BEGIN);
     }
     else 
-        std::cerr << "ERROR: Invalid PPU read (this should never occur)" << std::endl;
+        LOG_WARN("Invalid PPU read (this should never occur)");
 
     return data;
 }
@@ -132,7 +132,7 @@ void PPU::WritePPUByte(BYTE val)
     {
         addr = MirrorPaletteRAMAddress(addr);
         if (addr >= PALETTE_RAM_BEGIN + PALETTE_RAM_TOTAL_SIZE)
-            std::cerr << "ERROR: failed to mirror palette ram address" << std::endl;
+            LOG_ERROR("Failed to mirror palette ram address");
         m_PaletteRAM.at(addr - PALETTE_RAM_BEGIN) = val;
     }
 }
@@ -144,7 +144,7 @@ WORD PPU::GetMirroredPPUADDRAddress(bool shouldIncrement)
     PPUADDR* ppuAddrRegister = dynamic_cast<PPUADDR*>(registers.ppuaddr.get());
     WORD addr = ppuAddrRegister->GetAddress();
     if (addr >= 0x4000)
-        std::cerr << "should never occur" << std::endl;
+        LOG_WARN("addr was " << addr << ", should never occur");
     addr = Bus::MirrorAddress(addr, PPU_ADDRESS_SPACE_END); // mirror 0x0 - 0x3FFF
 
     // increment address after reading
@@ -161,7 +161,7 @@ WORD PPU::MirrorPaletteRAMAddress(WORD addr)
 {
     if (addr < PALETTE_RAM_BEGIN || addr >= PALETTE_RAM_MIRRORED_END)
     {
-        std::cerr << "WARNING: Attempted to palette ram mirror \"Palette RAM\" address 0x" << std::hex << addr << std::dec << std::endl;
+        LOG_WARN("Attempted to palette ram mirror \"Palette RAM\" address 0x" << std::hex << addr << std::dec);
         return addr;
     }
 
@@ -185,7 +185,7 @@ const size_t PPU::GetNametableIndex(WORD addr) const
 {
     if (addr >= NAMETABLES_MIRRORED_END) // addr < NAMETABLES_BEGIN || 
     {
-        std::cerr << "WARNING: Attempted to nametable ram mirror \"Nametable RAM\" address 0x" << std::hex << addr << std::dec << std::endl;
+        LOG_WARN("Attempted to nametable ram mirror \"Nametable RAM\" address 0x" << std::hex << addr << std::dec);
         return {};
     }
 
@@ -203,7 +203,7 @@ const size_t PPU::GetNametableIndex(WORD addr) const
             break;
 
         default:
-            std::cerr << "Unimplemented nametable mirror type: " << *m_pMirrorType << std::endl;
+            LOG_WARN("Unimplemented nametable mirror type: " << *m_pMirrorType);
             break;
     }
 

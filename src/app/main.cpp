@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 	}
 	catch (const std::exception& e)
 	{
-		LOG_ERROR(e.what());
+		LOG_FATAL(e.what());
 		return 1;
 	}
 

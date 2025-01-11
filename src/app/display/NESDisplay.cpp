@@ -196,7 +196,7 @@ std::vector<BYTE> NESDisplay::GetBgTilePalette(const std::vector<BYTE>& nametabl
 
 	/*if (tileNoX > 32 || tileNoY > 30)
 	{
-		std::cerr << "ERROR: Attempted to get invalid tile's palette!" << std::endl;
+		LOG_WARN("Attempted to get invalid tile's palette!");
 		return paletteColours; // function was misused
 	}*/
 
@@ -241,8 +241,8 @@ void NESDisplay::DrawNametable(const std::vector<BYTE>& nametable, const Point& 
 	// bgBankAddr either 0 or 0x1000, use it to determine which bank we access
 	const WORD bgBankAddr = dynamic_cast<PPUCTRL *>(m_pPPU->registers.ppuctrl.get())->GetBackgroundPTableAddr();
 
-	// std::cout << "bgbankaddr: 0x" << std::hex << std::setw(4) << std::setfill('0') << bgBankAddr << " nametableaddr: 0x" <<
-	// 	dynamic_cast<PPUCTRL *>(m_pPPU->registers.ppuctrl.get())->GetNametableAddr() << std::endl;
+	// LOG_DEBUG("bgbankaddr: 0x" << std::hex << std::setw(4) << std::setfill('0') << bgBankAddr << " nametableaddr: 0x" <<
+	//  dynamic_cast<PPUCTRL *>(m_pPPU->registers.ppuctrl.get())->GetNametableAddr());
 
 	std::vector<Tile> tiles{};
 	// NES screen is 32 tiles long, 30 tiles high (32 * 8 = 256, 30 * 8 = 240)
@@ -256,7 +256,7 @@ void NESDisplay::DrawNametable(const std::vector<BYTE>& nametable, const Point& 
 
 		if (tileNo >= nametable.size())
 		{
-			std::cerr << "Attempted to access tile outside of nametable!" << std::endl;
+			LOG_WARN("Attempted to access tile outside of nametable!");
 			break;
 		}
 
@@ -266,7 +266,7 @@ void NESDisplay::DrawNametable(const std::vector<BYTE>& nametable, const Point& 
 
 		if (m_pPPU->GetCHR_ROM()->size() + sizeof(Tile) < selectedTileIndex)
 		{
-			std::cerr << "Attempted to access nametable tile outside of CHR_ROM!" << std::endl;
+			LOG_WARN("Attempted to access nametable tile outside of CHR_ROM!");
 			continue;
 		}
 
@@ -298,7 +298,7 @@ void NESDisplay::DrawSprites()
 
 		if (selectedTileIndex + sizeof(Tile) > m_pPPU->GetCHR_ROM()->size())
 		{
-			std::cerr << "Attempted to access sprite tile outside of CHR_ROM!" << std::endl;
+			LOG_WARN("Attempted to access sprite tile outside of CHR_ROM!");
 			continue;
 		}
 

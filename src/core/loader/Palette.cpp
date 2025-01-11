@@ -18,7 +18,7 @@ bool Palette::LoadPalette(const std::string& filePath)
 
     if (rawFile.size() < (COLOUR_PALETTE_SIZE * sizeof(RGB)))
     {
-        std::cerr << "ERROR: Failed to load palette, size was too small!" << std::endl;
+        LOG_ERROR("Failed to load palette, size was too small!");
         return false;
     }
 

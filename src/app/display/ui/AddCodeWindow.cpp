@@ -63,7 +63,7 @@ void AddCodeWindow::Draw()
             // attempt to insert new code into database
             auto pMD5pair = *m_ppMD5pair;
             if (!DatabaseHandler::InsertInfoW(info, pMD5pair->first, pMD5pair->second, Loader::GetFullFilePath(DATABASE_RELATIVE_PATH), false))
-                std::cerr << "failed to insert info" << std::endl;
+                LOG_ERROR("failed to insert info");
 
             isThreadRunning = false;
         });
@@ -109,7 +109,7 @@ bool AddCodeWindow::AttemptEncode()
     std::string encodedString = GameGenie::Encode(code);
     if (encodedString.length() != 6 && encodedString.length() != 8)
     {
-        std::cerr << "Encoded string was wrong length: " << encodedString.length() << std::endl;
+        LOG_CRITICAL("Encoded string was wrong length: " << encodedString.length());
         return false;
     }
 

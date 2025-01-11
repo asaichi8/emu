@@ -5,7 +5,6 @@
 // TODO: add define for enabling/disabling debug rom
 
 // TODO: use unordered_map for enums
-// TODO: add logging, remove std::cerrs/add verbose option
 // TODO: make a bunch of parameters const and stuff
 // TODO: avoid define, use static const member variables
 // TODO: make sure all member variables are m_, use regular naming scheme
@@ -62,7 +61,7 @@ Emulator::Emulator(const std::string& romPath, EmulatorDisplay& GUI) : m_GUI(&GU
 	// debug
 	if (!info.name.empty())
 	{
-		// std::cout << "Game: " << info.name << std::endl;
+		LOG_INFO("Game: " << info.name);
 		// for (const auto& code : info.gameGenieCodes)
 		// {
 		// 	std::cout << "Code: " << code.code << "  Description: " << code.description << "  isActive: " << code.isActive << std::endl;
