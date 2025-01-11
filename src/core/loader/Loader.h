@@ -5,12 +5,11 @@
 #include <sstream>
 #include <fstream>
 #include <cstdint>
-#include <iostream>
 #include <filesystem>
 #include <unordered_map>
 #include <openssl/evp.h>
 #include <nlohmann/json.hpp>
-#include "../../include/typedefs.h"
+#include "../../include/pch.h"
 #include "../cheats/GameGenie.h"
 
 

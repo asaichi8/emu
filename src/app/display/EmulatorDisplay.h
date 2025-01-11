@@ -3,7 +3,7 @@
 #include <atomic>
 #include <thread>
 #include <mutex>
-#include <iostream>
+#include "pch.h"
 #include "SDL/SDLApp.h"
 #include "../../include/imgui/imgui.h"
 #include "../../include/imgui/imgui_impl_sdl2.h"

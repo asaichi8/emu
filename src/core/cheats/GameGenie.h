@@ -6,8 +6,7 @@
 #include <vector>
 #include <algorithm>
 #include <sstream>
-#include <iostream>
-#include "typedefs.h"
+#include "pch.h"
 
 
 // https://github.com/jdratlif/ggencoder-java/blob/master/docs/nes.txt
