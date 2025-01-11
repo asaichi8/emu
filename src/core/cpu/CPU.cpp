@@ -84,15 +84,15 @@ void CPU::Run()
 {
 	m_curOpcode = m_Bus->ReadByte(reg.program_counter);
 
-	// Log
-	//Log();
-
-	//if (reg.program_counter == 0xC66E)
-	//    std::cout << std::endl; // breakpoint here
-
 	reg.program_counter++;
 	Execute(instructions[m_curOpcode]);
 	m_nCycles += m_curCycles;
+
+	// Log
+	// Log();
+
+	// if (reg.program_counter == 0xC66E)
+	//    std::cout << std::endl; // breakpoint here
 
 	if (m_Bus->IsNMIInterruptQueuedW())
 		NMI();
