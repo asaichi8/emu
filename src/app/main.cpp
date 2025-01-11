@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 		if (argv[i] == "--verbose" || argv[i] == "-v")
 			g_verboseLevel = (VerboseLevel)(std::stoi(argv[++i]));
 	}*/
-	VerboseLevel g_verboseLevel = VerboseLevel::DEBUG;
+	g_verboseLevel = VerboseLevel::DEBUG;
 
 	std::string romPath = "default.nes";
 

@@ -41,6 +41,7 @@ file(GLOB_RECURSE SOURCES
     ${CMAKE_SOURCE_DIR}/src/app/display/SDL/controllers/*.cpp
     # ${CMAKE_SOURCE_DIR}/src/demos/*.cpp
     ${CMAKE_SOURCE_DIR}/src/imgui/*.cpp
+    ${CMAKE_SOURCE_DIR}/src/include/Logger.cpp
     ${CMAKE_SOURCE_DIR}/src/include/tinyfiledialogs/*.c
 )
 

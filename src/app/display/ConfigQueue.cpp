@@ -49,7 +49,7 @@ void ConfigQueue::MakeConfig(const std::string& configName)
     }
 
     if (!config->_file.write(config->ini, true))
-        std::cerr << "Failed to write to config file!" << std::endl;
+        LOG_ERROR("Failed to write to config file!");
 }
 
 void ConfigQueue::Push(std::string val, bool writeToFile)
