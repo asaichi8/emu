@@ -70,15 +70,16 @@ void CPU::Run()
 	// std::cout << "$" << std::hex << std::setw(4) << std::setfill('0') << reg.program_counter << ":  " << std::dec
 	// 		<< info.instruction << "\t\t" << info.addrMode << " " << info.size << std::endl;
 
-	reg.program_counter++;
-	Execute(instructions[m_curOpcode]);
-	m_nCycles += m_curCycles;
-
 	// Log
 	// Log();
 
 	// if (reg.program_counter == 0xC66E)
 	//    std::cout << std::endl; // breakpoint here
+	   
+	reg.program_counter++;
+	Execute(instructions[m_curOpcode]);
+	m_nCycles += m_curCycles;
+
 
 	if (m_Bus->IsNMIInterruptQueuedW())
 		NMI();
@@ -104,7 +105,7 @@ void CPU::Reset()
 
 	// https://6502.co.uk/lesson/reset
 	// "This reset sequence lasts for seven clock cycles and after this, the computer will be usable. "
-	m_curCycles += 7;
+	m_nCycles = 7;
 	m_Bus->Clock(m_nCycles);
 
 	m_Bus->Reset();
