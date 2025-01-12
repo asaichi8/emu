@@ -9,6 +9,7 @@
 #include <memory>
 #include <filesystem>
 #include "CPURegisters.h"
+#include "Disassembler.h"
 #include "../memory/Bus.h"
 #include "../../include/typedefs.h"
 
@@ -18,14 +19,7 @@
 
 class CPU
 {
-	std::shared_ptr<Bus> m_Bus{};
-	CPURegisters reg{};
-	BYTE m_curOpcode{};
-	DWORD m_curCycles{};
-	QWORD m_nCycles{};
-	bool m_bNeedsExtraCycle{};
-
-
+public:
 	struct Instruction
 	{
 		void (CPU::*opcode)(WORD);
@@ -35,6 +29,15 @@ class CPU
 		std::string strName;
 		std::string strAddrMode;
 	};
+
+private:
+	std::shared_ptr<Bus> m_Bus{};
+	CPURegisters reg{};
+	BYTE m_curOpcode{};
+	DWORD m_curCycles{};
+	QWORD m_nCycles{};
+	bool m_bNeedsExtraCycle{};
+
 
 	void PushStackByte(BYTE val);
 	BYTE PopStackByte();
@@ -173,7 +176,6 @@ class CPU
 
 	void Execute(const Instruction& instruction);
 	size_t GetInstructionLenBytes(const Instruction& instruction);
-	std::string Disassemble(WORD addr);
 	void Log();
 
 public:
@@ -186,9 +188,12 @@ public:
 	// http://www.6502.org/users/obelisk/6502/reference.html#BRK : "IRQ interrupt vector at $FFFE/F"   
 	static const WORD IRQ_VECTOR = 0xFFFE;
 
+	Disassembler m_disassembler;
+
 	void Run();
 	void Reset();
 	void IRQ();
 	void NMI();
 	const CPURegisters& ReadRegisters() const { return reg; }
+	static const Instruction* GetInstructionTable() { return instructions; }
 };
