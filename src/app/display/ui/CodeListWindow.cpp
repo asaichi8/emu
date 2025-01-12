@@ -80,7 +80,8 @@ void CodeListWindow::Draw()
             isThreadRunning = true;
 
             std::lock_guard<std::mutex> lock(*m_pDBmutex);
-
+            
+            // TODO: if we got info through md5headerless, it will replace the existing md5 which is unintended behaviour
             auto pMD5pair = *m_ppMD5pair;
             if (!DatabaseHandler::InsertInfoW(**m_ppGameInfo, pMD5pair->first, pMD5pair->second, Loader::GetFullFilePath(DATABASE_RELATIVE_PATH), true))
                 LOG_ERROR("Failed to insert info");
