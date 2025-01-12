@@ -67,7 +67,8 @@ void CPU::Run()
 	m_curOpcode = m_Bus->ReadByte(reg.program_counter);
 
 	// Disassembler::DisasmInfo info = m_disassembler.Disassemble(reg.program_counter);
-	// std::cout << info.instruction << " {" << info.addrMode << "} " << info.size << std::endl;
+	// std::cout << "$" << std::hex << std::setw(4) << std::setfill('0') << reg.program_counter << ":  " << std::dec
+	// 		<< info.instruction << "\t\t" << info.addrMode << " " << info.size << std::endl;
 
 	reg.program_counter++;
 	Execute(instructions[m_curOpcode]);
