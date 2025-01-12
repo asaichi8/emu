@@ -12,5 +12,12 @@ class Disassembler
 public:
     Disassembler(std::shared_ptr<Bus> bus);
 
-    std::string Disassemble(WORD addr);
+    struct DisasmInfo
+    {
+        std::string instruction{};
+        size_t size{};
+        std::string addrMode{};
+    };
+
+    DisasmInfo Disassemble(WORD addr);
 };
