@@ -7,7 +7,7 @@
 // additional table, contains information for ACC addressing mode: https://www.masswerk.at/6502/6502_instruction_set.html
 CPU::Instruction CPU::instructions[256] = {
 /*                 x0                x1                x2                x3                x4                x5                x6                x7                  x8                x9                xA                xB                xC                xD                xE                xF              */
-/* 0x */    i(BRK, IMP, 7,0), i(ORA, IZX, 6,0), i(KIL, IMP, 0,0), i(SLO, IZX, 8,0), i(NOP, ZPG, 3,0), i(ORA, ZPG, 3,0), i(ASL, ZPG, 5,0), i(SLO, ZPG, 5,0),   i(PHP, IMP, 3,0), i(ORA, IMM, 2,0), i(ASL, IMP, 2,0), i(ANC, IMM, 2,0), i(NOP, ABS, 4,0), i(ORA, ABS, 4,0), i(ASL, ABS, 6,0), i(SLO, ABS, 6,0), 
+/* 0x */    i(BRK, IMP, 7,0), i(ORA, IZX, 6,0), i(KIL, IMP, 0,0), i(SLO, IZX, 8,0), i(NOP, ZPG, 3,0), i(ORA, ZPG, 3,0), i(ASL, ZPG, 5,0), i(SLO, ZPG, 5,0),   i(PHP, IMP, 3,0), i(ORA, IMM, 2,0), i(ASL, ACC, 2,0), i(ANC, IMM, 2,0), i(NOP, ABS, 4,0), i(ORA, ABS, 4,0), i(ASL, ABS, 6,0), i(SLO, ABS, 6,0), 
 /* 1x */    i(BPL, REL, 2,0), i(ORA, IZY, 5,1), i(KIL, IMP, 0,0), i(SLO, IZY, 8,0), i(NOP, ZPX, 4,0), i(ORA, ZPX, 4,0), i(ASL, ZPX, 6,0), i(SLO, ZPX, 6,0),   i(CLC, IMP, 2,0), i(ORA, ABY, 4,1), i(NOP, IMP, 2,0), i(SLO, ABY, 7,0), i(NOP, ABX, 4,1), i(ORA, ABX, 4,1), i(ASL, ABX, 7,0), i(SLO, ABX, 7,0), 
 /* 2x */    i(JSR, ABS, 6,0), i(AND, IZX, 6,0), i(KIL, IMP, 0,0), i(RLA, IZX, 8,0), i(BIT, ZPG, 3,0), i(AND, ZPG, 3,0), i(ROL, ZPG, 5,0), i(RLA, ZPG, 5,0),   i(PLP, IMP, 4,0), i(AND, IMM, 2,0), i(ROL, ACC, 2,0), i(ANC, IMM, 2,0), i(BIT, ABS, 4,0), i(AND, ABS, 4,0), i(ROL, ABS, 6,0), i(RLA, ABS, 6,0), 
 /* 3x */    i(BMI, REL, 2,0), i(AND, IZY, 5,1), i(KIL, IMP, 0,0), i(RLA, IZY, 8,0), i(NOP, ZPX, 4,0), i(AND, ZPX, 4,0), i(ROL, ZPX, 6,0), i(RLA, ZPX, 6,0),   i(SEC, IMP, 2,0), i(AND, ABY, 4,1), i(NOP, IMP, 2,0), i(RLA, ABY, 7,0), i(NOP, ABX, 4,1), i(AND, ABX, 4,1), i(ROL, ABX, 7,0), i(RLA, ABX, 7,0), 
@@ -479,7 +479,7 @@ void CPU::BVS(WORD addr)
 void CPU::ASL(WORD addr) 
 { 
 	BYTE val{};
-	bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP);
+	bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP || instructions[m_curOpcode].addrMode == &CPU::ACC);
 	
 	val = (isImplicit ? reg.accumulator : m_Bus->ReadByte(addr));
 
@@ -501,7 +501,7 @@ void CPU::ASL(WORD addr)
 void CPU::LSR(WORD addr) 
 { 
 	BYTE val{};
-	bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP);
+	bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP || instructions[m_curOpcode].addrMode == &CPU::ACC);
 
 	val = (isImplicit ? reg.accumulator : m_Bus->ReadByte(addr));
 
@@ -523,7 +523,7 @@ void CPU::LSR(WORD addr)
 void CPU::ROL(WORD addr) 
 { 
 	BYTE val{};
-	bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP);
+	bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP || instructions[m_curOpcode].addrMode == &CPU::ACC);
 	
 	val = (isImplicit ? reg.accumulator : m_Bus->ReadByte(addr));
 
@@ -547,7 +547,7 @@ void CPU::ROL(WORD addr)
 void CPU::ROR(WORD addr) 
 { 
 	BYTE val{};
-	bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP);
+	bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP || instructions[m_curOpcode].addrMode == &CPU::ACC);
 	
 	val = (isImplicit ? reg.accumulator : m_Bus->ReadByte(addr));
 
