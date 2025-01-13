@@ -30,7 +30,7 @@ Disassembler::DisasmInfo Disassembler::Disassemble(WORD addr)
     ss << std::hex << std::setfill('0') << std::uppercase;
 
     // https://www.nesdev.org/obelisk-6502-guide/addressing.html
-	if (info.addrMode == "IMM")
+	if (info.addrMode == "IMP")
 	{
 		//
 	}
