@@ -5,9 +5,9 @@
 #include <mutex>
 #include "pch.h"
 #include "SDL/SDLApp.h"
-#include "../../include/imgui/imgui.h"
-#include "../../include/imgui/imgui_impl_sdl2.h"
-#include "../../include/imgui/imgui_impl_sdlrenderer2.h"
+#include "../../include/lib/imgui/imgui.h"
+#include "../../include/lib/imgui/imgui_impl_sdl2.h"
+#include "../../include/lib/imgui/imgui_impl_sdlrenderer2.h"
 #include "../../include/typedefs.h"
 #include "../../core/loader/Loader.h"
 #include "SDL/controllers/ControllerHandler.h"

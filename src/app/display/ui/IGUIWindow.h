@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "../../../include/imgui/imgui.h"
+#include "../../../include/lib/imgui/imgui.h"
 
 
 /// @brief Interface for creating an ImGUI window. 
