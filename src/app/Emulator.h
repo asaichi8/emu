@@ -51,7 +51,9 @@ class Emulator
 		{SDL_CONTROLLER_BUTTON_DPAD_LEFT, Joypad::Button::LEFT},
 		{SDL_CONTROLLER_BUTTON_DPAD_RIGHT, Joypad::Button::RIGHT},
 		{SDL_CONTROLLER_BUTTON_A, Joypad::Button::A},
+		{SDL_CONTROLLER_BUTTON_Y, Joypad::Button::A}, // probably remove this later
 		{SDL_CONTROLLER_BUTTON_B, Joypad::Button::B},
+		//{SDL_CONTROLLER_BUTTON_Y, Joypad::Button::B},
 		{SDL_CONTROLLER_BUTTON_START, Joypad::Button::START},
 		{SDL_CONTROLLER_BUTTON_BACK, Joypad::Button::SELECT}
 	};
