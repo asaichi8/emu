@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mINI/ini.h"
+#include "lib/mINI/ini.h"
 
 
 // singleton

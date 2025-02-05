@@ -11,7 +11,7 @@
 #include "ErrorMsgWindow.h"
 #include "AddCodeWindow.h"
 #include "../ConfigQueue.h"
-#include "../../../include/tinyfiledialogs/tinyfiledialogs.h"
+#include "../../../include/lib/tinyfiledialogs/tinyfiledialogs.h"
 
 
 class MainMenuBar

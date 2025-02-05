@@ -22,9 +22,10 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src/core/memory
     # ${CMAKE_SOURCE_DIR}/src/demos
     ${CMAKE_SOURCE_DIR}/src/include
-    ${CMAKE_SOURCE_DIR}/src/include/imgui
-    ${CMAKE_SOURCE_DIR}/src/include/ini
-    ${CMAKE_SOURCE_DIR}/src/include/tinyfiledialogs
+    #${CMAKE_SOURCE_DIR}/src/include/lib
+    ${CMAKE_SOURCE_DIR}/src/include/lib/imgui
+    ${CMAKE_SOURCE_DIR}/src/include/lib/ini
+    ${CMAKE_SOURCE_DIR}/src/include/lib/tinyfiledialogs
 )
 
 file(GLOB_RECURSE SOURCES
@@ -42,7 +43,7 @@ file(GLOB_RECURSE SOURCES
     # ${CMAKE_SOURCE_DIR}/src/demos/*.cpp
     ${CMAKE_SOURCE_DIR}/src/imgui/*.cpp
     ${CMAKE_SOURCE_DIR}/src/include/Logger.cpp
-    ${CMAKE_SOURCE_DIR}/src/include/tinyfiledialogs/*.c
+    ${CMAKE_SOURCE_DIR}/src/include/lib/tinyfiledialogs/*.c
 )
 
 add_executable(emu ${SOURCES})

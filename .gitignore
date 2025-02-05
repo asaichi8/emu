@@ -17,6 +17,7 @@ bin/emu
 asm/default.o
 asm/default.nes
 bin/bin/
+bin/.bin/
 bin/rom_database.json
 bin/rom_database.json.bak
 src/include/SDL2
