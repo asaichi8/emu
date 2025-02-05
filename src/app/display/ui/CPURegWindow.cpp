@@ -23,7 +23,7 @@ void CPURegWindow::Draw()
     ImGui::TextColored(m_CPUReg.status_register.test(StatusRegisterFlags::DECIMAL_MODE) ? GREEN : RED, "D"); ImGui::SameLine();
     ImGui::TextColored(m_CPUReg.status_register.test(StatusRegisterFlags::BREAK_COMMAND) ? GREEN : RED, "B"); ImGui::SameLine();
     ImGui::TextColored(m_CPUReg.status_register.test(StatusRegisterFlags::UNUSED) ? GREEN : RED, "U"); ImGui::SameLine();
-    ImGui::TextColored(m_CPUReg.status_register.test(StatusRegisterFlags::_OVERFLOW) ? GREEN : RED, "O"); ImGui::SameLine();
+    ImGui::TextColored(m_CPUReg.status_register.test(StatusRegisterFlags::OVERFLOW_FLAG) ? GREEN : RED, "O"); ImGui::SameLine();
     ImGui::TextColored(m_CPUReg.status_register.test(StatusRegisterFlags::NEGATIVE) ? GREEN : RED, "N");
     
     ImGui::End();

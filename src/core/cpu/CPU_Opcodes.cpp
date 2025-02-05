@@ -164,12 +164,12 @@ void CPU::ADC(WORD addr)
 	// determine overflow bit
 	// if positive + positive = negative, overflow occured
 	if ((CHAR)reg.accumulator >= 0 && (CHAR)val >= 0 && (CHAR)(result) < 0)
-		reg.status_register.set(StatusRegisterFlags::_OVERFLOW);
+		reg.status_register.set(StatusRegisterFlags::OVERFLOW_FLAG);
 	// if negative + negative = positive, overflow occured
 	else if ((CHAR)reg.accumulator < 0 && (CHAR)val < 0 && (CHAR)(result) >= 0)
-		reg.status_register.set(StatusRegisterFlags::_OVERFLOW);
+		reg.status_register.set(StatusRegisterFlags::OVERFLOW_FLAG);
 	else
-		reg.status_register.reset(StatusRegisterFlags::_OVERFLOW);
+		reg.status_register.reset(StatusRegisterFlags::OVERFLOW_FLAG);
 	
 
 	reg.accumulator = result; // save result to accumulator
@@ -197,12 +197,12 @@ void CPU::SBC(WORD addr)
 	// determine overflow bit
 	// if negative - positive = positive, overflow occured
 	if ((CHAR)reg.accumulator < 0 && (CHAR)val >= 0 && (CHAR)(result) >= 0)
-		reg.status_register.set(StatusRegisterFlags::_OVERFLOW);
+		reg.status_register.set(StatusRegisterFlags::OVERFLOW_FLAG);
 	// if positive - negative = negative, overflow occured
 	else if ((CHAR)reg.accumulator >= 0 && (CHAR)val < 0 && (CHAR)(result) < 0)
-		reg.status_register.set(StatusRegisterFlags::_OVERFLOW);
+		reg.status_register.set(StatusRegisterFlags::OVERFLOW_FLAG);
 	else
-		reg.status_register.reset(StatusRegisterFlags::_OVERFLOW);
+		reg.status_register.reset(StatusRegisterFlags::OVERFLOW_FLAG);
 
 
 	reg.accumulator = result; // save result to accumulator
@@ -307,7 +307,7 @@ void CPU::BIT(WORD addr)
 	reg.CheckZero(result);
 	reg.CheckNegative(val);
 	// set overflow bit based on 6th bit of memory value
-	reg.status_register.set(StatusRegisterFlags::_OVERFLOW, val & (1 << 6));
+	reg.status_register.set(StatusRegisterFlags::OVERFLOW_FLAG, val & (1 << 6));
 }
 
 
@@ -453,7 +453,7 @@ void CPU::BPL(WORD addr)
 /// @brief Branches to address if the overflow flag is not set.
 void CPU::BVC(WORD addr) 
 { 
-	if (reg.status_register.test(StatusRegisterFlags::_OVERFLOW))
+	if (reg.status_register.test(StatusRegisterFlags::OVERFLOW_FLAG))
 		return;
 		
 	m_curCycles += CPU::IsOnSamePage(reg.program_counter, addr) ? 1 : 2;
@@ -464,7 +464,7 @@ void CPU::BVC(WORD addr)
 /// @brief Branches to address if the overflow flag is set.
 void CPU::BVS(WORD addr) 
 { 
-	if (!reg.status_register.test(StatusRegisterFlags::_OVERFLOW))
+	if (!reg.status_register.test(StatusRegisterFlags::OVERFLOW_FLAG))
 		return;
 
 	m_curCycles += CPU::IsOnSamePage(reg.program_counter, addr) ? 1 : 2;
@@ -590,7 +590,7 @@ void CPU::CLI(WORD addr)
 /// @brief Resets the overflow flag.
 void CPU::CLV(WORD addr) 
 { 
-	reg.status_register.reset(StatusRegisterFlags::_OVERFLOW);
+	reg.status_register.reset(StatusRegisterFlags::OVERFLOW_FLAG);
 }
 
 
@@ -801,7 +801,7 @@ void CPU::ARR(WORD addr)
 	// set carry based on 6th bit
 	reg.status_register.set(StatusRegisterFlags::CARRY, reg.accumulator & (1 << 6));
 	// set overflow based on bit 5 XOR bit 6
-	reg.status_register.set(StatusRegisterFlags::_OVERFLOW, (reg.accumulator & (1 << 5)) ^ (reg.accumulator & (1 << 6)));
+	reg.status_register.set(StatusRegisterFlags::OVERFLOW_FLAG, (reg.accumulator & (1 << 5)) ^ (reg.accumulator & (1 << 6)));
 }
 
 void CPU::LAS(WORD addr) 
