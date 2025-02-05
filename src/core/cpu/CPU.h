@@ -38,14 +38,13 @@ private:
 	QWORD m_nCycles{};
 	bool m_bNeedsExtraCycle{};
 
-
 	void PushStackByte(BYTE val);
 	BYTE PopStackByte();
 	void PushStackWord(WORD val);
 	WORD PopStackWord();
 	static bool IsOnSamePage(WORD addr1, WORD addr2);
 
-
+#pragma region Addressing mode functions
 	// Addressing modes - returns the address to act upon
 	MODE(IMM); // immediate
 	MODE(IMP); // implicit
@@ -60,7 +59,8 @@ private:
 	MODE(ZPY); // zero page y
 	MODE(IZY); // indirect indexed
 	MODE(IZX); // indexed indirect
-
+#pragma endregion
+#pragma region Opcode functions
 	// --== Opcodes ==--
 	// http://www.oxyron.de/html/opcodes02.html
 	// https://www.nesdev.org/wiki/CPU_unofficial_opcodes
@@ -170,8 +170,8 @@ private:
 	OPCODE(LAS);
 	OPCODE(AXS);
 	OPCODE(ISC);
+#pragma endregion
 	
-
 	static Instruction instructions[256];
 
 	void Execute(const Instruction& instruction);
