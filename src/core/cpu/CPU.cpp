@@ -40,21 +40,21 @@ void CPU::Log()
 		hasPrintedPath = true;
 	}
 
-	out << std::hex << std::uppercase << std::setw(4) << std::setfill('0') << reg.program_counter << "  ";
+	out << std::hex << std::uppercase << std::setw(4) << std::setfill('0') << m_reg.program_counter << "  ";
 	out << std::hex << std::setw(2) << std::setfill('0') << (int)m_curOpcode << ' ';
 	for (int i = 1; i < GetInstructionLenBytes(instructions[m_curOpcode]); ++i)
 	{
-		out << std::hex << std::setw(2) << std::setfill('0') << (int)(m_Bus->ReadByte(reg.program_counter + i)) << ' ';
+		out << std::hex << std::setw(2) << std::setfill('0') << (int)(m_Bus->ReadByte(m_reg.program_counter + i)) << ' ';
 	}
 	for (int i = 0; i < 3 - GetInstructionLenBytes(instructions[m_curOpcode]); ++i)
 	{
 		out << "   ";
 	}
-	out << " A:" << std::hex << std::setw(2) << std::setfill('0') << (int)reg.accumulator << ' ';
-	out << "X:" << std::hex << std::setw(2) << std::setfill('0') << (int)reg.X << ' ';
-	out << "Y:" << std::hex << std::setw(2) << std::setfill('0') << (int)reg.Y << ' ';
-	out << "P:" << std::hex << std::setw(2) << std::setfill('0') << reg.status_register.to_ulong() << ' ';
-	out << "SP:" << std::hex << std::setw(2) << std::setfill('0') << (int)reg.stack_pointer << ' ';
+	out << " A:" << std::hex << std::setw(2) << std::setfill('0') << (int)m_reg.accumulator << ' ';
+	out << "X:" << std::hex << std::setw(2) << std::setfill('0') << (int)m_reg.X << ' ';
+	out << "Y:" << std::hex << std::setw(2) << std::setfill('0') << (int)m_reg.Y << ' ';
+	out << "P:" << std::hex << std::setw(2) << std::setfill('0') << m_reg.status_register.to_ulong() << ' ';
+	out << "SP:" << std::hex << std::setw(2) << std::setfill('0') << (int)m_reg.stack_pointer << ' ';
 	out << "PPU:" << std::dec << std::setw(3) << std::setfill(' ') << m_Bus->GetPPU()->GetScanlineCount() << ',';
 	out << std::setw(3) << std::setfill(' ') << m_Bus->GetPPU()->GetCycleCount() << ' ';
 	out << "CYC:" << std::dec << (int)m_nCycles;
@@ -64,22 +64,24 @@ void CPU::Log()
 /// @brief Starts running the CPU (https://en.wikipedia.org/wiki/Instruction_cycle)
 void CPU::Run()
 {
-	m_curOpcode = m_Bus->ReadByte(reg.program_counter);
+	m_curOpcode = m_Bus->ReadByte(m_reg.program_counter);
 
-	// Disassembler::DisasmInfo info = m_disassembler.Disassemble(reg.program_counter);
-	// std::cout << "$" << std::hex << std::setw(4) << std::setfill('0') << reg.program_counter << ":  " << std::dec
+	// Disassembler::DisasmInfo info = m_disassembler.Disassemble(m_reg.program_counter);
+	// std::cout << "$" << std::hex << std::setw(4) << std::setfill('0') << m_reg.program_counter << ":  " << std::dec
 	// 		<< info.instruction << "\t\t" << info.addrMode << " " << info.size << std::endl;
 
 	// Log
 	// Log();
 
-	// if (reg.program_counter == 0xC66E)
+	// if (m_reg.program_counter == 0xC66E)
 	//    std::cout << std::endl; // breakpoint here
 	   
-	reg.program_counter++;
-	Execute(instructions[m_curOpcode]);
-	m_nCycles += m_curCycles;
+	m_reg.program_counter++;
 
+	const Instruction& curInstruction = instructions[m_curOpcode];
+	Execute(curInstruction);
+
+	m_nCycles += m_curCycles;
 
 	if (m_Bus->IsNMIInterruptQueuedW())
 		NMI();
@@ -91,17 +93,16 @@ void CPU::Run()
 /// @brief Resets the processor to a known state.
 void CPU::Reset()
 {
-	reg.program_counter = m_Bus->ReadWord(RESET_VECTOR); 
-	reg.accumulator = 0;
-	reg.X = 0;
-	reg.Y = 0;
-	reg.stack_pointer = 0xFD; // https://www.nesdev.org/wiki/CPU_power_up_state#cite_note-reset-stack-push-3
+	m_reg.program_counter = m_Bus->ReadWord(RESET_VECTOR); // 0xFFFC
+	m_reg.accumulator = 0;
+	m_reg.X = 0;
+	m_reg.Y = 0;
+	m_reg.stack_pointer = 0xFD; // https://www.nesdev.org/wiki/CPU_power_up_state#cite_note-reset-stack-push-3
 
-	reg.status_register = 0;
-	reg.status_register.set(StatusRegisterFlags::UNUSED); // https://www.nesdev.org/wiki/Status_flags "No CPU effect; always pushed as 1"
+	m_reg.status_register = 0;
+	m_reg.status_register.set(StatusRegisterFlags::UNUSED); // https://www.nesdev.org/wiki/Status_flags "No CPU effect; always pushed as 1"
 	// https://www.nesdev.org/wiki/CPU_power_up_state#cite_note-1
-	reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
-	//reg.status_register.set(StatusRegisterFlags::BREAK_COMMAND);
+	m_reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
 
 	// https://6502.co.uk/lesson/reset
 	// "This reset sequence lasts for seven clock cycles and after this, the computer will be usable. "
@@ -115,36 +116,36 @@ void CPU::Reset()
 // https://www.pagetable.com/?p=410
 void CPU::IRQ()
 {
-	if (reg.status_register.test(StatusRegisterFlags::INTERRUPT_REQUEST))
+	if (m_reg.status_register.test(StatusRegisterFlags::INTERRUPT_REQUEST))
 		return;
 
-	auto savedReg = reg.status_register;
+	auto savedReg = m_reg.status_register;
 	savedReg.set(StatusRegisterFlags::UNUSED);
 	savedReg.reset(StatusRegisterFlags::BREAK_COMMAND);
 
-	PushStackWord(reg.program_counter);
+	PushStackWord(m_reg.program_counter);
 	PushStackByte((BYTE)(savedReg.to_ulong()));
 
-	reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
+	m_reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
 	
 	m_curCycles += 7;
-	reg.program_counter = m_Bus->ReadWord(IRQ_VECTOR); //(m_Bus->ReadByte(IRQ_VECTOR + 1) << 8) | m_Bus->ReadByte(IRQ_VECTOR); 
+	m_reg.program_counter = m_Bus->ReadWord(IRQ_VECTOR); //(m_Bus->ReadByte(IRQ_VECTOR + 1) << 8) | m_Bus->ReadByte(IRQ_VECTOR); 
 }
 	
 void CPU::NMI()
 {
-	auto savedReg = reg.status_register;
+	auto savedReg = m_reg.status_register;
 	savedReg.set(StatusRegisterFlags::UNUSED);
 	savedReg.reset(StatusRegisterFlags::BREAK_COMMAND);
 
-	PushStackWord(reg.program_counter);
+	PushStackWord(m_reg.program_counter);
 	PushStackByte((BYTE)(savedReg.to_ulong()));
 
-	reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
+	m_reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
 
 	// TODO: cycles?
 	m_curCycles += 7;
-	reg.program_counter = m_Bus->ReadWord(NMI_VECTOR); // (m_Bus->ReadByte(NMI_VECTOR + 1) << 8) | m_Bus->ReadByte(NMI_VECTOR);
+	m_reg.program_counter = m_Bus->ReadWord(NMI_VECTOR); // (m_Bus->ReadByte(NMI_VECTOR + 1) << 8) | m_Bus->ReadByte(NMI_VECTOR);
 }
 
 
@@ -169,18 +170,18 @@ void CPU::Execute(const Instruction& instruction)
 /// @param val Byte to be pushed.
 void CPU::PushStackByte(BYTE val)
 {
-	m_Bus->WriteByte(STACK + reg.stack_pointer, val);
+	m_Bus->WriteByte(STACK_BEGIN + m_reg.stack_pointer, val); // where STACK_BEGIN == 0x0100
 
-	reg.stack_pointer--;
+	m_reg.stack_pointer--;
 }
 
 /// @brief Pops and retrieves a byte from the stack.
 /// @return Popped byte.
 BYTE CPU::PopStackByte()
 {
-	reg.stack_pointer++;
+	m_reg.stack_pointer++;
 
-	return m_Bus->ReadByte(STACK + reg.stack_pointer);
+	return m_Bus->ReadByte(STACK_BEGIN + m_reg.stack_pointer);
 }
 
 

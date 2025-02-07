@@ -22,17 +22,17 @@ class CPU
 public:
 	struct Instruction
 	{
-		void (CPU::*opcode)(WORD);
-		WORD (CPU::*addrMode)();
-		DWORD cycles;
-		bool extraCycle;
-		std::string strName;
-		std::string strAddrMode;
+		void (CPU::*opcode)(WORD);	// function pointer to the instruction's opcode
+		WORD (CPU::*addrMode)();	// function pointer to the instruction's addressing mode
+		DWORD cycles;				// number of base cycles this instruction requiures
+		bool extraCycle;			// specific conditions may require the CPU take an extra cycle
+		std::string strName;		// name of instruction in string form
+		std::string strAddrMode;	// name of addressing mode in string form
 	};
 
 private:
 	std::shared_ptr<Bus> m_Bus{};
-	CPURegisters reg{};
+	CPURegisters m_reg{};
 	BYTE m_curOpcode{};
 	DWORD m_curCycles{};
 	QWORD m_nCycles{};
@@ -194,6 +194,6 @@ public:
 	void Reset();
 	void IRQ();
 	void NMI();
-	const CPURegisters& ReadRegisters() const { return reg; }
+	const CPURegisters& ReadRegisters() const { return m_reg; }
 	static const Instruction* GetInstructionTable() { return instructions; }
 };
