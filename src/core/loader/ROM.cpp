@@ -66,7 +66,6 @@ std::string ROM::CheckROM(std::unique_ptr<std::vector<BYTE>> pRomRaw, bool shoul
 }
 
 /// @brief Maps ROM into memory.
-/// @param filePath 
 void ROM::MapROM()
 {
 	if (!m_pRawFile)
@@ -136,9 +135,9 @@ bool ROM::CheckINES(const std::vector<BYTE>* romRaw)
 	return (memcmp(sig, NES_SIG, sizeof(NES_SIG)) == 0);
 }
 
-/// @brief 
-/// @param rawFile 
-/// @param header 
+/// @brief Ensures that a given file abides by the size promised in the header.
+/// @param rawFile Raw file to be checked against.
+/// @param header The iNES header for the file.
 /// @return True if valid, false if otherwise
 bool ROM::CheckFileSize(const std::vector<BYTE>& rawFile, const iNES_Header* header) 
 {
