@@ -19,6 +19,7 @@ int main(int argc, char* argv[])
 	}*/
 	g_verboseLevel = VerboseLevel::DEBUG;
 
+	// std::string romPath = "tests/nestest2.nes";
 	std::string romPath = "default.nes";
 
 	try

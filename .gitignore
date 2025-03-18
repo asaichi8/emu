@@ -20,3 +20,5 @@ bin/bin/
 bin/.bin/
 bin/rom_database.json
 bin/rom_database.json.bak
+nestest.log
+nestestnoasm.log
