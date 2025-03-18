@@ -22,10 +22,10 @@ void NESDisplay::DrawScreen()
         dynamic_cast<PPUSCROLL *>(m_pPPU->registers.ppuscroll.get())->GetY()
     };
 
-    DrawNametable(m_pPPU->GetNametableRAM()[!useFirstNametable], scroll, {DISPLAY_WIDTH, DISPLAY_HEIGHT}, scroll * -1); 
+    DrawNametable(m_pPPU->GetNametableRAM()[!useFirstNametable], false, scroll, {DISPLAY_WIDTH, DISPLAY_HEIGHT}, scroll * -1); 
 	// TODO: support four scroll
-    if      (scroll.x) DrawNametable(m_pPPU->GetNametableRAM()[useFirstNametable], {0, 0}, {scroll.x, DISPLAY_HEIGHT}, {DISPLAY_WIDTH - scroll.x, 0});
-    else if (scroll.y) DrawNametable(m_pPPU->GetNametableRAM()[useFirstNametable], {0, 0}, {DISPLAY_WIDTH, scroll.y}, {0, DISPLAY_HEIGHT - scroll.y});
+    if      (scroll.x) DrawNametable(m_pPPU->GetNametableRAM()[useFirstNametable], false, {0, 0}, {scroll.x, DISPLAY_HEIGHT}, {DISPLAY_WIDTH - scroll.x, 0});
+    else if (scroll.y) DrawNametable(m_pPPU->GetNametableRAM()[useFirstNametable], false, {0, 0}, {DISPLAY_WIDTH, scroll.y}, {0, DISPLAY_HEIGHT - scroll.y});
 
     DrawSprites();
     // DrawTiles(m_pPPU->GetCHR_ROM(), 0);
@@ -68,21 +68,23 @@ void NESDisplay::DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank)
 }
 
 
-bool NESDisplay::SetPixel(const RGB colour, const Point& pixelPos, RGB transparentColour, bool behindBg)
+bool NESDisplay::SetPixel(const RGB colour, const Point& pixelPos, RGB transparentColour, bool behindBg, bool useSecondBuffer)
 {
 	const size_t pixelStartPos = (pixelPos.x * sizeof(RGB)) + (pixelPos.y * sizeof(RGB) * DISPLAY_WIDTH);
 	if (pixelStartPos + sizeof(RGB) > SCREEN_BUFFER_SIZE)
 		return false; // not fatal
 
+	BYTE* bufPtr = useSecondBuffer ? m_szScreenBufferTwo : m_szScreenBuffer;
+
 	if (behindBg && (
-			(*(RGB*)(&m_szScreenBuffer[pixelStartPos])).r != transparentColour.r ||
-			(*(RGB*)(&m_szScreenBuffer[pixelStartPos])).g != transparentColour.g ||
-			(*(RGB*)(&m_szScreenBuffer[pixelStartPos])).b != transparentColour.b
+			(*(RGB*)(&bufPtr[pixelStartPos])).r != transparentColour.r ||
+			(*(RGB*)(&bufPtr[pixelStartPos])).g != transparentColour.g ||
+			(*(RGB*)(&bufPtr[pixelStartPos])).b != transparentColour.b
 		))
 		return false;
 
 	// directly map the RGB colour struct into memory
-	*(RGB*)(&m_szScreenBuffer[pixelStartPos]) = colour;
+	*(RGB*)(&bufPtr[pixelStartPos]) = colour;
 
 	return true;
 }
@@ -119,7 +121,7 @@ bool NESDisplay::SetPixel(const RGB colour, const Point& pixelPos, RGB transpare
 // therefore, the eyes are of one colour (tilePaletteIndex 1 (0b01)), and the mouth is of another
 // colour (tilePaletteIndex 3 (0b11)). the corners of the mouth are of colour tilePaletteIndex 2 (0b10).
 // where tilePosX = 0-32, tilePosY = 0-30
-void NESDisplay::DrawTile(const Tile &tile, const Point& tilePos, const std::vector<BYTE>& tilePaletteIndexes,
+void NESDisplay::DrawTile(const Tile &tile, const Point& tilePos, const std::vector<BYTE>& tilePaletteIndexes, bool useSecondBuffer,
 						  const Point& start, const Point& end, const Point& shift,
 						  bool isSprite, bool flipY, bool flipX, bool behindBg)
 {
@@ -242,7 +244,7 @@ std::vector<BYTE> NESDisplay::GetSpriteTilePalette(const std::bitset<2>& palette
 	return paletteColours;
 }
 
-void NESDisplay::DrawNametable(const std::vector<BYTE>& nametable, const Point& start, const Point& end, const Point& shift)
+void NESDisplay::DrawNametable(const std::vector<BYTE>& nametable, bool useSecondBuffer, const Point& start, const Point& end, const Point& shift)
 {
 	// bgBankAddr either 0 or 0x1000, use it to determine which bank we access
 	const WORD bgBankAddr = dynamic_cast<PPUCTRL *>(m_pPPU->registers.ppuctrl.get())->GetBackgroundPTableAddr();
@@ -280,7 +282,7 @@ void NESDisplay::DrawNametable(const std::vector<BYTE>& nametable, const Point& 
 
 		std::vector<BYTE> tilePaletteIndexes = GetBgTilePalette(nametable, tilePos);
 
-		DrawTile(*pCurTile, tilePos * 8, tilePaletteIndexes, start, end, shift);
+		DrawTile(*pCurTile, tilePos * 8, tilePaletteIndexes, useSecondBuffer, start, end, shift);
 	}
 }
 
@@ -313,7 +315,7 @@ void NESDisplay::DrawSprites()
 		Point tilePos = {pCurSprite->tileX, pCurSprite->tileY + 1};
 		std::vector<BYTE> paletteColours = GetSpriteTilePalette(paletteIndex);
 
-		DrawTile(*pCurTile, tilePos, paletteColours,
+		DrawTile(*pCurTile, tilePos, paletteColours, false,
 				 {0, 0}, {DISPLAY_WIDTH, DISPLAY_HEIGHT}, {0, 0},
 				 true, shouldFlipVertical, shouldFlipHorizontal, pCurSprite->tileProperties & OAMProperties::PRIORITY);
 	}
