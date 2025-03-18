@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 	{
 		ControllerHandler controllerHandler{};
 		// Initiate the GUI.
-		std::unique_ptr<EmulatorDisplay> GUI = std::make_unique<EmulatorDisplay>("Emulator", DISPLAY_WIDTH, DISPLAY_HEIGHT, 4, &controllerHandler);
+		std::unique_ptr<EmulatorDisplay> GUI = std::make_unique<EmulatorDisplay>("Emulator", DISPLAY_WIDTH*2, DISPLAY_HEIGHT*2, 2, &controllerHandler);
 
 		while (!romPath.empty())
 		{

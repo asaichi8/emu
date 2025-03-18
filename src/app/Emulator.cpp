@@ -74,6 +74,22 @@ Emulator::~Emulator()
 	
 }
 
+void Emulator::GetDualScreen(NESDisplay& display, BYTE* newBuf)
+{
+	// normal display
+	for (int i = 0; i < 240; ++i)
+	{
+		memcpy(newBuf + i * (256 * 2 * 3), &display.GetScreen(0)[i * (256 * 3)], 256 * 3);
+	}
+
+	// nametable display
+	for (int i = 240; i < 240 * 2; ++i) // loop through each line
+	{
+		memcpy(newBuf + i * (256 * 2 * 3), &display.GetScreen(2)[(i - 240) * (256 * 3)], 256 * 3);
+		memcpy(newBuf + (i * (256 * 2 * 3)) + (256 * 3), &display.GetScreen(3)[(i - 240) * (256 * 3)], 256 * 3);
+	}
+}
+
 
 /// @brief Runs the emulator.
 /// @return The next ROM file to run. Returns nothing if we expect to exit.
@@ -97,6 +113,8 @@ std::string Emulator::Run()
 	const double CPU_CLOCK_RATE = 1789773 / 2.5; // CPU clock rate divided by arbitrary number because this is wrong
 	const double CYCLE_TIME = 1e6 / CPU_CLOCK_RATE * BATCH_MULTIPLIER; // working with microseconds
 
+	static const size_t DOUBLE_SCREEN_BUFFER_SIZE = DISPLAY_WIDTH * 2 * DISPLAY_HEIGHT * 2 * sizeof(RGB); // 256 * 2 * 240 * 2 * 3
+	BYTE newBuf[DOUBLE_SCREEN_BUFFER_SIZE]{};
 	// controller poll time = 1ms
 	bool running = true;
 	auto now = std::chrono::high_resolution_clock::now();
@@ -121,7 +139,6 @@ std::string Emulator::Run()
 				for (int j = 0; j < BATCH_MULTIPLIER; ++j)
 				{
 					m_CPU->Run();
-
 					if (m_Bus->GetPPU()->GetInterruptStatus())
 						nesDisplay.DrawScreen();
 				}
@@ -135,15 +152,16 @@ std::string Emulator::Run()
 			if (now >= nextFrameTime)
 			{
 				nextFrameTime = now + FPStime;
-				m_GUI->RenderFrame(nesDisplay.GetScreen(), DISPLAY_WIDTH);
+				this->GetDualScreen(nesDisplay, newBuf);
+				m_GUI->RenderFrame(newBuf, DISPLAY_WIDTH * 2);
 			}
 		}
 		else
 		{
-			m_GUI->RenderFrame(nesDisplay.GetScreen(), DISPLAY_WIDTH);
+			this->GetDualScreen(nesDisplay, newBuf);
+			m_GUI->RenderFrame(newBuf, DISPLAY_WIDTH * 2);
 			//aloopStart = std::chrono::high_resolution_clock::now();
 		}
-
 
 		m_GUI->GetMainMenuBar()->UpdateRegisters(m_CPU->ReadRegisters()); // update GUI with a copy of the CPU's current registers
 

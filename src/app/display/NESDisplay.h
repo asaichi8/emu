@@ -31,16 +31,15 @@ class NESDisplay
 
 	const PPU *m_pPPU;
 	Palette *m_pPalette;
-	BYTE m_szScreenBuffer[SCREEN_BUFFER_SIZE]{};
-	BYTE m_szScreenBufferTwo[SCREEN_BUFFER_SIZE]{};
+	BYTE m_szScreenBuffer[4][SCREEN_BUFFER_SIZE]{};
 
-	bool SetPixel(const RGB colour, const Point& pixelPos, RGB transparentColour, bool behindBg, bool useSecondBuffer = false);
-	void DrawTile(const Tile &tile, const Point& tilePos, const std::vector<BYTE> &tilePalette, bool useSecondBuffer = false,
+	bool SetPixel(const RGB colour, const Point& pixelPos, RGB transparentColour, bool behindBg, size_t bufNum = 0);
+	void DrawTile(const Tile &tile, const Point& tilePos, const std::vector<BYTE> &tilePalette, size_t bufNum = 0,
 				  const Point& start = {0, 0}, const Point& end = {DISPLAY_WIDTH, DISPLAY_HEIGHT}, const Point& shift = {0, 0},
 				  bool isSprite = false, bool flipY = false, bool flipX = false, bool behindBg = false);
 	std::vector<BYTE> GetBgTilePalette(const std::vector<BYTE> &nametable, const Point& tileNo);
 	std::vector<BYTE> GetSpriteTilePalette(const std::bitset<2>& paletteIndex);
-	void DrawNametable(const std::vector<BYTE>& nametable, bool useSecondBuffer = false, const Point& start = {0, 0}, const Point& end = {DISPLAY_WIDTH, DISPLAY_HEIGHT}, const Point& shift = {0, 0});
+	void DrawNametable(const std::vector<BYTE>& nametable, size_t bufNum = 0, const Point& start = {0, 0}, const Point& end = {DISPLAY_WIDTH, DISPLAY_HEIGHT}, const Point& shift = {0, 0});
 	void DrawSprites();
 
 public:
@@ -49,5 +48,11 @@ public:
 
 	void DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank);
 	void DrawScreen();
-	BYTE *GetScreen() { return m_szScreenBuffer; }
+	BYTE* GetScreen(size_t bufNum)
+	{
+		if (bufNum >= 4)
+			return 0;
+		
+		return m_szScreenBuffer[bufNum];
+	}
 };

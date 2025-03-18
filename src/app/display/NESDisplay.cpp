@@ -22,10 +22,35 @@ void NESDisplay::DrawScreen()
         dynamic_cast<PPUSCROLL *>(m_pPPU->registers.ppuscroll.get())->GetY()
     };
 
-    DrawNametable(m_pPPU->GetNametableRAM()[!useFirstNametable], false, scroll, {DISPLAY_WIDTH, DISPLAY_HEIGHT}, scroll * -1); 
+	DrawNametable(m_pPPU->GetNametableRAM()[!useFirstNametable], false, scroll, {DISPLAY_WIDTH, DISPLAY_HEIGHT}, scroll * -1); 
 	// TODO: support four scroll
-    if      (scroll.x) DrawNametable(m_pPPU->GetNametableRAM()[useFirstNametable], false, {0, 0}, {scroll.x, DISPLAY_HEIGHT}, {DISPLAY_WIDTH - scroll.x, 0});
-    else if (scroll.y) DrawNametable(m_pPPU->GetNametableRAM()[useFirstNametable], false, {0, 0}, {DISPLAY_WIDTH, scroll.y}, {0, DISPLAY_HEIGHT - scroll.y});
+	if      (scroll.x) DrawNametable(m_pPPU->GetNametableRAM()[useFirstNametable], false, {0, 0}, {scroll.x, DISPLAY_HEIGHT}, {DISPLAY_WIDTH - scroll.x, 0});
+	else if (scroll.y) DrawNametable(m_pPPU->GetNametableRAM()[useFirstNametable], false, {0, 0}, {DISPLAY_WIDTH, scroll.y}, {0, DISPLAY_HEIGHT - scroll.y});
+
+	// FOR NAMETABLE DISPLAY TESTING, remove when not used
+	DrawNametable(m_pPPU->GetNametableRAM()[!useFirstNametable], 2);
+	DrawNametable(m_pPPU->GetNametableRAM()[useFirstNametable], 3);
+	//vertical lines
+	for (int i = 0; i < 240; ++i)
+	{
+		if (scroll.x > 0) SetPixel({255, 0, 0}, {scroll.x - 1, i}, {0, 0, 0}, false, 2);
+		if (scroll.x < 255) SetPixel({255, 0, 0}, {scroll.x, i}, {0, 0, 0}, false, 3);
+	}
+	//horizontal lines
+	for (int i = 0; i < 256; ++i)
+	{
+		if (scroll.x <= i) 
+		{
+			SetPixel({255, 0, 0}, {i, 239}, {0, 0, 0}, false, 2);
+			SetPixel({255, 0, 0}, {i, 0}, {0, 0, 0}, false, 2);
+		}
+
+		if (scroll.x > i)
+		{
+			SetPixel({255, 0, 0}, {i, 239}, {0, 0, 0}, false, 3);
+			SetPixel({255, 0, 0}, {i, 0}, {0, 0, 0}, false, 3);
+		}
+	}
 
     DrawSprites();
     // DrawTiles(m_pPPU->GetCHR_ROM(), 0);
@@ -68,13 +93,14 @@ void NESDisplay::DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank)
 }
 
 
-bool NESDisplay::SetPixel(const RGB colour, const Point& pixelPos, RGB transparentColour, bool behindBg, bool useSecondBuffer)
+bool NESDisplay::SetPixel(const RGB colour, const Point& pixelPos, RGB transparentColour, bool behindBg, size_t bufNum)
 {
 	const size_t pixelStartPos = (pixelPos.x * sizeof(RGB)) + (pixelPos.y * sizeof(RGB) * DISPLAY_WIDTH);
 	if (pixelStartPos + sizeof(RGB) > SCREEN_BUFFER_SIZE)
 		return false; // not fatal
 
-	BYTE* bufPtr = useSecondBuffer ? m_szScreenBufferTwo : m_szScreenBuffer;
+	if (bufNum >= 4) bufNum = 0; // safeguard in case we access value out of bufNum size
+	BYTE* bufPtr = m_szScreenBuffer[bufNum];
 
 	if (behindBg && (
 			(*(RGB*)(&bufPtr[pixelStartPos])).r != transparentColour.r ||
@@ -121,7 +147,7 @@ bool NESDisplay::SetPixel(const RGB colour, const Point& pixelPos, RGB transpare
 // therefore, the eyes are of one colour (tilePaletteIndex 1 (0b01)), and the mouth is of another
 // colour (tilePaletteIndex 3 (0b11)). the corners of the mouth are of colour tilePaletteIndex 2 (0b10).
 // where tilePosX = 0-32, tilePosY = 0-30
-void NESDisplay::DrawTile(const Tile &tile, const Point& tilePos, const std::vector<BYTE>& tilePaletteIndexes, bool useSecondBuffer,
+void NESDisplay::DrawTile(const Tile &tile, const Point& tilePos, const std::vector<BYTE>& tilePaletteIndexes, size_t bufNum,
 						  const Point& start, const Point& end, const Point& shift,
 						  bool isSprite, bool flipY, bool flipX, bool behindBg)
 {
@@ -151,7 +177,7 @@ void NESDisplay::DrawTile(const Tile &tile, const Point& tilePos, const std::vec
 			if ((pixelPos.x + shift.x) > DISPLAY_WIDTH) continue;
 			if ((pixelPos.y + shift.y) > DISPLAY_HEIGHT) continue;
 			
-			SetPixel(rgb, pixelPos + shift, m_pPalette->GetPalette().at(tilePaletteIndexes.at(0)), behindBg);
+			SetPixel(rgb, pixelPos + shift, m_pPalette->GetPalette().at(tilePaletteIndexes.at(0)), behindBg, bufNum);
 		}
 	}
 }
@@ -244,7 +270,7 @@ std::vector<BYTE> NESDisplay::GetSpriteTilePalette(const std::bitset<2>& palette
 	return paletteColours;
 }
 
-void NESDisplay::DrawNametable(const std::vector<BYTE>& nametable, bool useSecondBuffer, const Point& start, const Point& end, const Point& shift)
+void NESDisplay::DrawNametable(const std::vector<BYTE>& nametable, size_t bufNum, const Point& start, const Point& end, const Point& shift)
 {
 	// bgBankAddr either 0 or 0x1000, use it to determine which bank we access
 	const WORD bgBankAddr = dynamic_cast<PPUCTRL *>(m_pPPU->registers.ppuctrl.get())->GetBackgroundPTableAddr();
@@ -282,7 +308,7 @@ void NESDisplay::DrawNametable(const std::vector<BYTE>& nametable, bool useSecon
 
 		std::vector<BYTE> tilePaletteIndexes = GetBgTilePalette(nametable, tilePos);
 
-		DrawTile(*pCurTile, tilePos * 8, tilePaletteIndexes, useSecondBuffer, start, end, shift);
+		DrawTile(*pCurTile, tilePos * 8, tilePaletteIndexes, bufNum, start, end, shift);
 	}
 }
 

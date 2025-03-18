@@ -58,6 +58,8 @@ class Emulator
 		{SDL_CONTROLLER_BUTTON_BACK, Joypad::Button::SELECT}
 	};
 
+	void GetDualScreen(NESDisplay& display, BYTE* newBuf);
+
 public:
 	Emulator(const std::string& romPath, EmulatorDisplay& GUI);
 	~Emulator();
