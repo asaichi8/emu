@@ -46,7 +46,7 @@ public:
 	NESDisplay(const PPU *pPPU, Palette *pPalette);
 	~NESDisplay();
 
-	void DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank);
+	void DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank, size_t bufNum = 0, const Point& startPos = {0, 0}, size_t lineLength = 16);
 	void DrawScreen();
 	BYTE* GetScreen(size_t bufNum)
 	{

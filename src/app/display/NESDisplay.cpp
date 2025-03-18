@@ -28,6 +28,10 @@ void NESDisplay::DrawScreen()
 	else if (scroll.y) DrawNametable(m_pPPU->GetNametableRAM()[useFirstNametable], false, {0, 0}, {DISPLAY_WIDTH, scroll.y}, {0, DISPLAY_HEIGHT - scroll.y});
 
 	// FOR NAMETABLE DISPLAY TESTING, remove when not used
+	// tile display
+	DrawTiles(m_pPPU->GetCHR_ROM(), 0, 1, {0, 64}, 16);
+	DrawTiles(m_pPPU->GetCHR_ROM(), 1, 1, {128, 64}, 16);
+	// nametable display
 	DrawNametable(m_pPPU->GetNametableRAM()[!useFirstNametable], 2);
 	DrawNametable(m_pPPU->GetNametableRAM()[useFirstNametable], 3);
 	//vertical lines
@@ -56,7 +60,7 @@ void NESDisplay::DrawScreen()
     // DrawTiles(m_pPPU->GetCHR_ROM(), 0);
 }
 
-void NESDisplay::DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank)
+void NESDisplay::DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank, size_t bufNum, const Point& startPos, size_t lineLength)
 {
 	if (bank > 2)
 	{
@@ -67,17 +71,17 @@ void NESDisplay::DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank)
 	const std::vector<BYTE>& nametable = m_pPPU->GetNametableRAM()[0]; // temporarily use nametable 0 only
 	const WORD tilesStartAddr = bank * 0x1000;
 
-	Point pixelPos{};
+	Point pixelPos = startPos;
 	std::vector<Tile> tiles{};
 	for (int tileNo = 0; tileNo < 16*16; ++tileNo)
 	{
 		const size_t curTileOffset = tileNo * sizeof(Tile);
 		const size_t curTilePos = tilesStartAddr + curTileOffset;
 
-		if (tileNo && tileNo % 16 == 0)
+		if (tileNo && tileNo % lineLength == 0)
 		{
 			pixelPos.y += 8; // new line
-			pixelPos.x = 0;	 // reset x at end of line
+			pixelPos.x = startPos.x;	 // reset x at end of line
 		}
 
 		// map 16 bytes at curTilePos into curTile
@@ -86,7 +90,7 @@ void NESDisplay::DrawTiles(const std::vector<BYTE> *pCHR_ROM, const size_t bank)
 
 		const Point tilePos = {tileNo % 32, tileNo / 32};
 
-		DrawTile(*pCurTile, pixelPos, GetBgTilePalette(nametable, tilePos));
+		DrawTile(*pCurTile, pixelPos, GetBgTilePalette(nametable, tilePos), bufNum);
 
 		pixelPos.x += 8;
 	}

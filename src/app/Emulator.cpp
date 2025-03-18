@@ -76,10 +76,11 @@ Emulator::~Emulator()
 
 void Emulator::GetDualScreen(NESDisplay& display, BYTE* newBuf)
 {
-	// normal display
+	// screens 0 and 1
 	for (int i = 0; i < 240; ++i)
 	{
-		memcpy(newBuf + i * (256 * 2 * 3), &display.GetScreen(0)[i * (256 * 3)], 256 * 3);
+		memcpy(newBuf + i * (256 * 2 * 3), &display.GetScreen(0)[i * (256 * 3)], 256 * 3); // normal display
+		memcpy(newBuf + (i * (256 * 2 * 3)) + (256 * 3), &display.GetScreen(1)[i * (256 * 3)], 256 * 3); // tile display
 	}
 
 	// nametable display
