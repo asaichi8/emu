@@ -15,6 +15,6 @@
 #define QWORD_MAX UINT64_MAX
 
 #define PAGE    0x0100
-#define STACK   0x0100 // beginning of stack (0x0100 - 0x01FF)
+#define STACK_BEGIN   0x0100 // beginning of stack (0x0100 - 0x01FF)
 
 #define KB 1024

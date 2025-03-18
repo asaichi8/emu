@@ -22,9 +22,8 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src/core/memory
     # ${CMAKE_SOURCE_DIR}/src/demos
     ${CMAKE_SOURCE_DIR}/src/include
-    #${CMAKE_SOURCE_DIR}/src/include/lib
     ${CMAKE_SOURCE_DIR}/src/include/lib/imgui
-    ${CMAKE_SOURCE_DIR}/src/include/lib/ini
+    ${CMAKE_SOURCE_DIR}/src/include/lib/mINI
     ${CMAKE_SOURCE_DIR}/src/include/lib/tinyfiledialogs
 )
 
@@ -52,5 +51,8 @@ find_package(SDL2 REQUIRED)
 if (SDL2_VERSION VERSION_LESS "2.0.17")
     message(FATAL_ERROR "SDL2 version 2.0.17 or higher is required.")
 endif()
+#include_directories("C:/msys64/mingw64/include")
+#link_directories("C:/msys64/mingw64/lib")
 include_directories(${SDL2_INCLUDE_DIRS})
 target_link_libraries(emu ${SDL2_LIBRARIES})
+#target_link_libraries(emu ${SDL2_LIBRARIES} ssl crypto)

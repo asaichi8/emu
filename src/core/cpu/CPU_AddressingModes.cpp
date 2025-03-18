@@ -11,7 +11,7 @@
 /// @brief Takes a single constant byte as an operand, e.g. LDY #$05, loading 0x05 into the Y index register. 
 WORD CPU::IMM() 
 {
-	return reg.program_counter++; // return addr of operand, then increment pc
+	return m_reg.program_counter++; // return addr of operand, then increment pc
 }
 
 // IMPLICIT
@@ -33,8 +33,8 @@ WORD CPU::ACC()
 /// @brief Takes a two-byte address as an operand (e.g. JMP $3000.)
 WORD CPU::ABS() 
 {
-	WORD addr = m_Bus->ReadWord(reg.program_counter);
-	reg.program_counter += 2;
+	WORD addr = m_Bus->ReadWord(m_reg.program_counter);
+	m_reg.program_counter += 2;
 
 	return addr;
 }
@@ -49,7 +49,7 @@ WORD CPU::ABS()
 WORD CPU::ABX()
 {
 	WORD addr = ABS();
-	WORD result = addr + reg.X;
+	WORD result = addr + m_reg.X;
 
 	if (m_bNeedsExtraCycle && !CPU::IsOnSamePage(addr, result))
 		m_curCycles++;
@@ -60,7 +60,7 @@ WORD CPU::ABX()
 WORD CPU::ABY() 
 {
 	WORD addr = ABS();
-	WORD result = addr + reg.Y;
+	WORD result = addr + m_reg.Y;
 
 	if (m_bNeedsExtraCycle && !CPU::IsOnSamePage(addr, result))
 		m_curCycles++;
@@ -89,11 +89,11 @@ WORD CPU::IND()
 /// @brief Takes a single operand containing a signed 8-bit number (ranging from -128 to +127) as a label.
 WORD CPU::REL()
 {
-	WORD addr = m_Bus->ReadByte(reg.program_counter); // read the offset
-	reg.program_counter++;
+	WORD addr = m_Bus->ReadByte(m_reg.program_counter); // read the offset
+	m_reg.program_counter++;
 
 	int8_t offset = (int8_t)addr;
-	addr = reg.program_counter + (WORD)offset; // increment/decrement pc by the offset
+	addr = m_reg.program_counter + (WORD)offset; // increment/decrement pc by the offset
 
 	return addr;
 }
@@ -103,35 +103,35 @@ WORD CPU::REL()
 ///        (e.g. DEC $5F would decrement the byte found at $005F by one.)
 WORD CPU::ZPG()
 {
-	return m_Bus->ReadByte(reg.program_counter++); // increment program counter AFTER reading
+	return m_Bus->ReadByte(m_reg.program_counter++); // increment program counter AFTER reading
 }
 // ZERO PAGE, X
 WORD CPU::ZPX()
 {
-	return (ZPG() + reg.X) & 0x00FF;
+	return (ZPG() + m_reg.X) & 0x00FF;
 }
 // ZERO PAGE, Y
 WORD CPU::ZPY()
 {
-	return (ZPG() + reg.Y) & 0x00FF;
+	return (ZPG() + m_reg.Y) & 0x00FF;
 }
 
 // INDIRECT INDEXED
 WORD CPU::IZY()
 {
 	/* e.g.: MEMORY ADDR | CONTENTS |                      DESCRIPTION
-				0x1000   |   0x60   | Supplied zero page address (inside reg.program_counter)
+				0x1000   |   0x60   | Supplied zero page address (inside m_reg.program_counter)
 				0x0060   |   0x00   | Low byte of effective address in the zero page
 				0x0061   |   0x70   | High byte of effective address in the zero page
 
 		Y = 0x40
 	*/
 
-	WORD zpAddrLow = m_Bus->ReadByte(reg.program_counter); // Read supplied ZP address, result: 0x60 (low byte of effective address)
-	reg.program_counter++; // Increment PC: it's now 0x1001
+	WORD zpAddrLow = m_Bus->ReadByte(m_reg.program_counter); // Read supplied ZP address, result: 0x60 (low byte of effective address)
+	m_reg.program_counter++; // Increment PC: it's now 0x1001
 
 	WORD addr = m_Bus->ReadWord(zpAddrLow, true); // Read word at 0x60-0x61 (0x7000). 
-	WORD result = addr + reg.Y; // Add Y for a final result of 0x7040.
+	WORD result = addr + m_reg.Y; // Add Y for a final result of 0x7040.
 
 	//  An additional clock cycle is used when the result of the operation is on a new page.
 	if (m_bNeedsExtraCycle && !CPU::IsOnSamePage(addr, result))
@@ -142,9 +142,9 @@ WORD CPU::IZY()
 // INDEXED INDIRECT
 WORD CPU::IZX()
 {
-	WORD zpAddrLow = m_Bus->ReadByte(reg.program_counter);
-	reg.program_counter++;
+	WORD zpAddrLow = m_Bus->ReadByte(m_reg.program_counter);
+	m_reg.program_counter++;
 
-	WORD addr = (zpAddrLow + reg.X) & 0x00FF; // add X and wrap around
+	WORD addr = (zpAddrLow + m_reg.X) & 0x00FF; // add X and wrap around
 	return m_Bus->ReadWord(addr, true);
 }

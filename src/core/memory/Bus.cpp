@@ -4,7 +4,7 @@
 Bus::Bus(ROM* rom) : m_ROM(rom)
 {
 	m_PPU = std::make_unique<PPU>(&(m_ROM->CHR_ROM), &(m_ROM->mirrorType));
-	m_CPURAM.assign(8 * KB, 0); // the CPU's RAM is actually only 2KB in size - the rest of the 6KB are mirrored.
+	m_CPURAM.assign(2 * KB, 0); // the CPU's RAM is actually only 2KB in size - the rest of the 6KB are mirrored.
 }
 
 
@@ -40,30 +40,29 @@ BYTE Bus::ReadByte(WORD addr)
 	// On the NES, only 2KiB of RAM is accessible due to hardware limitations. The CPU accesses RAM through addresses 0x0000 to 0x1FFF, however, which
 	// is an 8KiB range. As a result, any time the CPU attempts to access an address past 2KB (0x800), the address is mirrored back to an address
 	// within the initial 2KiB.
-	if (addr < MIRRORED_INTERNAL_RAM_END)
+	if (addr < MIRRORED_INTERNAL_RAM_END) // 0x2000
 		return m_CPURAM[MirrorAddress(addr, INTERNAL_RAM_SIZE)]; // clamp to 0x000 - 0x7FF
-	else if (addr < MIRRORED_PPU_REGISTER_END)
+	else if (addr < MIRRORED_PPU_REGISTER_END) // 0x4000
 		return ReadPPURegister((PPURegAddr)(MirrorAddress(addr, PPU_REGISTER_SIZE, MIRRORED_INTERNAL_RAM_END))); // clamp to 0x2000 - 0x2007
 	else if (addr == 0x4016) // TODO: get rid of magic number
 		return m_Joypads[0].CPURead().to_ulong();
 	else if (addr == 0x4017)
 		return m_Joypads[1].CPURead().to_ulong();
-	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
+	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END) // 0x8000 to 0xFFFF
 		return ReadPRGByte(addr);
 	
-	//return m_CPURAM[addr];
 	return 0;
 }
 
 void Bus::WriteByte(WORD addr, BYTE val)
 {
-	if (addr < MIRRORED_INTERNAL_RAM_END)
-		m_CPURAM[MirrorAddress(addr, INTERNAL_RAM_SIZE)] = val;
-	else if (addr < MIRRORED_PPU_REGISTER_END)
-		WritePPURegister((PPURegAddr)(MirrorAddress(addr, PPU_REGISTER_SIZE, MIRRORED_INTERNAL_RAM_END)), val);
+	if (addr < MIRRORED_INTERNAL_RAM_END) // 0x2000
+		m_CPURAM[MirrorAddress(addr, INTERNAL_RAM_SIZE)] = val; // clamp to 0x000 - 0x7FFF
+	else if (addr < MIRRORED_PPU_REGISTER_END) // 0x4000
+		WritePPURegister((PPURegAddr)(MirrorAddress(addr, PPU_REGISTER_SIZE, MIRRORED_INTERNAL_RAM_END)), val); // clamp to 0x2000 - 0x2007
 	else if (addr == (WORD)PPURegAddr::OAMDMA) // 0x4014
 		WritePPURegister(PPURegAddr::OAMDMA, val);
-	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END)
+	else if (addr >= PRG_RAM_START && addr <= PRG_RAM_END) // 0x8000 to 0xFFFF
 		LOG_WARN("Attempted to write to cartridge ROM at address 0x" << std::hex << addr << std::dec << " (this should never occur)");
 	else if (addr == 0x4016) // TODO: get rid of magic number
 	{

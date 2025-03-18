@@ -32,28 +32,28 @@ CPU::Instruction CPU::instructions[256] = {
 /// @brief Loads value at the address into the accumulator.
 void CPU::LDA(WORD addr) 
 { 
-	reg.accumulator = m_Bus->ReadByte(addr);
+	m_reg.accumulator = m_Bus->ReadByte(addr);
 	
-	reg.CheckNegative(reg.accumulator);
-	reg.CheckZero(reg.accumulator);
+	m_reg.CheckNegative(m_reg.accumulator);
+	m_reg.CheckZero(m_reg.accumulator);
 }
 
 /// @brief Loads value at the address into the X register.
 void CPU::LDX(WORD addr) 
 { 
-	reg.X = m_Bus->ReadByte(addr);
+	m_reg.X = m_Bus->ReadByte(addr);
 	
-	reg.CheckNegative(reg.X);
-	reg.CheckZero(reg.X);
+	m_reg.CheckNegative(m_reg.X);
+	m_reg.CheckZero(m_reg.X);
 }
 
 /// @brief Loads value at the address into the Y register.
 void CPU::LDY(WORD addr) 
 { 
-	reg.Y = m_Bus->ReadByte(addr);
+	m_reg.Y = m_Bus->ReadByte(addr);
 	
-	reg.CheckNegative(reg.Y);
-	reg.CheckZero(reg.Y);
+	m_reg.CheckNegative(m_reg.Y);
+	m_reg.CheckZero(m_reg.Y);
 }
 
 
@@ -61,19 +61,19 @@ void CPU::LDY(WORD addr)
 /// @brief Stores the value in the accumulator to the address.
 void CPU::STA(WORD addr) 
 { 
-	m_Bus->WriteByte(addr, reg.accumulator);
+	m_Bus->WriteByte(addr, m_reg.accumulator);
 }
 
 /// @brief Stores the value in the X register to the address.
 void CPU::STX(WORD addr) 
 { 
-	m_Bus->WriteByte(addr, reg.X);
+	m_Bus->WriteByte(addr, m_reg.X);
 }
 
 /// @brief Stores the value in the Y register to the address.
 void CPU::STY(WORD addr) 
 { 
-	m_Bus->WriteByte(addr, reg.Y);
+	m_Bus->WriteByte(addr, m_reg.Y);
 }
 
 
@@ -84,8 +84,8 @@ void CPU::INC(WORD addr)
 	BYTE val = m_Bus->ReadByte(addr);
 	val++;
 
-	reg.CheckNegative(val);
-	reg.CheckZero(val);
+	m_reg.CheckNegative(val);
+	m_reg.CheckZero(val);
 
 	m_Bus->WriteByte(addr, val);
 }
@@ -93,19 +93,19 @@ void CPU::INC(WORD addr)
 /// @brief Increment the value in the X register.
 void CPU::INX(WORD addr) 
 { 
-	reg.X++;
+	m_reg.X++;
 
-	reg.CheckNegative(reg.X);
-	reg.CheckZero(reg.X);
+	m_reg.CheckNegative(m_reg.X);
+	m_reg.CheckZero(m_reg.X);
 }
 
 /// @brief Increment the value in the Y register.
 void CPU::INY(WORD addr) 
 { 
-	reg.Y++;
+	m_reg.Y++;
 
-	reg.CheckNegative(reg.Y);
-	reg.CheckZero(reg.Y);
+	m_reg.CheckNegative(m_reg.Y);
+	m_reg.CheckZero(m_reg.Y);
 }
 
 
@@ -116,8 +116,8 @@ void CPU::DEC(WORD addr)
 	BYTE val = m_Bus->ReadByte(addr);
 	val--;
 
-	reg.CheckNegative(val);
-	reg.CheckZero(val);
+	m_reg.CheckNegative(val);
+	m_reg.CheckZero(val);
 		
 	m_Bus->WriteByte(addr, val);
 }
@@ -125,19 +125,19 @@ void CPU::DEC(WORD addr)
 /// @brief Decrement the value in the X register.
 void CPU::DEX(WORD addr) 
 { 
-	reg.X--;
+	m_reg.X--;
 
-	reg.CheckNegative(reg.X);
-	reg.CheckZero(reg.X);
+	m_reg.CheckNegative(m_reg.X);
+	m_reg.CheckZero(m_reg.X);
 }
 
 /// @brief Decrement the value in the Y register.
 void CPU::DEY(WORD addr) 
 { 
-	reg.Y--;
+	m_reg.Y--;
 
-	reg.CheckNegative(reg.Y);
-	reg.CheckZero(reg.Y);
+	m_reg.CheckNegative(m_reg.Y);
+	m_reg.CheckZero(m_reg.Y);
 }
 
 
@@ -148,31 +148,31 @@ void CPU::ADC(WORD addr)
 { 
 	BYTE val = m_Bus->ReadByte(addr);
 
-	WORD added16 = val + reg.accumulator; // add values together
+	WORD added16 = val + m_reg.accumulator; // add values together
 	
 	// add carry bit if present
-	if (reg.status_register.test(StatusRegisterFlags::CARRY))
+	if (m_reg.status_register.test(StatusRegisterFlags::CARRY))
 		added16++;
 	
 	BYTE result = added16 & 0x00FF; // convert to 8-bit
 	
 	//  registers
-	reg.CheckCarry(added16);
-	reg.CheckZero(result);
-	reg.CheckNegative(result);
+	m_reg.CheckCarry(added16);
+	m_reg.CheckZero(result);
+	m_reg.CheckNegative(result);
 
 	// determine overflow bit
 	// if positive + positive = negative, overflow occured
-	if ((CHAR)reg.accumulator >= 0 && (CHAR)val >= 0 && (CHAR)(result) < 0)
-		reg.status_register.set(StatusRegisterFlags::_OVERFLOW);
+	if ((CHAR)m_reg.accumulator >= 0 && (CHAR)val >= 0 && (CHAR)(result) < 0)
+		m_reg.status_register.set(StatusRegisterFlags::OVERFLOW_FLAG);
 	// if negative + negative = positive, overflow occured
-	else if ((CHAR)reg.accumulator < 0 && (CHAR)val < 0 && (CHAR)(result) >= 0)
-		reg.status_register.set(StatusRegisterFlags::_OVERFLOW);
+	else if ((CHAR)m_reg.accumulator < 0 && (CHAR)val < 0 && (CHAR)(result) >= 0)
+		m_reg.status_register.set(StatusRegisterFlags::OVERFLOW_FLAG);
 	else
-		reg.status_register.reset(StatusRegisterFlags::_OVERFLOW);
+		m_reg.status_register.reset(StatusRegisterFlags::OVERFLOW_FLAG);
 	
 
-	reg.accumulator = result; // save result to accumulator
+	m_reg.accumulator = result; // save result to accumulator
 }
 
 /// @brief Performs a subtraction between the accumulator and a value at the address.
@@ -181,31 +181,31 @@ void CPU::SBC(WORD addr)
 { 
 	BYTE val = m_Bus->ReadByte(addr);
 
-	WORD negated16 = reg.accumulator - val; // negate values
+	WORD negated16 = m_reg.accumulator - val; // negate values
 
 	// subtract only if carry bit is not set
-	if (!reg.status_register.test(StatusRegisterFlags::CARRY))
+	if (!m_reg.status_register.test(StatusRegisterFlags::CARRY))
 		negated16--;
 
 	BYTE result = negated16 & 0x00FF; // convert to 8-bit
 
 	//  registers
-	reg.status_register.set(StatusRegisterFlags::CARRY, negated16 < PAGE);
-	reg.CheckZero(result);
-	reg.CheckNegative(result);
+	m_reg.status_register.set(StatusRegisterFlags::CARRY, negated16 < PAGE);
+	m_reg.CheckZero(result);
+	m_reg.CheckNegative(result);
 
 	// determine overflow bit
 	// if negative - positive = positive, overflow occured
-	if ((CHAR)reg.accumulator < 0 && (CHAR)val >= 0 && (CHAR)(result) >= 0)
-		reg.status_register.set(StatusRegisterFlags::_OVERFLOW);
+	if ((CHAR)m_reg.accumulator < 0 && (CHAR)val >= 0 && (CHAR)(result) >= 0)
+		m_reg.status_register.set(StatusRegisterFlags::OVERFLOW_FLAG);
 	// if positive - negative = negative, overflow occured
-	else if ((CHAR)reg.accumulator >= 0 && (CHAR)val < 0 && (CHAR)(result) < 0)
-		reg.status_register.set(StatusRegisterFlags::_OVERFLOW);
+	else if ((CHAR)m_reg.accumulator >= 0 && (CHAR)val < 0 && (CHAR)(result) < 0)
+		m_reg.status_register.set(StatusRegisterFlags::OVERFLOW_FLAG);
 	else
-		reg.status_register.reset(StatusRegisterFlags::_OVERFLOW);
+		m_reg.status_register.reset(StatusRegisterFlags::OVERFLOW_FLAG);
 
 
-	reg.accumulator = result; // save result to accumulator
+	m_reg.accumulator = result; // save result to accumulator
 }
 
 /// @brief Compares the value in the accumulator against the value read at the given address.
@@ -213,13 +213,13 @@ void CPU::SBC(WORD addr)
 void CPU::CMP(WORD addr) 
 { 
 	BYTE val = m_Bus->ReadByte(addr);
-	WORD negated16 = reg.accumulator - val;
+	WORD negated16 = m_reg.accumulator - val;
 
 	BYTE result = negated16 & 0x00FF; // convert word to byte
 
-	reg.CheckCarryCompare(reg.accumulator, val);
-	reg.CheckZero(result);
-	reg.CheckNegative(result);
+	m_reg.CheckCarryCompare(m_reg.accumulator, val);
+	m_reg.CheckZero(result);
+	m_reg.CheckNegative(result);
 }
 
 /// @brief Compares the value in the X register against the value read at the given address.
@@ -227,13 +227,13 @@ void CPU::CMP(WORD addr)
 void CPU::CPX(WORD addr) 
 { 
 	BYTE val = m_Bus->ReadByte(addr);
-	WORD negated16 = reg.X - val;
+	WORD negated16 = m_reg.X - val;
 
 	BYTE result = negated16 & 0x00FF; // convert word to byte
 
-	reg.CheckCarryCompare(reg.X, val);
-	reg.CheckZero(result);
-	reg.CheckNegative(result);
+	m_reg.CheckCarryCompare(m_reg.X, val);
+	m_reg.CheckZero(result);
+	m_reg.CheckNegative(result);
 }
 
 /// @brief Compares the value in the Y register against the value read at the given address.
@@ -241,13 +241,13 @@ void CPU::CPX(WORD addr)
 void CPU::CPY(WORD addr) 
 { 
 	BYTE val = m_Bus->ReadByte(addr);
-	WORD negated16 = reg.Y - val;
+	WORD negated16 = m_reg.Y - val;
 
 	BYTE result = negated16 & 0x00FF; // convert word to byte
 
-	reg.CheckCarryCompare(reg.Y, val);
-	reg.CheckZero(result);
-	reg.CheckNegative(result);
+	m_reg.CheckCarryCompare(m_reg.Y, val);
+	m_reg.CheckZero(result);
+	m_reg.CheckNegative(result);
 }
 
 
@@ -258,12 +258,12 @@ void CPU::AND(WORD addr)
 { 
 	BYTE val = m_Bus->ReadByte(addr);
 
-	BYTE result = val & reg.accumulator;
+	BYTE result = val & m_reg.accumulator;
 
-	reg.CheckZero(result);
-	reg.CheckNegative(result);
+	m_reg.CheckZero(result);
+	m_reg.CheckNegative(result);
 
-	reg.accumulator = result;
+	m_reg.accumulator = result;
 }
 
 /// @brief Performs a bitwise XOR operation between the accumulator and the value read at the given address.
@@ -272,12 +272,12 @@ void CPU::EOR(WORD addr)
 { 
 	BYTE val = m_Bus->ReadByte(addr);
 
-	BYTE result = val ^ reg.accumulator;
+	BYTE result = val ^ m_reg.accumulator;
 
-	reg.CheckZero(result);
-	reg.CheckNegative(result);
+	m_reg.CheckZero(result);
+	m_reg.CheckNegative(result);
 
-	reg.accumulator = result;
+	m_reg.accumulator = result;
 }
 
 /// @brief Performs a bitwise inclusive OR operation between the accumulator and the value read at the given address.
@@ -286,12 +286,12 @@ void CPU::ORA(WORD addr)
 { 
 	BYTE val = m_Bus->ReadByte(addr);
 
-	BYTE result = val | reg.accumulator;
+	BYTE result = val | m_reg.accumulator;
 
-	reg.CheckZero(result);
-	reg.CheckNegative(result);
+	m_reg.CheckZero(result);
+	m_reg.CheckNegative(result);
 
-	reg.accumulator = result;
+	m_reg.accumulator = result;
 }
 
 /// @brief Tests if bits are in specific locations by performing a bitwise AND between the accumulator and the value
@@ -301,13 +301,13 @@ void CPU::BIT(WORD addr)
 { 
 	BYTE val = m_Bus->ReadByte(addr);
 
-	BYTE result = reg.accumulator & val;
+	BYTE result = m_reg.accumulator & val;
 
 	// http://www.6502.org/users/obelisk/6502/reference.html#BIT
-	reg.CheckZero(result);
-	reg.CheckNegative(val);
+	m_reg.CheckZero(result);
+	m_reg.CheckNegative(val);
 	// set overflow bit based on 6th bit of memory value
-	reg.status_register.set(StatusRegisterFlags::_OVERFLOW, val & (1 << 6));
+	m_reg.status_register.set(StatusRegisterFlags::OVERFLOW_FLAG, val & (1 << 6));
 }
 
 
@@ -315,14 +315,14 @@ void CPU::BIT(WORD addr)
 /// @brief Pushes the current value of the accumulator onto the stack.
 void CPU::PHA(WORD addr) 
 { 
-	PushStackByte(reg.accumulator);
+	PushStackByte(m_reg.accumulator);
 }
 
 /// @brief Pushes a copy of the status register onto the stack.
 ///        The pushed status register has the UNUSED and BREAK_COMMAND flags set.
 void CPU::PHP(WORD addr) 
 { 
-	auto statusCopy = reg.status_register;
+	auto statusCopy = m_reg.status_register;
 	statusCopy.set(StatusRegisterFlags::UNUSED);
 	statusCopy.set(StatusRegisterFlags::BREAK_COMMAND);
 
@@ -332,10 +332,10 @@ void CPU::PHP(WORD addr)
 /// @brief Pops a byte from the stack into the accumulator. 
 void CPU::PLA(WORD addr) 
 { 
-	reg.accumulator = PopStackByte();
+	m_reg.accumulator = PopStackByte();
 
-	reg.CheckZero(reg.accumulator);
-	reg.CheckNegative(reg.accumulator);
+	m_reg.CheckZero(m_reg.accumulator);
+	m_reg.CheckNegative(m_reg.accumulator);
 }
 
 /// @brief Pops a byte from the stack into the status register.
@@ -343,10 +343,10 @@ void CPU::PLP(WORD addr)
 { 
 	auto pulledStatus = PopStackByte();
 
-	bool wasBreakSet = (reg.status_register.test(StatusRegisterFlags::BREAK_COMMAND));
-	reg.status_register = pulledStatus;
-	reg.status_register.set(StatusRegisterFlags::BREAK_COMMAND, wasBreakSet);
-	reg.status_register.set(StatusRegisterFlags::UNUSED);
+	bool wasBreakSet = (m_reg.status_register.test(StatusRegisterFlags::BREAK_COMMAND));
+	m_reg.status_register = pulledStatus;
+	m_reg.status_register.set(StatusRegisterFlags::BREAK_COMMAND, wasBreakSet);
+	m_reg.status_register.set(StatusRegisterFlags::UNUSED);
 }
 
 
@@ -354,16 +354,16 @@ void CPU::PLP(WORD addr)
 /// @brief Sets the program counter to the specified address to "jump" to that location in memory.
 void CPU::JMP(WORD addr) 
 { 
-	reg.program_counter = addr;
+	m_reg.program_counter = addr;
 }
 
 /// @brief Jumps to a subroutine by pushing the address of the current instruction onto the stack, and then
 ///        jumping to the given address.
 void CPU::JSR(WORD addr) 
 { 
-	reg.program_counter--;
+	m_reg.program_counter--;
 
-	PushStackWord(reg.program_counter);
+	PushStackWord(m_reg.program_counter);
 
 	JMP(addr);
 }
@@ -371,9 +371,9 @@ void CPU::JSR(WORD addr)
 /// @brief Returns from a subroutine by setting the program counter to a popped address from the stack.
 void CPU::RTS(WORD addr) 
 { 
-	reg.program_counter = PopStackWord();
+	m_reg.program_counter = PopStackWord();
 
-	reg.program_counter++;
+	m_reg.program_counter++;
 }
 
 
@@ -386,11 +386,11 @@ void CPU::RTS(WORD addr)
 /// @brief Branches to address if the carry flag is not set.
 void CPU::BCC(WORD addr) 
 { 
-	if (reg.status_register.test(StatusRegisterFlags::CARRY)) 
+	if (m_reg.status_register.test(StatusRegisterFlags::CARRY)) 
 		return;
 
 	// we branched, so increase current cycles by at least one. if it was to a different page, increment by one
-	m_curCycles += CPU::IsOnSamePage(reg.program_counter, addr) ? 1 : 2;
+	m_curCycles += CPU::IsOnSamePage(m_reg.program_counter, addr) ? 1 : 2;
 	
 	JMP(addr);
 }
@@ -398,10 +398,10 @@ void CPU::BCC(WORD addr)
 /// @brief Branches to address if the carry flag is set.
 void CPU::BCS(WORD addr) 
 { 
-	if (!reg.status_register.test(StatusRegisterFlags::CARRY))
+	if (!m_reg.status_register.test(StatusRegisterFlags::CARRY))
 		return;
 	
-	m_curCycles += CPU::IsOnSamePage(reg.program_counter, addr) ? 1 : 2;
+	m_curCycles += CPU::IsOnSamePage(m_reg.program_counter, addr) ? 1 : 2;
 	
 	JMP(addr);
 }
@@ -409,10 +409,10 @@ void CPU::BCS(WORD addr)
 /// @brief Branches to address if the zero flag is set.
 void CPU::BEQ(WORD addr) 
 { 
-	if (!reg.status_register.test(StatusRegisterFlags::ZERO))
+	if (!m_reg.status_register.test(StatusRegisterFlags::ZERO))
 		return;
 		
-	m_curCycles += CPU::IsOnSamePage(reg.program_counter, addr) ? 1 : 2;
+	m_curCycles += CPU::IsOnSamePage(m_reg.program_counter, addr) ? 1 : 2;
 	
 	JMP(addr);
 }
@@ -420,10 +420,10 @@ void CPU::BEQ(WORD addr)
 /// @brief Branches to address if the negative flag is set.
 void CPU::BMI(WORD addr) 
 { 
-	if (!reg.status_register.test(StatusRegisterFlags::NEGATIVE))
+	if (!m_reg.status_register.test(StatusRegisterFlags::NEGATIVE))
 		return;
 		
-	m_curCycles += CPU::IsOnSamePage(reg.program_counter, addr) ? 1 : 2;
+	m_curCycles += CPU::IsOnSamePage(m_reg.program_counter, addr) ? 1 : 2;
 	
 	JMP(addr);
 }
@@ -431,10 +431,10 @@ void CPU::BMI(WORD addr)
 /// @brief Branches to address if the zero flag is not set.
 void CPU::BNE(WORD addr) 
 { 
-	if (reg.status_register.test(StatusRegisterFlags::ZERO))
+	if (m_reg.status_register.test(StatusRegisterFlags::ZERO))
 		return;
 		
-	m_curCycles += CPU::IsOnSamePage(reg.program_counter, addr) ? 1 : 2;
+	m_curCycles += CPU::IsOnSamePage(m_reg.program_counter, addr) ? 1 : 2;
 	
 	JMP(addr);
 }
@@ -442,10 +442,10 @@ void CPU::BNE(WORD addr)
 /// @brief Branches to address if the negative flag is not set.
 void CPU::BPL(WORD addr) 
 { 
-	if (reg.status_register.test(StatusRegisterFlags::NEGATIVE))
+	if (m_reg.status_register.test(StatusRegisterFlags::NEGATIVE))
 		return;
 		
-	m_curCycles += CPU::IsOnSamePage(reg.program_counter, addr) ? 1 : 2;
+	m_curCycles += CPU::IsOnSamePage(m_reg.program_counter, addr) ? 1 : 2;
 	
 	JMP(addr);
 }
@@ -453,10 +453,10 @@ void CPU::BPL(WORD addr)
 /// @brief Branches to address if the overflow flag is not set.
 void CPU::BVC(WORD addr) 
 { 
-	if (reg.status_register.test(StatusRegisterFlags::_OVERFLOW))
+	if (m_reg.status_register.test(StatusRegisterFlags::OVERFLOW_FLAG))
 		return;
 		
-	m_curCycles += CPU::IsOnSamePage(reg.program_counter, addr) ? 1 : 2;
+	m_curCycles += CPU::IsOnSamePage(m_reg.program_counter, addr) ? 1 : 2;
 	
 	JMP(addr);
 }
@@ -464,10 +464,10 @@ void CPU::BVC(WORD addr)
 /// @brief Branches to address if the overflow flag is set.
 void CPU::BVS(WORD addr) 
 { 
-	if (!reg.status_register.test(StatusRegisterFlags::_OVERFLOW))
+	if (!m_reg.status_register.test(StatusRegisterFlags::OVERFLOW_FLAG))
 		return;
 
-	m_curCycles += CPU::IsOnSamePage(reg.program_counter, addr) ? 1 : 2;
+	m_curCycles += CPU::IsOnSamePage(m_reg.program_counter, addr) ? 1 : 2;
 	
 	JMP(addr);
 }
@@ -481,18 +481,18 @@ void CPU::ASL(WORD addr)
 	BYTE val{};
 	bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP || instructions[m_curOpcode].addrMode == &CPU::ACC);
 	
-	val = (isImplicit ? reg.accumulator : m_Bus->ReadByte(addr));
+	val = (isImplicit ? m_reg.accumulator : m_Bus->ReadByte(addr));
 
 	// set carry flag if 7th bit (the one we're about to shift away) is set
-	reg.status_register.set(StatusRegisterFlags::CARRY, val & 0x80);
+	m_reg.status_register.set(StatusRegisterFlags::CARRY, val & 0x80);
 
 	BYTE result = val << 1;
-	reg.CheckNegative(result);
-	reg.CheckZero(result);
+	m_reg.CheckNegative(result);
+	m_reg.CheckZero(result);
 	
 
 	if (isImplicit)
-		reg.accumulator = result;
+		m_reg.accumulator = result;
 	else
 		m_Bus->WriteByte(addr, result); // write value back to same location
 }
@@ -503,18 +503,18 @@ void CPU::LSR(WORD addr)
 	BYTE val{};
 	bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP || instructions[m_curOpcode].addrMode == &CPU::ACC);
 
-	val = (isImplicit ? reg.accumulator : m_Bus->ReadByte(addr));
+	val = (isImplicit ? m_reg.accumulator : m_Bus->ReadByte(addr));
 
 	// set carry flag if 1st bit (the one we're about to shift away) is set
-	reg.status_register.set(StatusRegisterFlags::CARRY, val & 0x01);
+	m_reg.status_register.set(StatusRegisterFlags::CARRY, val & 0x01);
 
 	BYTE result = val >> 1;
-	reg.CheckNegative(result);
-	reg.CheckZero(result);
+	m_reg.CheckNegative(result);
+	m_reg.CheckZero(result);
 	
 
 	if (isImplicit)
-		reg.accumulator = result;
+		m_reg.accumulator = result;
 	else
 		m_Bus->WriteByte(addr, result); // write value back to same location
 }
@@ -525,20 +525,20 @@ void CPU::ROL(WORD addr)
 	BYTE val{};
 	bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP || instructions[m_curOpcode].addrMode == &CPU::ACC);
 	
-	val = (isImplicit ? reg.accumulator : m_Bus->ReadByte(addr));
+	val = (isImplicit ? m_reg.accumulator : m_Bus->ReadByte(addr));
 
 	// shift to left while setting bit 0 to value of carry flag
-	BYTE result = (val << 1) | reg.status_register.test(StatusRegisterFlags::CARRY);
+	BYTE result = (val << 1) | m_reg.status_register.test(StatusRegisterFlags::CARRY);
 
 	// set carry flag if 7th bit (the one we're about to shift away) is set
-	reg.status_register.set(StatusRegisterFlags::CARRY, val & 0x80);
+	m_reg.status_register.set(StatusRegisterFlags::CARRY, val & 0x80);
 
-	reg.CheckNegative(result);
-	reg.CheckZero(result);
+	m_reg.CheckNegative(result);
+	m_reg.CheckZero(result);
 	
 
 	if (isImplicit)
-		reg.accumulator = result;
+		m_reg.accumulator = result;
 	else
 		m_Bus->WriteByte(addr, result); // write value back to same location
 }
@@ -549,20 +549,20 @@ void CPU::ROR(WORD addr)
 	BYTE val{};
 	bool isImplicit = (instructions[m_curOpcode].addrMode == &CPU::IMP || instructions[m_curOpcode].addrMode == &CPU::ACC);
 	
-	val = (isImplicit ? reg.accumulator : m_Bus->ReadByte(addr));
+	val = (isImplicit ? m_reg.accumulator : m_Bus->ReadByte(addr));
 
 	// shift to left while setting bit 7 to value of carry flag
-	BYTE result = (val >> 1) | (reg.status_register.test(StatusRegisterFlags::CARRY) << 7);
+	BYTE result = (val >> 1) | (m_reg.status_register.test(StatusRegisterFlags::CARRY) << 7);
 	
 	// set carry flag if 1st bit (the one we're about to shift away) is set
-	reg.status_register.set(StatusRegisterFlags::CARRY, val & 0x01);
+	m_reg.status_register.set(StatusRegisterFlags::CARRY, val & 0x01);
 
-	reg.CheckNegative(result);
-	reg.CheckZero(result);
+	m_reg.CheckNegative(result);
+	m_reg.CheckZero(result);
 	
 
 	if (isImplicit)
-		reg.accumulator = result;
+		m_reg.accumulator = result;
 	else
 		m_Bus->WriteByte(addr, result); // write value back to same location
 }
@@ -572,25 +572,25 @@ void CPU::ROR(WORD addr)
 /// @brief Resets the carry flag.
 void CPU::CLC(WORD addr) 
 { 
-	reg.status_register.reset(StatusRegisterFlags::CARRY);
+	m_reg.status_register.reset(StatusRegisterFlags::CARRY);
 }
 
 /// @brief Resets the decimal mode flag.
 void CPU::CLD(WORD addr) 
 { 
-	reg.status_register.reset(StatusRegisterFlags::DECIMAL_MODE);
+	m_reg.status_register.reset(StatusRegisterFlags::DECIMAL_MODE);
 }
 
 /// @brief Resets the IRQ flag.
 void CPU::CLI(WORD addr) 
 { 
-	reg.status_register.reset(StatusRegisterFlags::INTERRUPT_REQUEST);
+	m_reg.status_register.reset(StatusRegisterFlags::INTERRUPT_REQUEST);
 }
 
 /// @brief Resets the overflow flag.
 void CPU::CLV(WORD addr) 
 { 
-	reg.status_register.reset(StatusRegisterFlags::_OVERFLOW);
+	m_reg.status_register.reset(StatusRegisterFlags::OVERFLOW_FLAG);
 }
 
 
@@ -598,19 +598,19 @@ void CPU::CLV(WORD addr)
 /// @brief Sets the carry flag.
 void CPU::SEC(WORD addr) 
 { 
-	reg.status_register.set(StatusRegisterFlags::CARRY);
+	m_reg.status_register.set(StatusRegisterFlags::CARRY);
 }
 
 /// @brief Sets the decimal mode flag.
 void CPU::SED(WORD addr) 
 { 
-	reg.status_register.set(StatusRegisterFlags::DECIMAL_MODE);
+	m_reg.status_register.set(StatusRegisterFlags::DECIMAL_MODE);
 }
 
 /// @brief Sets the IRQ flag.
 void CPU::SEI(WORD addr) 
 { 
-	reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
+	m_reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
 }
 
 
@@ -618,52 +618,52 @@ void CPU::SEI(WORD addr)
 /// @brief Sets the X register to the value in the accumulator.
 void CPU::TAX(WORD addr) 
 { 
-	reg.X = reg.accumulator;
+	m_reg.X = m_reg.accumulator;
 
-	reg.CheckNegative(reg.X);
-	reg.CheckZero(reg.X);
+	m_reg.CheckNegative(m_reg.X);
+	m_reg.CheckZero(m_reg.X);
 }
 
 /// @brief Sets the Y register to the value in the accumulator.
 void CPU::TAY(WORD addr) 
 { 
-	reg.Y = reg.accumulator;
+	m_reg.Y = m_reg.accumulator;
 
-	reg.CheckNegative(reg.Y);
-	reg.CheckZero(reg.Y);
+	m_reg.CheckNegative(m_reg.Y);
+	m_reg.CheckZero(m_reg.Y);
 }
 
 /// @brief Sets the accumulator to the value in the X register.
 void CPU::TXA(WORD addr) 
 { 
-	reg.accumulator = reg.X;
+	m_reg.accumulator = m_reg.X;
 
-	reg.CheckNegative(reg.accumulator);
-	reg.CheckZero(reg.accumulator);
+	m_reg.CheckNegative(m_reg.accumulator);
+	m_reg.CheckZero(m_reg.accumulator);
 }
 
 /// @brief Sets the accumulator to the value in the Y register.
 void CPU::TYA(WORD addr) 
 { 
-	reg.accumulator = reg.Y;
+	m_reg.accumulator = m_reg.Y;
 
-	reg.CheckNegative(reg.Y);
-	reg.CheckZero(reg.Y);
+	m_reg.CheckNegative(m_reg.Y);
+	m_reg.CheckZero(m_reg.Y);
 }
 
 /// @brief Sets the X register to the value in the stack pointer.
 void CPU::TSX(WORD addr) 
 { 
-	reg.X = reg.stack_pointer;
+	m_reg.X = m_reg.stack_pointer;
 
-	reg.CheckZero(reg.X);
-	reg.CheckNegative(reg.X);
+	m_reg.CheckZero(m_reg.X);
+	m_reg.CheckNegative(m_reg.X);
 }
 
 /// @brief Sets the stack pointer to the value in the X register.
 void CPU::TXS(WORD addr) 
 { 
-	reg.stack_pointer = reg.X;
+	m_reg.stack_pointer = m_reg.X;
 }
 
 
@@ -673,18 +673,18 @@ void CPU::TXS(WORD addr)
 ///        It then jumps to the address read at the interrupt vector (usually 0xFFFE to 0xFFFF).
 void CPU::BRK(WORD addr) 
 { 
-	reg.program_counter++;
+	m_reg.program_counter++;
 
-	auto savedReg = reg.status_register;
+	auto savedReg = m_reg.status_register;
 	savedReg.set(StatusRegisterFlags::UNUSED); // "always pushed as 1" https://www.nesdev.org/wiki/Status_flags#Flags
 	savedReg.set(StatusRegisterFlags::BREAK_COMMAND); // https://www.nesdev.org/wiki/Status_flags#The_B_flag
 
-	PushStackWord(reg.program_counter);
+	PushStackWord(m_reg.program_counter);
 	PushStackByte((BYTE)(savedReg.to_ulong()));
 
-	reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
+	m_reg.status_register.set(StatusRegisterFlags::INTERRUPT_REQUEST);
 
-	reg.program_counter = m_Bus->ReadWord(IRQ_VECTOR);
+	m_reg.program_counter = m_Bus->ReadWord(IRQ_VECTOR);
 }
 
 /// @brief No operation - does nothing but consume CPU cycles.
@@ -697,11 +697,11 @@ void CPU::NOP(WORD addr)
 ///        off the the stack (with the UNUSED and BREAK flags reset), and then pops the program counter off the stack.
 void CPU::RTI(WORD addr) 
 {
-	reg.status_register = PopStackByte();
-	reg.status_register.set(StatusRegisterFlags::UNUSED);
-	reg.status_register.reset(StatusRegisterFlags::BREAK_COMMAND);
+	m_reg.status_register = PopStackByte();
+	m_reg.status_register.set(StatusRegisterFlags::UNUSED);
+	m_reg.status_register.reset(StatusRegisterFlags::BREAK_COMMAND);
 
-	reg.program_counter = PopStackWord();
+	m_reg.program_counter = PopStackWord();
 }
 
 
@@ -769,7 +769,7 @@ void CPU::RRA(WORD addr)
 
 void CPU::SAX(WORD addr) 
 { 
-	BYTE result = reg.X & reg.accumulator;
+	BYTE result = m_reg.X & m_reg.accumulator;
 
 	m_Bus->WriteByte(addr, result);
 }
@@ -784,7 +784,7 @@ void CPU::ANC(WORD addr)
 { 
 	AND(addr);
 	// copy negative flag to carry
-	reg.status_register.set(StatusRegisterFlags::CARRY, StatusRegisterFlags::NEGATIVE);
+	m_reg.status_register.set(StatusRegisterFlags::CARRY, StatusRegisterFlags::NEGATIVE);
 }
 
 void CPU::ALR(WORD addr) // ASR
@@ -799,9 +799,9 @@ void CPU::ARR(WORD addr)
 	ROR(addr);
 
 	// set carry based on 6th bit
-	reg.status_register.set(StatusRegisterFlags::CARRY, reg.accumulator & (1 << 6));
+	m_reg.status_register.set(StatusRegisterFlags::CARRY, m_reg.accumulator & (1 << 6));
 	// set overflow based on bit 5 XOR bit 6
-	reg.status_register.set(StatusRegisterFlags::_OVERFLOW, (reg.accumulator & (1 << 5)) ^ (reg.accumulator & (1 << 6)));
+	m_reg.status_register.set(StatusRegisterFlags::OVERFLOW_FLAG, (m_reg.accumulator & (1 << 5)) ^ (m_reg.accumulator & (1 << 6)));
 }
 
 void CPU::LAS(WORD addr) 
@@ -812,11 +812,11 @@ void CPU::LAS(WORD addr)
 void CPU::AXS(WORD addr) 
 { 
 	BYTE val = m_Bus->ReadByte(addr);
-	BYTE result = (reg.X & reg.accumulator) - val;
+	BYTE result = (m_reg.X & m_reg.accumulator) - val;
 
-	reg.status_register.set(StatusRegisterFlags::CARRY, val <= (reg.X & reg.accumulator));
-	reg.CheckNegative(result);
-	reg.CheckZero(result);
+	m_reg.status_register.set(StatusRegisterFlags::CARRY, val <= (m_reg.X & m_reg.accumulator));
+	m_reg.CheckNegative(result);
+	m_reg.CheckZero(result);
 }
 
 void CPU::ISC(WORD addr) // ISB

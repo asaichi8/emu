@@ -18,6 +18,7 @@ Disassembler::DisasmInfo Disassembler::Disassemble(WORD addr)
 	// look up instruction in instruction table
 	const CPU::Instruction& instruction = CPU::GetInstructionTable()[opcode];
 	
+	// fill info struct with currently known information
 	info.instruction = instruction.strName;
 	info.addrMode = instruction.strAddrMode;
     info.size = 1; // there's only one opcode, so we start the size off at 1

@@ -22,3 +22,5 @@ bin/rom_database.json
 bin/rom_database.json.bak
 nestest.log
 nestestnoasm.log
+src/include/SDL2
+emu.exe
